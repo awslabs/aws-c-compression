@@ -17,6 +17,8 @@
 
 #include <aws/compression/private/huffman_static_decode.h>
 
+#include <assert.h>
+
 static struct aws_huffman_bit_pattern code_points[] = {
     { .pattern = 0x1ff8, .num_bits = 13 }, /* 0 */
     { .pattern = 0x7fffd8, .num_bits = 23 }, /* 1 */
@@ -278,14 +280,15 @@ static struct aws_huffman_bit_pattern code_points[] = {
 };
 
 struct aws_huffman_bit_pattern encode_character(uint16_t symbol, void *userdata) {
-
     (void)userdata;
+
+    assert(symbol < 257);
     return code_points[symbol];
 }
 
 static size_t decode_character(uint32_t bit_pattern, uint16_t *symbol, void *userdata) {
-
     (void)userdata;
+
     if (bit_pattern & 0x80000000) {
         goto node_1;
     } else {

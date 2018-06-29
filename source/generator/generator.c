@@ -29,12 +29,78 @@ struct code_point {
     struct bit_pattern pattern;
 };
 
-static struct code_point code_points[] = {
-#define HUFFMAN_CODE(psymbol, pbitstring, pbit_pattern, plength) { .symbol = psymbol, .pattern = { .num_bits = plength, .bits = pbit_pattern } },
-#include <aws/compression/private/h2_huffman_static_table.def>
-#undef HUFFMAN_CODE
-};
-static const size_t num_code_points = sizeof(code_points) / sizeof(struct code_point);
+static const size_t num_code_points = 257;
+static struct code_point code_points[num_code_points];
+
+static void skip_whitespace(const char **str) {
+    while (**str == ' ' || **str == '\t') {
+        ++(*str);
+    }
+}
+
+static void read_past_comma(const char **str) {
+    while (**str != ',') {
+        ++(*str);
+    }
+    ++(*str);
+}
+
+void read_code_points(const char *input_path) {
+
+    memset(code_points, 0, sizeof(code_points));
+    FILE *file = fopen(input_path, "r");
+
+    static const char HC_KEYWORD[] = "HUFFMAN_CODE";
+    static const size_t HC_KW_LEN = sizeof(HC_KEYWORD) - 1;
+
+    int is_comment = 0;
+    size_t code_index = 0;
+    char line[120];
+    while (fgets(line, sizeof(line), file) != NULL) {
+        const size_t line_length = strlen(line);
+
+        if (line[0] == '#') {
+            /* Ignore preprocessor directives */
+            continue;
+        } else {
+            /* Check for comments */
+            for (size_t i = 0; i < line_length - 1; ++i) {
+                if (!is_comment) {
+                    if (line[i] == '/' && line[i + 1] == '*') {
+                        is_comment = 1;
+                    } else if (strncmp(&line[i], HC_KEYWORD, HC_KW_LEN) == 0) {
+                        /* Found code, parse it */
+                        struct code_point *code = &code_points[code_index++];
+
+                        /* Skip macro */
+                        const char *current_char = &line[i + HC_KW_LEN];
+                        skip_whitespace(&current_char);
+                        /* Skip ( */
+                        assert(*current_char++ == '(');
+
+                        /* Parse symbol */
+                        code->symbol = (uint16_t)atoi(current_char);
+
+                        read_past_comma(&current_char);
+                        /* Skip the binary string form */
+                        read_past_comma(&current_char);
+
+                        /* Parse bits */
+                        code->pattern.bits = (uint32_t)strtol(current_char, NULL, 16);
+
+                        read_past_comma(&current_char);
+
+                        code->pattern.num_bits = (uint32_t)atoi(current_char);
+                    }
+                } else if (line[i] == '*' && line[i + 1] == '/') {
+                    is_comment = 0;
+                }
+            }
+        }
+    }
+
+    assert(code_index == 257);
+}
 
 void bit_pattern_write(struct bit_pattern *pattern, FILE* file) {
     for (int bit_idx = pattern->num_bits - 1; bit_idx >= 0; --bit_idx) {
@@ -148,6 +214,13 @@ void huffman_node_write_decode(struct huffman_node *node, FILE *file, uint8_t cu
 
 int main(int argc, char *argv[]) {
 
+    assert(argc == 3 && "generator expects 2 arguments: input file, output file");
+
+    const char *input_file = argv[1];
+    const char *output_file = argv[2];
+
+    read_code_points(input_file);
+
     struct huffman_node tree_root;
     memset(&tree_root, 0, sizeof(struct huffman_node));
 
@@ -185,7 +258,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Open the file */
-    FILE *file = fopen("source/huffman_static_decode_gen.c", "w");
+    FILE *file = fopen(output_file, "w");
     assert(file);
 
     /* Write the file/function header */
@@ -208,6 +281,8 @@ int main(int argc, char *argv[]) {
 "/* WARNING: THIS FILE WAS AUTOMATICALLY GENERATED. DO NOT EDIT. */\n"
 "\n"
 "#include <aws/compression/private/huffman_static_decode.h>\n"
+"\n"
+"#include <assert.h>\n"
 "\n"
 "static struct aws_huffman_bit_pattern code_points[] = {\n");
 
