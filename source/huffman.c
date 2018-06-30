@@ -15,7 +15,17 @@
 
 #include <aws/compression/huffman.h>
 
+#include <aws/common/common.h>
+
 #include <assert.h>
+
+void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_coder *coder) {
+    assert(decoder);
+    assert(coder);
+
+    AWS_ZERO_STRUCT(*decoder);
+    decoder->coder = coder;
+}
 
 size_t aws_huffman_encode(struct aws_huffman_coder *coder, const char *to_encode, size_t length, uint8_t *output) {
     assert(coder);
@@ -61,8 +71,30 @@ size_t aws_huffman_encode(struct aws_huffman_coder *coder, const char *to_encode
     return byte_pos;
 }
 
-aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_coder *coder, const uint8_t *buffer, size_t len, char *output, size_t *output_size, size_t *processed) {
-    assert(coder);
+static void decode_fill_working_bits(struct aws_huffman_decoder *decoder, const uint8_t **current_read_byte, const uint8_t *buffer_end, uint8_t bits_to_read) {
+    /* Read from bytes in the buffer until all bytes have been replaced */
+    while (bits_to_read > 0) {
+        uint8_t bits_in_current = 8 - decoder->bit_pos;
+        uint8_t bits_from_current = bits_to_read > bits_in_current ? bits_in_current : bits_to_read;
+
+        bits_to_read -= bits_from_current;
+        decoder->working_bits <<= bits_from_current;
+        if (*current_read_byte < buffer_end) {
+            /* Read the appropiate number of bits from this byte */
+            decoder->working_bits |= (**current_read_byte << decoder->bit_pos) >> (8 - bits_from_current);
+        }
+
+        decoder->bit_pos += bits_from_current;
+        if (decoder->bit_pos == 8) {
+            ++(*current_read_byte);
+            decoder->bit_pos = 0;
+        }
+    }
+}
+
+aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *buffer, size_t len, char *output, size_t *output_size, size_t *processed) {
+    assert(decoder);
+    assert(decoder->coder);
     assert(buffer);
     assert(output);
 
@@ -74,34 +106,40 @@ aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_coder *coder, co
 
     /* current_read_byte + bit_pos = the current position in the input buffer */
     const uint8_t *current_read_byte = buffer;
-    uint8_t bit_pos = 0;
+    const uint8_t *buffer_end = buffer + len;
 
-    uint32_t working_bits = 0;
+    /*
     for (uint8_t bytes_read = 0; bytes_read < READ_AHEAD_SIZE; ++bytes_read) {
-        /* Populate working_bits with first READ_AHEAD_SIZE bytes in the buffer */
-        working_bits <<= 8;
+        Populate working_bits with first READ_AHEAD_SIZE bytes in the buffer
+        decoder->working_bits <<= 8;
         if (bytes_read < len) {
-            working_bits |= *(current_read_byte++);
+            decoder->working_bits |= *(current_read_byte++);
         }
     }
+    */
+    decode_fill_working_bits(decoder, &current_read_byte, buffer_end, 32 - decoder->bit_pos);
 
     while (*processed < len && output_pos < *output_size) {
 
         uint16_t symbol;
-        size_t bits_read = coder->decode(working_bits, &symbol, coder->userdata);
+        size_t bits_read = decoder->coder->decode(decoder->working_bits, &symbol, decoder->coder->userdata);
         assert(bits_read > 0);
 
         /* Update processed based on how many bits we read */
-        *processed += (bits_read + bit_pos) / 8;
+        *processed += (bits_read + decoder->bit_pos) / 8;
 
-        if (symbol == coder->eos_symbol) {
+        if (symbol == decoder->coder->eos_symbol) {
             /* Handle EOS */
 
             *output_size = output_pos;
-            if ((bits_read + bit_pos) % 8 != 0) {
+            if ((bits_read + decoder->bit_pos) % 8 != 0) {
                 /* If not even number of bits processed, round up for final byte */
                 ++*processed;
             }
+
+            /* Reset the state */
+            decoder->working_bits = 0;
+            decoder->bit_pos = 0;
 
             if (*processed == len) {
                 /* If on the last byte, success */
@@ -116,27 +154,10 @@ aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_coder *coder, co
             /* Store the found symbol */
             output[output_pos++] = (char)symbol;
 
-            /* Read from bytes in the buffer until all read bytes have been replaced */
-            while (bits_read > 0) {
-                uint8_t bits_in_current = 8 - bit_pos;
-                uint8_t bits_from_current = bits_read > bits_in_current ? bits_in_current : bits_read;
-
-                bits_read -= bits_from_current;
-                working_bits <<= bits_from_current;
-                if (current_read_byte - buffer < len) {
-                    /* Read the appropiate number of bits from this byte */
-                    working_bits |= (*current_read_byte << bit_pos) >> (8 - bits_from_current);
-                }
-
-                bit_pos += bits_from_current;
-                if (bit_pos == 8) {
-                    ++current_read_byte;
-                    bit_pos = 0;
-                }
-            }
+            decode_fill_working_bits(decoder, &current_read_byte, buffer_end, bits_read);
         }
     }
 
     *output_size = output_pos;
-    return AWS_HUFFMAN_DECODE_ERROR;
+    return AWS_HUFFMAN_DECODE_NEED_MORE;
 }

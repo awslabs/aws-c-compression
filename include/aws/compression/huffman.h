@@ -34,6 +34,12 @@ struct aws_huffman_coder {
     void *userdata;
 };
 
+struct aws_huffman_decoder {
+    struct aws_huffman_coder *coder;
+    uint32_t working_bits;
+    uint8_t bit_pos;
+};
+
 typedef enum aws_huffman_decoder_state {
     AWS_HUFFMAN_DECODE_NEED_MORE,
     AWS_HUFFMAN_DECODE_EOS_REACHED,
@@ -44,8 +50,10 @@ typedef enum aws_huffman_decoder_state {
 extern "C" {
 #endif
 
+void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_coder *coder);
+
 size_t aws_huffman_encode(struct aws_huffman_coder *coder, const char *to_encode, size_t length, uint8_t *output);
-aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_coder *coder, const uint8_t *buffer, size_t len, char *output, size_t *output_size, size_t *processed);
+aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *buffer, size_t len, char *output, size_t *output_size, size_t *processed);
 
 #ifdef __cplusplus
 }

@@ -120,9 +120,12 @@ static int test_huffman_decoder(struct aws_allocator *allocator, void *user_data
     AWS_ZERO_ARRAY(output_buffer);
 
     struct aws_huffman_coder *coder = hpack_get_coder();
+    struct aws_huffman_decoder decoder;
+    aws_huffman_decoder_init(&decoder, coder);
+
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
-    aws_huffman_decoder_state state = aws_huffman_decode(coder, input_buffer, sizeof(input_buffer), output_buffer, &output_size, &processed);
+    aws_huffman_decoder_state state = aws_huffman_decode(&decoder, input_buffer, sizeof(input_buffer), output_buffer, &output_size, &processed);
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Decoder ended in the wrong state");
     ASSERT_UINT_EQUALS(sizeof(expected) - 1, output_size, "Decoder wrote too many bytes");
     ASSERT_UINT_EQUALS(sizeof(input_buffer), processed, "Decoder read too few/many bytes");
@@ -147,9 +150,12 @@ static int test_huffman_decoder_all_code_points(struct aws_allocator *allocator,
     AWS_ZERO_ARRAY(output_buffer);
 
     struct aws_huffman_coder *coder = hpack_get_coder();
+    struct aws_huffman_decoder decoder;
+    aws_huffman_decoder_init(&decoder, coder);
+
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
-    aws_huffman_decoder_state state = aws_huffman_decode(coder, input_buffer, sizeof(input_buffer), output_buffer, &output_size, &processed);
+    aws_huffman_decoder_state state = aws_huffman_decode(&decoder, input_buffer, sizeof(input_buffer), output_buffer, &output_size, &processed);
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Decoder ended in the wrong state");
     ASSERT_UINT_EQUALS(sizeof(expected) - 1, output_size, "Decoder wrote too many bytes");
     ASSERT_UINT_EQUALS(sizeof(input_buffer), processed, "Decoder read too few/many bytes");
@@ -163,6 +169,8 @@ AWS_TEST_CASE(huffman_decoder_all_code_points, test_huffman_decoder_all_code_poi
 static int test_huffman_transitive(struct aws_allocator *allocator, void *user_data) {
 
     struct aws_huffman_coder *coder = hpack_get_coder();
+    struct aws_huffman_decoder decoder;
+    aws_huffman_decoder_init(&decoder, coder);
 
     const char input_string[] = "www.example.com";
     uint8_t intermediate_buffer[16];
@@ -177,7 +185,7 @@ static int test_huffman_transitive(struct aws_allocator *allocator, void *user_d
 
     size_t output_size = sizeof(output_string);
     size_t processed = 0;
-    aws_huffman_decoder_state state = aws_huffman_decode(coder, intermediate_buffer, bytes_written, output_string, &output_size, &processed);
+    aws_huffman_decoder_state state = aws_huffman_decode(&decoder, intermediate_buffer, bytes_written, output_string, &output_size, &processed);
 
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Decoder ended in the wrong state");
     ASSERT_UINT_EQUALS(sizeof(input_string) - 1, output_size, "Decoder wrote too many bytes");
@@ -193,6 +201,8 @@ AWS_TEST_CASE(huffman_transitive, test_huffman_transitive)
 static int test_huffman_transitive_all_code_points(struct aws_allocator *allocator, void *user_data) {
 
     struct aws_huffman_coder *coder = hpack_get_coder();
+    struct aws_huffman_decoder decoder;
+    aws_huffman_decoder_init(&decoder, coder);
 
     const char input_string[] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     uint8_t intermediate_buffer[98];
@@ -207,7 +217,7 @@ static int test_huffman_transitive_all_code_points(struct aws_allocator *allocat
 
     size_t output_size = sizeof(output_string);
     size_t processed = 0;
-    aws_huffman_decoder_state state = aws_huffman_decode(coder, intermediate_buffer, bytes_written, output_string, &output_size, &processed);
+    aws_huffman_decoder_state state = aws_huffman_decode(&decoder, intermediate_buffer, bytes_written, output_string, &output_size, &processed);
 
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Decoder ended in the wrong state");
     ASSERT_UINT_EQUALS(sizeof(input_string) - 1, output_size, "Decoder wrote too many bytes");
