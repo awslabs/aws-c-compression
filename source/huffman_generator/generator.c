@@ -214,10 +214,17 @@ void huffman_node_write_decode(struct huffman_node *node, FILE *file, uint8_t cu
 
 int main(int argc, char *argv[]) {
 
-    assert(argc == 3 && "generator expects 2 arguments: input file, output file");
+    if (argc != 4) {
+        fprintf(stderr,
+            "generator expects 3 arguments: [input file] [output file] [encoding name]\n"
+            "A function of the following signature will be exported:\n"
+            "struct aws_huffman_character_coder *[encoding_get_coder()");
+        return 1;
+    }
 
     const char *input_file = argv[1];
     const char *output_file = argv[2];
+    const char *decoder_name = argv[3];
 
     read_code_points(input_file);
 
@@ -280,7 +287,7 @@ int main(int argc, char *argv[]) {
 "\n"
 "/* WARNING: THIS FILE WAS AUTOMATICALLY GENERATED. DO NOT EDIT. */\n"
 "\n"
-"#include <aws/compression/private/huffman_static_decode.h>\n"
+"#include <aws/compression/huffman.h>\n"
 "\n"
 "#include <assert.h>\n"
 "\n"
@@ -312,16 +319,16 @@ int main(int argc, char *argv[]) {
     fprintf(file,
 "}\n"
 "\n"
-"struct aws_huffman_coder *hpack_get_coder() {\n"
+"struct aws_huffman_character_coder *%s_get_coder() {\n"
 "\n"
-"    static struct aws_huffman_coder coder = {\n"
+"    static struct aws_huffman_character_coder coder = {\n"
 "        .encode = encode_character,\n"
 "        .decode = decode_character,\n"
 "        .eos_symbol = %lu,\n"
 "        .userdata = NULL,\n"
 "    };\n"
 "    return &coder;\n"
-"}\n", num_code_points - 1);
+"}\n", decoder_name, num_code_points - 1);
 
     fclose(file);
 

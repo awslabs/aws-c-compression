@@ -19,40 +19,94 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/**
+ * Represents an encoded bit pattern
+ */
 struct aws_huffman_bit_pattern {
+    /**
+     * The value of the bit pattern
+     * \note The pattern is stored in the bottom bits
+     */
     uint32_t pattern;
+    /** The number of bits in pattern to use */
     uint8_t num_bits;
 };
 
+/**
+ * Function used to encode a single character to an aws_bit_pattern
+ */
 typedef struct aws_huffman_bit_pattern (*aws_huffman_character_encoder)(uint16_t symbol, void *userdata);
+/**
+ * Function used to decode a bit pattern into a character
+ */
 typedef size_t (*aws_huffman_character_decoder)(uint32_t bit_pattern, uint16_t *symbol, void *userdata);
 
-struct aws_huffman_coder {
+/**
+ * Structure used to define how characters are encoded and decoded
+ *
+ * This struct may be provided by the code generator
+ */
+struct aws_huffman_character_coder {
     aws_huffman_character_encoder encode;
     aws_huffman_character_decoder decode;
     uint16_t eos_symbol;
     void *userdata;
 };
 
-struct aws_huffman_decoder {
-    struct aws_huffman_coder *coder;
+/**
+ * Structure used for persistent decoding.
+ * Allows for reading from or writing to incomplete buffers.
+ */
+struct aws_huffman_coder {
+    struct aws_huffman_character_coder *coder;
     uint8_t bit_pos;
 };
 
-typedef enum aws_huffman_decoder_state {
-    AWS_HUFFMAN_DECODE_NEED_MORE,
+/**
+ * The state the decoder is currently in.
+ */
+typedef enum aws_huffman_coder_state {
+    /** The stream has successfully decoded */
     AWS_HUFFMAN_DECODE_EOS_REACHED,
+    /** More input data or output space is needed */
+    AWS_HUFFMAN_DECODE_NEED_MORE,
+    /** An error occured while decoding */
     AWS_HUFFMAN_DECODE_ERROR
-} aws_huffman_decoder_state;
+} aws_huffman_coder_state;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_coder *coder);
+/**
+ * Initialize a decoder object with a character coder.
+ */
+void aws_huffman_coder_init(struct aws_huffman_coder *decoder, struct aws_huffman_character_coder *coder);
 
-size_t aws_huffman_encode(struct aws_huffman_coder *coder, const char *to_encode, size_t length, uint8_t *output);
-aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *buffer, size_t len, char *output, size_t *output_size, size_t *processed);
+/**
+ * Encode a character buffer into the output buffer.
+ *
+ * \param[in]   coder       The character coder to use
+ * \param[in]   to_encode   The character buffer to encode
+ * \param[in]   length      The length of to_encode
+ * \param[in]   output      The buffer to write encoded bytes to
+ *
+ * \return The number of bytes written to output
+ */
+size_t aws_huffman_encode(struct aws_huffman_character_coder *coder, const char *to_encode, size_t length, uint8_t *output);
+/**
+ * Decodes a byte buffer into the provided character array.
+ *
+ * \param[in]       decoder         The decoder object to use
+ * \param[in]       to_decode       The encoded byte buffer to read from
+ * \param[in]       length          The length of to_decode
+ * \param[in]       output          The buffer to write decoded characters to
+ * \param[in,out]   output_size     In: The size of output Out: The number of bytes written to output
+ * \param[out]      processed       The number of bytes read from to_decode before reaching the end or running out of output space
+ *
+ * \return The current state of the decoder \see aws_huffman_decoder_state
+ */
+aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_coder *decoder, const uint8_t *to_decode, size_t length, char *output, size_t *output_size, size_t *processed);
 
 #ifdef __cplusplus
 }

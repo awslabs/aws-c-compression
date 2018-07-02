@@ -15,7 +15,7 @@
 
 /* WARNING: THIS FILE WAS AUTOMATICALLY GENERATED. DO NOT EDIT. */
 
-#include <aws/compression/private/huffman_static_decode.h>
+#include <aws/compression/huffman.h>
 
 #include <assert.h>
 
@@ -2339,9 +2339,9 @@ node_11111111111111111111111111111:
 
 }
 
-struct aws_huffman_coder *hpack_get_coder() {
+struct aws_huffman_character_coder *hpack_get_coder() {
 
-    static struct aws_huffman_coder coder = {
+    static struct aws_huffman_character_coder coder = {
         .encode = encode_character,
         .decode = decode_character,
         .eos_symbol = 256,

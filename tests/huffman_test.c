@@ -16,7 +16,9 @@
 #include <aws/testing/aws_test_harness.h>
 
 #include <aws/compression/huffman.h>
-#include <aws/compression/private/huffman_static_decode.h>
+
+/* Exported by generated file */
+struct aws_huffman_character_coder *hpack_get_coder();
 
 struct code_point {
     uint16_t symbol;
@@ -50,7 +52,7 @@ static size_t encoded_codes_len = sizeof(encoded_codes);
 static int test_huffman_character_encoder(struct aws_allocator *allocator, void *user_data) {
     /* Test encoding each character */
 
-    struct aws_huffman_coder *coder = hpack_get_coder();
+    struct aws_huffman_character_coder *coder = hpack_get_coder();
 
     for (int i = 0; i < sizeof(code_points) / sizeof(struct code_point); ++i) {
         struct code_point *value = &code_points[i];
@@ -74,7 +76,7 @@ static int test_huffman_encoder(struct aws_allocator *allocator, void *user_data
     uint8_t output_buffer[encoded_url_len + 1];
     AWS_ZERO_ARRAY(output_buffer);
 
-    struct aws_huffman_coder *coder = hpack_get_coder();
+    struct aws_huffman_character_coder *coder = hpack_get_coder();
     size_t bytes_written = aws_huffman_encode(coder, url_string, url_string_len, output_buffer);
     ASSERT_UINT_EQUALS(bytes_written, encoded_url_len, "Encoder wrote too many bytes");
     ASSERT_UINT_EQUALS(output_buffer[encoded_url_len], 0, "Encoder wrote too far!");
@@ -90,7 +92,7 @@ static int test_huffman_encoder_all_code_points(struct aws_allocator *allocator,
     uint8_t output_buffer[encoded_codes_len + 1];
     AWS_ZERO_ARRAY(output_buffer);
 
-    struct aws_huffman_coder *coder = hpack_get_coder();
+    struct aws_huffman_character_coder *coder = hpack_get_coder();
     size_t bytes_written = aws_huffman_encode(coder, all_codes, all_codes_len, output_buffer);
     ASSERT_UINT_EQUALS(bytes_written, encoded_codes_len, "Encoder wrote too many bytes");
     ASSERT_UINT_EQUALS(output_buffer[encoded_codes_len], 0, "Encoder wrote too far!");
@@ -103,7 +105,7 @@ AWS_TEST_CASE(huffman_encoder_all_code_points, test_huffman_encoder_all_code_poi
 static int test_huffman_character_decoder(struct aws_allocator *allocator, void *user_data) {
     /* Test decoding each character */
 
-    struct aws_huffman_coder *coder = hpack_get_coder();
+    struct aws_huffman_character_coder *coder = hpack_get_coder();
 
     for (int i = 0; i < sizeof(code_points) / sizeof(struct code_point); ++i) {
         struct code_point *value = &code_points[i];
@@ -127,13 +129,13 @@ static int test_huffman_decoder(struct aws_allocator *allocator, void *user_data
     char output_buffer[url_string_len + 1];
     AWS_ZERO_ARRAY(output_buffer);
 
-    struct aws_huffman_coder *coder = hpack_get_coder();
-    struct aws_huffman_decoder decoder;
-    aws_huffman_decoder_init(&decoder, coder);
+    struct aws_huffman_character_coder *coder = hpack_get_coder();
+    struct aws_huffman_coder decoder;
+    aws_huffman_coder_init(&decoder, coder);
 
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
-    aws_huffman_decoder_state state = aws_huffman_decode(&decoder, encoded_url, encoded_url_len, output_buffer, &output_size, &processed);
+    aws_huffman_coder_state state = aws_huffman_decode(&decoder, encoded_url, encoded_url_len, output_buffer, &output_size, &processed);
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Decoder ended in the wrong state");
     ASSERT_UINT_EQUALS(url_string_len, output_size, "Decoder wrote too many bytes");
     ASSERT_UINT_EQUALS(encoded_url_len, processed, "Decoder read too few/many bytes");
@@ -150,13 +152,13 @@ static int test_huffman_decoder_all_code_points(struct aws_allocator *allocator,
     char output_buffer[all_codes_len + 1];
     AWS_ZERO_ARRAY(output_buffer);
 
-    struct aws_huffman_coder *coder = hpack_get_coder();
-    struct aws_huffman_decoder decoder;
-    aws_huffman_decoder_init(&decoder, coder);
+    struct aws_huffman_character_coder *coder = hpack_get_coder();
+    struct aws_huffman_coder decoder;
+    aws_huffman_coder_init(&decoder, coder);
 
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
-    aws_huffman_decoder_state state = aws_huffman_decode(&decoder, encoded_codes, encoded_codes_len, output_buffer, &output_size, &processed);
+    aws_huffman_coder_state state = aws_huffman_decode(&decoder, encoded_codes, encoded_codes_len, output_buffer, &output_size, &processed);
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Decoder ended in the wrong state");
     ASSERT_UINT_EQUALS(all_codes_len, output_size, "Decoder wrote too many bytes");
     ASSERT_UINT_EQUALS(encoded_codes_len, processed, "Decoder read too few/many bytes");
@@ -178,8 +180,8 @@ static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, v
     for (int i = 0; i < sizeof(step_sizes) / sizeof(size_t); ++i) {
         size_t step_size = step_sizes[i];
 
-        struct aws_huffman_decoder decoder;
-        aws_huffman_decoder_init(&decoder, hpack_get_coder());
+        struct aws_huffman_coder decoder;
+        aws_huffman_coder_init(&decoder, hpack_get_coder());
 
         uint8_t *current_input = encoded_codes;
         char *current_output = output_buffer;
@@ -190,7 +192,7 @@ static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, v
             size_t processed = 0;
             size_t to_process = bytes_to_process > step_size ? step_size : bytes_to_process;
 
-            aws_huffman_decoder_state state = aws_huffman_decode(&decoder, current_input, to_process, current_output, &output_size, &processed);
+            aws_huffman_coder_state state = aws_huffman_decode(&decoder, current_input, to_process, current_output, &output_size, &processed);
 
             ASSERT_TRUE(processed > 0, "0 bytes processed");
             ASSERT_BIN_ARRAYS_EQUALS(all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size, "Incorrect bytes written");
@@ -222,8 +224,8 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
     for (int i = 0; i < sizeof(step_sizes) / sizeof(size_t); ++i) {
         size_t step_size = step_sizes[i];
 
-        struct aws_huffman_decoder decoder;
-        aws_huffman_decoder_init(&decoder, hpack_get_coder());
+        struct aws_huffman_coder decoder;
+        aws_huffman_coder_init(&decoder, hpack_get_coder());
 
         uint8_t *current_input = encoded_codes;
         char *current_output = output_buffer;
@@ -233,7 +235,7 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
             size_t output_size = step_size;
             size_t processed = 0;
 
-            aws_huffman_decoder_state state = aws_huffman_decode(&decoder, current_input, bytes_to_process, current_output, &output_size, &processed);
+            aws_huffman_coder_state state = aws_huffman_decode(&decoder, current_input, bytes_to_process, current_output, &output_size, &processed);
 
             ASSERT_TRUE(processed > 0, "0 bytes processed");
             ASSERT_TRUE(output_size > 0, "0 bytes written");
@@ -258,9 +260,9 @@ AWS_TEST_CASE(huffman_decoder_partial_output, test_huffman_decoder_partial_outpu
 static int test_huffman_transitive(struct aws_allocator *allocator, void *user_data) {
     /* Test encoding a short url and immediately decoding it */
 
-    struct aws_huffman_coder *coder = hpack_get_coder();
-    struct aws_huffman_decoder decoder;
-    aws_huffman_decoder_init(&decoder, coder);
+    struct aws_huffman_character_coder *coder = hpack_get_coder();
+    struct aws_huffman_coder decoder;
+    aws_huffman_coder_init(&decoder, coder);
 
     uint8_t intermediate_buffer[16];
     AWS_ZERO_ARRAY(intermediate_buffer);
@@ -274,7 +276,7 @@ static int test_huffman_transitive(struct aws_allocator *allocator, void *user_d
 
     size_t output_size = sizeof(output_string);
     size_t processed = 0;
-    aws_huffman_decoder_state state = aws_huffman_decode(&decoder, intermediate_buffer, bytes_written, output_string, &output_size, &processed);
+    aws_huffman_coder_state state = aws_huffman_decode(&decoder, intermediate_buffer, bytes_written, output_string, &output_size, &processed);
 
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Decoder ended in the wrong state");
     ASSERT_UINT_EQUALS(url_string_len, output_size, "Decoder wrote too many bytes");
@@ -290,9 +292,9 @@ AWS_TEST_CASE(huffman_transitive, test_huffman_transitive)
 static int test_huffman_transitive_all_code_points(struct aws_allocator *allocator, void *user_data) {
     /* Test encoding a sequence of all character values expressable as characters and immediately decoding it */
 
-    struct aws_huffman_coder *coder = hpack_get_coder();
-    struct aws_huffman_decoder decoder;
-    aws_huffman_decoder_init(&decoder, coder);
+    struct aws_huffman_character_coder *coder = hpack_get_coder();
+    struct aws_huffman_coder decoder;
+    aws_huffman_coder_init(&decoder, coder);
 
     uint8_t intermediate_buffer[98];
     AWS_ZERO_ARRAY(intermediate_buffer);
@@ -306,7 +308,7 @@ static int test_huffman_transitive_all_code_points(struct aws_allocator *allocat
 
     size_t output_size = sizeof(output_string);
     size_t processed = 0;
-    aws_huffman_decoder_state state = aws_huffman_decode(&decoder, intermediate_buffer, bytes_written, output_string, &output_size, &processed);
+    aws_huffman_coder_state state = aws_huffman_decode(&decoder, intermediate_buffer, bytes_written, output_string, &output_size, &processed);
 
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Decoder ended in the wrong state");
     ASSERT_UINT_EQUALS(all_codes_len, output_size, "Decoder wrote too many bytes");

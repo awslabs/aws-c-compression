@@ -19,7 +19,7 @@
 
 #include <assert.h>
 
-void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_coder *coder) {
+void aws_huffman_coder_init(struct aws_huffman_coder *decoder, struct aws_huffman_character_coder *coder) {
     assert(decoder);
     assert(coder);
 
@@ -27,13 +27,13 @@ void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_hu
     decoder->coder = coder;
 }
 
-size_t aws_huffman_encode(struct aws_huffman_coder *coder, const char *to_encode, size_t length, uint8_t *output) {
+size_t aws_huffman_encode(struct aws_huffman_character_coder *coder, const char *to_encode, size_t length, uint8_t *output) {
     assert(coder);
     assert(to_encode);
     assert(output);
 
     /* Counters for how far into the output we currently are */
-    size_t byte_pos = 0;
+    size_t output_pos = 0;
     uint8_t bit_pos = 8;
 
     /* Used to avoid writing out one bit at a time */
@@ -48,8 +48,7 @@ size_t aws_huffman_encode(struct aws_huffman_coder *coder, const char *to_encode
             encoded_bit <<= bit_pos;                                                            \
             working |= encoded_bit;                                                             \
             if (bit_pos == 0) {                                                                 \
-                output[byte_pos] = working;                                                     \
-                byte_pos++;                                                                     \
+                output[output_pos++] = working;                                                 \
                 bit_pos = 8;                                                                    \
                 working = 0;                                                                    \
             }                                                                                   \
@@ -65,13 +64,13 @@ size_t aws_huffman_encode(struct aws_huffman_coder *coder, const char *to_encode
         /* Pad the rest out with 1s */
         uint8_t padding_mask = UINT8_MAX >> (8 - bit_pos);
         working |= padding_mask;
-        output[byte_pos++] = working;
+        output[output_pos++] = working;
     }
 
-    return byte_pos;
+    return output_pos;
 }
 
-static void decode_fill_working_bits(struct aws_huffman_decoder *decoder, size_t *working_bits, const uint8_t **current_read_byte, const uint8_t *buffer_end, uint8_t bits_to_read) {
+static void decode_fill_working_bits(struct aws_huffman_coder *decoder, size_t *working_bits, const uint8_t **current_read_byte, const uint8_t *buffer_end, uint8_t bits_to_read) {
     /* Read from bytes in the buffer until all bytes have been replaced */
     while (bits_to_read > 0) {
         uint8_t bits_in_current = 8 - decoder->bit_pos;
@@ -92,10 +91,10 @@ static void decode_fill_working_bits(struct aws_huffman_decoder *decoder, size_t
     }
 }
 
-aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *buffer, size_t len, char *output, size_t *output_size, size_t *processed) {
+aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_coder *decoder, const uint8_t *to_decode, size_t length, char *output, size_t *output_size, size_t *processed) {
     assert(decoder);
     assert(decoder->coder);
-    assert(buffer);
+    assert(to_decode);
     assert(output);
 
     enum { READ_AHEAD_SIZE = sizeof(uint32_t) };
@@ -106,18 +105,18 @@ aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_decoder *decoder
     size_t output_pos = 0;
 
     /* current_read_byte + bit_pos = the current position in the input buffer */
-    const uint8_t *current_read_byte = buffer;
-    const uint8_t *buffer_end = buffer + len;
+    const uint8_t *current_read_byte = to_decode;
+    const uint8_t *buffer_end = to_decode + length;
 
     decode_fill_working_bits(decoder, &working_bits, &current_read_byte, buffer_end, 32);
 
-    while (*processed < len && output_pos < *output_size) {
+    while (*processed < length && output_pos < *output_size) {
 
         uint16_t symbol;
         size_t bits_read = decoder->coder->decode(working_bits, &symbol, decoder->coder->userdata);
         assert(bits_read > 0);
 
-        if (*processed * 8 + decoder->bit_pos + bits_read > len * 8) {
+        if (*processed * 8 + decoder->bit_pos + bits_read > length * 8) {
             /* Check if the buffer has been overrun.
                Note: because of the check in decode_fill_working_bits,
                the buffer won't actually overrun, instead there will
@@ -137,7 +136,7 @@ aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_decoder *decoder
             /* Reset the state */
             decoder->bit_pos = 0;
 
-            if (*processed == len) {
+            if (*processed == length) {
                 /* If on the last byte, success */
                 return AWS_HUFFMAN_DECODE_EOS_REACHED;
             } else {
