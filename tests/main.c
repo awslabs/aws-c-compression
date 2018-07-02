@@ -32,6 +32,8 @@ static int run_tests(int argc, char *argv[]) {
         &huffman_character_decoder,
         &huffman_decoder,
         &huffman_decoder_all_code_points,
+        &huffman_decoder_partial_input,
+        &huffman_decoder_partial_output,
 
         &huffman_transitive,
         &huffman_transitive_all_code_points,

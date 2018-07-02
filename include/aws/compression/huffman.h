@@ -36,7 +36,6 @@ struct aws_huffman_coder {
 
 struct aws_huffman_decoder {
     struct aws_huffman_coder *coder;
-    uint32_t working_bits;
     uint8_t bit_pos;
 };
 

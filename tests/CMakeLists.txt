@@ -25,6 +25,8 @@ add_test(huffman_encoder_all_code_points ${TEST_BINARY_NAME} huffman_encoder_all
 add_test(huffman_character_decoder ${TEST_BINARY_NAME} huffman_character_decoder)
 add_test(huffman_decoder ${TEST_BINARY_NAME} huffman_decoder)
 add_test(huffman_decoder_all_code_points ${TEST_BINARY_NAME} huffman_decoder_all_code_points)
+add_test(huffman_decoder_partial_input ${TEST_BINARY_NAME} huffman_decoder_partial_input)
+add_test(huffman_decoder_partial_output ${TEST_BINARY_NAME} huffman_decoder_partial_output)
 
 add_test(huffman_transitive ${TEST_BINARY_NAME} huffman_transitive)
 add_test(huffman_transitive_all_code_points ${TEST_BINARY_NAME} huffman_transitive_all_code_points)

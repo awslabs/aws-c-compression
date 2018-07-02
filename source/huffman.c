@@ -71,17 +71,17 @@ size_t aws_huffman_encode(struct aws_huffman_coder *coder, const char *to_encode
     return byte_pos;
 }
 
-static void decode_fill_working_bits(struct aws_huffman_decoder *decoder, const uint8_t **current_read_byte, const uint8_t *buffer_end, uint8_t bits_to_read) {
+static void decode_fill_working_bits(struct aws_huffman_decoder *decoder, size_t *working_bits, const uint8_t **current_read_byte, const uint8_t *buffer_end, uint8_t bits_to_read) {
     /* Read from bytes in the buffer until all bytes have been replaced */
     while (bits_to_read > 0) {
         uint8_t bits_in_current = 8 - decoder->bit_pos;
         uint8_t bits_from_current = bits_to_read > bits_in_current ? bits_in_current : bits_to_read;
 
         bits_to_read -= bits_from_current;
-        decoder->working_bits <<= bits_from_current;
+        *working_bits <<= bits_from_current;
         if (*current_read_byte < buffer_end) {
             /* Read the appropiate number of bits from this byte */
-            decoder->working_bits |= (**current_read_byte << decoder->bit_pos) >> (8 - bits_from_current);
+            *working_bits |= (**current_read_byte << decoder->bit_pos) >> (8 - bits_from_current);
         }
 
         decoder->bit_pos += bits_from_current;
@@ -102,43 +102,39 @@ aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_decoder *decoder
 
     /* Measures how much of the input was read */
     *processed = 0;
+    size_t working_bits = 0;
     size_t output_pos = 0;
 
     /* current_read_byte + bit_pos = the current position in the input buffer */
     const uint8_t *current_read_byte = buffer;
     const uint8_t *buffer_end = buffer + len;
 
-    /*
-    for (uint8_t bytes_read = 0; bytes_read < READ_AHEAD_SIZE; ++bytes_read) {
-        Populate working_bits with first READ_AHEAD_SIZE bytes in the buffer
-        decoder->working_bits <<= 8;
-        if (bytes_read < len) {
-            decoder->working_bits |= *(current_read_byte++);
-        }
-    }
-    */
-    decode_fill_working_bits(decoder, &current_read_byte, buffer_end, 32 - decoder->bit_pos);
+    decode_fill_working_bits(decoder, &working_bits, &current_read_byte, buffer_end, 32);
 
     while (*processed < len && output_pos < *output_size) {
 
         uint16_t symbol;
-        size_t bits_read = decoder->coder->decode(decoder->working_bits, &symbol, decoder->coder->userdata);
+        size_t bits_read = decoder->coder->decode(working_bits, &symbol, decoder->coder->userdata);
         assert(bits_read > 0);
 
-        /* Update processed based on how many bits we read */
-        *processed += (bits_read + decoder->bit_pos) / 8;
+        if (*processed * 8 + decoder->bit_pos + bits_read > len * 8) {
+            /* Check if the buffer has been overrun.
+               Note: because of the check in decode_fill_working_bits,
+               the buffer won't actually overrun, instead there will
+               be 0's in the bottom of working_bits. */
+            break;
+        }
 
         if (symbol == decoder->coder->eos_symbol) {
             /* Handle EOS */
 
             *output_size = output_pos;
-            if ((bits_read + decoder->bit_pos) % 8 != 0) {
-                /* If not even number of bits processed, round up for final byte */
-                ++*processed;
-            }
+
+            /* Update processed in include last partial byte read
+               Note: 1 + ((x - 1) / y) is a way to round x/y up */
+            *processed += 1 + ((bits_read + decoder->bit_pos - 1) / 8);
 
             /* Reset the state */
-            decoder->working_bits = 0;
             decoder->bit_pos = 0;
 
             if (*processed == len) {
@@ -154,7 +150,11 @@ aws_huffman_decoder_state aws_huffman_decode(struct aws_huffman_decoder *decoder
             /* Store the found symbol */
             output[output_pos++] = (char)symbol;
 
-            decode_fill_working_bits(decoder, &current_read_byte, buffer_end, bits_read);
+            /* Update processed to include any bytes that have been completely processed
+               DOES NOT include partial bytes read */
+            *processed += (bits_read + decoder->bit_pos) / 8;
+
+            decode_fill_working_bits(decoder, &working_bits, &current_read_byte, buffer_end, bits_read);
         }
     }
 
