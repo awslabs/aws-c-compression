@@ -16,6 +16,7 @@
 #include <aws/compression/huffman.h>
 
 #include <aws/common/common.h>
+#include <aws/common/byte_buf.h>
 
 #include <assert.h>
 
@@ -39,9 +40,7 @@ void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_hu
    so this struct helps avoid passing all the parameters through by hand */
 struct encoder_state {
     struct aws_huffman_encoder *encoder;
-    uint8_t *output;
-    size_t output_size;
-    size_t output_pos;
+    struct aws_byte_cursor output_cursor;
     uint8_t working;
     uint8_t bit_pos;
 };
@@ -65,9 +64,9 @@ static aws_huffman_coder_state encode_write_bit_pattern(struct encoder_state *st
 
         if (state->bit_pos == 0) {
             /* Save the whole byte */
-            state->output[state->output_pos++] = state->working;
+            aws_byte_cursor_write_u8(&state->output_cursor, state->working);
 
-            if (state->output_pos == state->output_size) {
+            if (state->output_cursor.len == 0) {
                 /* Write all the remaining bits to working_bits and return */
 
                 bits_to_cut += bits_for_current;
@@ -94,9 +93,7 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
 
     struct encoder_state state = {
         .encoder = encoder,
-        .output = output,
-        .output_size = *output_size,
-        .output_pos = 0,
+        .output_cursor = aws_byte_cursor_from_array(output, *output_size),
         .working = 0,
         .bit_pos = 8,
     };
@@ -140,12 +137,12 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
         /* Pad the rest out with 1s */
         uint8_t padding_mask = UINT8_MAX >> (8 - state.bit_pos);
         state.working |= padding_mask;
-        output[state.output_pos++] = state.working;
+        aws_byte_cursor_write_u8(&state.output_cursor, state.working);
     }
 
     state.encoder->eos_written = 0;
 
-    *output_size = state.output_pos;
+    *output_size = *output_size - state.output_cursor.len;
     return AWS_HUFFMAN_DECODE_EOS_REACHED;
 }
 
