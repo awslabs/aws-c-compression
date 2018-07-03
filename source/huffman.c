@@ -100,6 +100,7 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
 
     /* Counters for how far into the output we currently are */
     *processed = 0;
+    struct aws_byte_cursor input_cursor = aws_byte_cursor_from_array(to_encode, length);
 
 #define CHECK_WRITE_BITS(bit_pattern) do {                                              \
         aws_huffman_coder_state result = encode_write_bit_pattern(&state, bit_pattern);  \
@@ -110,10 +111,11 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
     CHECK_WRITE_BITS(encoder->working_bits);
     AWS_ZERO_STRUCT(encoder->working_bits);
 
-    while (*processed < length) {
-        /* Write the actual data passed */
-        struct aws_huffman_bit_pattern code_point = encoder->coder->encode(
-            to_encode[(*processed)++], encoder->coder->userdata);
+    while (input_cursor.len) {
+        uint8_t new_byte = 0;
+        aws_byte_cursor_read_u8(&input_cursor, &new_byte);
+        struct aws_huffman_bit_pattern code_point = encoder->coder->encode(new_byte, encoder->coder->userdata);
+        ++(*processed);
 
         CHECK_WRITE_BITS(code_point);
     }
