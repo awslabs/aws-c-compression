@@ -150,28 +150,34 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
    so this struct helps avoid passing all the parameters through by hand */
 struct decoder_state {
     struct aws_huffman_decoder *decoder;
-    const uint8_t *current_read_byte;
-    const uint8_t *buffer_end;
-    size_t working;
+    struct aws_byte_cursor input_cursor;
+    uint32_t working;
 };
 
 static void decode_fill_working_bits(struct decoder_state *state, uint8_t bits_to_read) {
+
     /* Read from bytes in the buffer until all bytes have been replaced */
     while (bits_to_read > 0) {
         uint8_t bits_in_current = 8 - state->decoder->bit_pos;
         uint8_t bits_from_current = bits_to_read > bits_in_current ? bits_in_current : bits_to_read;
+        assert(bits_from_current <= 8);
 
         bits_to_read -= bits_from_current;
         state->working <<= bits_from_current;
-        if (state->current_read_byte < state->buffer_end) {
+        if (state->input_cursor.len) {
             /* Read the appropiate number of bits from this byte */
-            state->working |= (*state->current_read_byte << state->decoder->bit_pos) >> (8 - bits_from_current);
+            uint8_t new_byte = 0;
+            aws_byte_cursor_read_u8(&state->input_cursor, &new_byte);
+            state->working |= (new_byte << state->decoder->bit_pos) >> (8 - bits_from_current);
         }
 
         state->decoder->bit_pos += bits_from_current;
         if (state->decoder->bit_pos == 8) {
             state->decoder->bit_pos = 0;
-            ++state->current_read_byte;
+        } else {
+            /* Not done with the current byte, reset back the cursor */
+            --state->input_cursor.ptr;
+            ++state->input_cursor.len;
         }
     }
 }
@@ -186,8 +192,7 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
 
     struct decoder_state state = {
         .decoder = decoder,
-        .current_read_byte = to_decode,
-        .buffer_end = to_decode + length,
+        .input_cursor = aws_byte_cursor_from_array(to_decode, length),
         .working = 0,
     };
 
