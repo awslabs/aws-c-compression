@@ -21,6 +21,7 @@ endif ()
 add_test(huffman_character_encoder ${TEST_BINARY_NAME} huffman_character_encoder)
 add_test(huffman_encoder ${TEST_BINARY_NAME} huffman_encoder)
 add_test(huffman_encoder_all_code_points ${TEST_BINARY_NAME} huffman_encoder_all_code_points)
+add_test(huffman_encoder_partial_output ${TEST_BINARY_NAME} huffman_encoder_partial_output)
 
 add_test(huffman_character_decoder ${TEST_BINARY_NAME} huffman_character_decoder)
 add_test(huffman_decoder ${TEST_BINARY_NAME} huffman_decoder)

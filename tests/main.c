@@ -28,6 +28,7 @@ static int run_tests(int argc, char *argv[]) {
         &huffman_character_encoder,
         &huffman_encoder,
         &huffman_encoder_all_code_points,
+        &huffman_encoder_partial_output,
 
         &huffman_character_decoder,
         &huffman_decoder,

@@ -54,10 +54,20 @@ struct aws_huffman_character_coder {
 };
 
 /**
+ * Structure used for persistent encoding.
+ * Allows for reading from or writing to incomplete buffers.
+ */
+struct aws_huffman_encoder {
+    struct aws_huffman_character_coder *coder;
+    struct aws_huffman_bit_pattern working_bits;
+    uint8_t eos_written : 1;
+};
+
+/**
  * Structure used for persistent decoding.
  * Allows for reading from or writing to incomplete buffers.
  */
-struct aws_huffman_coder {
+struct aws_huffman_decoder {
     struct aws_huffman_character_coder *coder;
     uint8_t bit_pos;
 };
@@ -68,8 +78,10 @@ struct aws_huffman_coder {
 typedef enum aws_huffman_coder_state {
     /** The stream has successfully decoded */
     AWS_HUFFMAN_DECODE_EOS_REACHED,
-    /** More input data or output space is needed */
-    AWS_HUFFMAN_DECODE_NEED_MORE,
+    /** More input data is needed */
+    AWS_HUFFMAN_DECODE_NEED_MORE_DATA,
+    /** More input data is needed */
+    AWS_HUFFMAN_DECODE_NEED_MORE_OUTPUT,
     /** An error occured while decoding */
     AWS_HUFFMAN_DECODE_ERROR
 } aws_huffman_coder_state;
@@ -79,21 +91,29 @@ extern "C" {
 #endif
 
 /**
+ * Initialize a encoder object with a character coder.
+ */
+void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_character_coder *coder);
+
+/**
  * Initialize a decoder object with a character coder.
  */
-void aws_huffman_coder_init(struct aws_huffman_coder *decoder, struct aws_huffman_character_coder *coder);
+void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_character_coder *coder);
 
 /**
  * Encode a character buffer into the output buffer.
  *
- * \param[in]   coder       The character coder to use
- * \param[in]   to_encode   The character buffer to encode
- * \param[in]   length      The length of to_encode
- * \param[in]   output      The buffer to write encoded bytes to
+ * \param[in]       encoder         The encoder object to use
+ * \param[in]       to_encode       The character buffer to encode
+ * \param[in]       length          The length of to_encode
+ * \param[in]       output          The buffer to write encoded bytes to
+ * \param[in,out]   output_size     In: The size of output Out: The number of bytes written to output
+ * \param[out]      processed       The number of bytes read from to_encode before reaching the end or running out of output space
  *
- * \return The number of bytes written to output
+ * \return The current state of the encoder \see aws_huffman_coder_state
  */
-size_t aws_huffman_encode(struct aws_huffman_character_coder *coder, const char *to_encode, size_t length, uint8_t *output);
+aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t length, uint8_t *output, size_t *output_size, size_t *processed);
+
 /**
  * Decodes a byte buffer into the provided character array.
  *
@@ -104,9 +124,9 @@ size_t aws_huffman_encode(struct aws_huffman_character_coder *coder, const char 
  * \param[in,out]   output_size     In: The size of output Out: The number of bytes written to output
  * \param[out]      processed       The number of bytes read from to_decode before reaching the end or running out of output space
  *
- * \return The current state of the decoder \see aws_huffman_decoder_state
+ * \return The current state of the decoder \see aws_huffman_coder_state
  */
-aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_coder *decoder, const uint8_t *to_decode, size_t length, char *output, size_t *output_size, size_t *processed);
+aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t length, char *output, size_t *output_size, size_t *processed);
 
 #ifdef __cplusplus
 }
