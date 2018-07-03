@@ -142,7 +142,7 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
 
     state.encoder->eos_written = 0;
 
-    *output_size = *output_size - state.output_cursor.len;
+    *output_size -= state.output_cursor.len;
     return AWS_HUFFMAN_DECODE_EOS_REACHED;
 }
 
@@ -198,13 +198,13 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
 
     /* Measures how much of the input was read */
     *processed = 0;
-    size_t output_pos = 0;
+    struct aws_byte_cursor output_cursor = aws_byte_cursor_from_array(output, *output_size);
 
     decode_fill_working_bits(&state, 32);
 
     while (1) {
 
-        if (output_pos == *output_size) {
+        if (output_cursor.len == 0) {
             /* Check if we've hit the end of the output buffer */
             return AWS_HUFFMAN_DECODE_NEED_MORE_OUTPUT;
         }
@@ -218,14 +218,15 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
                Note: because of the check in decode_fill_working_bits,
                the buffer won't actually overrun, instead there will
                be 0's in the bottom of working_bits. */
-            *output_size = output_pos;
+            *output_size -= output_cursor.len;
             return AWS_HUFFMAN_DECODE_NEED_MORE_DATA;
         }
 
         if (symbol == decoder->coder->eos_symbol) {
             /* Handle EOS */
 
-            *output_size = output_pos;
+            /* Subtract bytes remaining */
+            *output_size -= output_cursor.len;
 
             /* Update processed in include last partial byte read
                Note: 1 + ((x - 1) / y) is a way to round x/y up */
@@ -245,7 +246,7 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
             assert(symbol < UINT8_MAX);
 
             /* Store the found symbol */
-            output[output_pos++] = (char)symbol;
+            aws_byte_cursor_write_u8(&output_cursor, (uint8_t)symbol);
 
             /* Update processed to include any bytes that have been completely processed
                DOES NOT include partial bytes read */
