@@ -60,7 +60,7 @@ struct aws_huffman_character_coder {
 struct aws_huffman_encoder {
     struct aws_huffman_character_coder *coder;
     struct aws_huffman_bit_pattern working_bits;
-    uint8_t eos_written : 1;
+    unsigned eos_written : 1;
 };
 
 /**
