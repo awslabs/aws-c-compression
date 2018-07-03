@@ -82,7 +82,8 @@ static int test_huffman_encoder(struct aws_allocator *allocator, void *user_data
 
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
-    aws_huffman_encode(&encoder, url_string, url_string_len, output_buffer, &output_size, &processed);
+    aws_huffman_coder_state state = aws_huffman_encode(&encoder, url_string, url_string_len, output_buffer, &output_size, &processed);
+    ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Encoder ended in incorrect state");
 
     ASSERT_UINT_EQUALS(encoded_url_len, output_size, "Encoder wrote incorrect number bytes");
     ASSERT_UINT_EQUALS(0, output_buffer[encoded_url_len], "Encoder wrote too far!");
@@ -104,7 +105,8 @@ static int test_huffman_encoder_all_code_points(struct aws_allocator *allocator,
 
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
-    aws_huffman_encode(&encoder, all_codes, all_codes_len, output_buffer, &output_size, &processed);
+    aws_huffman_coder_state state = aws_huffman_encode(&encoder, all_codes, all_codes_len, output_buffer, &output_size, &processed);
+    ASSERT_UINT_EQUALS(AWS_HUFFMAN_DECODE_EOS_REACHED, state, "Encoder ended in incorrect state");
 
     ASSERT_UINT_EQUALS(encoded_codes_len, output_size, "Encoder wrote incorrect number bytes");
     ASSERT_UINT_EQUALS(0, output_buffer[encoded_codes_len], "Encoder wrote too far!");
@@ -120,7 +122,7 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
     uint8_t output_buffer[encoded_codes_len];
     AWS_ZERO_ARRAY(output_buffer);
 
-    static const size_t step_sizes[] = { 4, 8, 16, 32, 64, 128 };
+    static const size_t step_sizes[] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 
     for (int i = 0; i < sizeof(step_sizes) / sizeof(size_t); ++i) {
         size_t step_size = step_sizes[i];

@@ -40,10 +40,10 @@ void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_hu
 struct encoder_state {
     struct aws_huffman_encoder *encoder;
     uint8_t *output;
-    size_t *output_size;
+    size_t output_size;
+    size_t output_pos;
     uint8_t working;
     uint8_t bit_pos;
-    size_t output_pos;
 };
 
 /* Helper function to write a single bit_pattern to memory (or working_bits if out of buffer space) */
@@ -67,7 +67,7 @@ static aws_huffman_coder_state encode_write_bit_pattern(struct encoder_state *st
             /* Save the whole byte */
             state->output[state->output_pos++] = state->working;
 
-            if (state->output_pos == *state->output_size) {
+            if (state->output_pos == state->output_size) {
                 /* Write all the remaining bits to working_bits and return */
 
                 bits_to_cut += bits_for_current;
@@ -95,10 +95,10 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
     struct encoder_state state = {
         .encoder = encoder,
         .output = output,
-        .output_size = output_size,
+        .output_size = *output_size,
+        .output_pos = 0,
         .working = 0,
         .bit_pos = 8,
-        .output_pos = 0,
     };
 
     /* Counters for how far into the output we currently are */
@@ -145,7 +145,7 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
 
     state.encoder->eos_written = 0;
 
-    *state.output_size = state.output_pos;
+    *output_size = state.output_pos;
     return AWS_HUFFMAN_DECODE_EOS_REACHED;
 }
 
