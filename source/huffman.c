@@ -215,7 +215,8 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
         size_t bits_read = decoder->coder->decode(state.working, &symbol, decoder->coder->userdata);
         assert(bits_read > 0);
 
-        if (*processed * 8 + decoder->bit_pos + bits_read > length * 8) {
+        size_t bits_left = (length - *processed) * 8 - decoder->bit_pos;
+        if (bits_read > bits_left) {
             /* Check if the buffer has been overrun.
                Note: because of the check in decode_fill_working_bits,
                the buffer won't actually overrun, instead there will
