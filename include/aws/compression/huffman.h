@@ -69,7 +69,8 @@ struct aws_huffman_encoder {
  */
 struct aws_huffman_decoder {
     struct aws_huffman_character_coder *coder;
-    uint8_t bit_pos;
+    uint64_t working_bits;
+    uint8_t num_bits;
 };
 
 /**

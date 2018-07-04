@@ -239,7 +239,7 @@ static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, v
     char output_buffer[150];
     AWS_ZERO_ARRAY(output_buffer);
 
-    static const size_t step_sizes[] = { 8, 16, 32, 64, 128 };
+    static const size_t step_sizes[] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 
     for (int i = 0; i < sizeof(step_sizes) / sizeof(size_t); ++i) {
         size_t step_size = step_sizes[i];
