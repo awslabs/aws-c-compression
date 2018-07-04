@@ -119,6 +119,9 @@ AWS_TEST_CASE(huffman_encoder_all_code_points, test_huffman_encoder_all_code_poi
 static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, void *user_data) {
     /* Test decoding when the output buffer size is limited */
 
+    struct aws_huffman_encoder encoder;
+    aws_huffman_encoder_init(&encoder, hpack_get_coder());
+
     uint8_t output_buffer[encoded_codes_len];
     AWS_ZERO_ARRAY(output_buffer);
 
@@ -126,9 +129,6 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
 
     for (int i = 0; i < sizeof(step_sizes) / sizeof(size_t); ++i) {
         size_t step_size = step_sizes[i];
-
-        struct aws_huffman_encoder encoder;
-        aws_huffman_encoder_init(&encoder, hpack_get_coder());
 
         const char *current_input = all_codes;
         uint8_t *current_output = output_buffer;
@@ -236,6 +236,9 @@ AWS_TEST_CASE(huffman_decoder_all_code_points, test_huffman_decoder_all_code_poi
 static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, void *user_data) {
     /* Test decoding a buffer in chunks */
 
+    struct aws_huffman_decoder decoder;
+    aws_huffman_decoder_init(&decoder, hpack_get_coder());
+
     char output_buffer[150];
     AWS_ZERO_ARRAY(output_buffer);
 
@@ -243,9 +246,6 @@ static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, v
 
     for (int i = 0; i < sizeof(step_sizes) / sizeof(size_t); ++i) {
         size_t step_size = step_sizes[i];
-
-        struct aws_huffman_decoder decoder;
-        aws_huffman_decoder_init(&decoder, hpack_get_coder());
 
         uint8_t *current_input = encoded_codes;
         char *current_output = output_buffer;
@@ -280,6 +280,9 @@ AWS_TEST_CASE(huffman_decoder_partial_input, test_huffman_decoder_partial_input)
 static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, void *user_data) {
     /* Test decoding when the output buffer size is limited */
 
+    struct aws_huffman_decoder decoder;
+    aws_huffman_decoder_init(&decoder, hpack_get_coder());
+
     char output_buffer[150];
     AWS_ZERO_ARRAY(output_buffer);
 
@@ -287,9 +290,6 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
 
     for (int i = 0; i < sizeof(step_sizes) / sizeof(size_t); ++i) {
         size_t step_size = step_sizes[i];
-
-        struct aws_huffman_decoder decoder;
-        aws_huffman_decoder_init(&decoder, hpack_get_coder());
 
         uint8_t *current_input = encoded_codes;
         char *current_output = output_buffer;
