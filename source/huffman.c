@@ -220,19 +220,23 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
         if (symbol == decoder->coder->eos_symbol) {
             /* Handle EOS */
 
+            aws_huffman_coder_state result = AWS_HUFFMAN_DECODE_EOS_REACHED;
+
             /* Subtract bytes remaining */
             *output_size -= output_cursor.len;
+
+            /* The padding at the end of the buffer must be 1s */
+            uint64_t padding = UINT64_MAX << (64 - decoder->num_bits);
+
+            if (*processed != length ||
+                (decoder->working_bits & padding) != padding) {
+                result = AWS_HUFFMAN_DECODE_ERROR;
+            }
 
             decoder->working_bits = 0;
             decoder->num_bits = 0;
 
-            if (*processed == length) {
-                /* If on the last byte, success */
-                return AWS_HUFFMAN_DECODE_EOS_REACHED;
-            } else {
-                /* If EOS found and more bytes to decode, error */
-                return AWS_HUFFMAN_DECODE_ERROR;
-            }
+            return result;
         } else {
             assert(symbol < UINT8_MAX);
 
