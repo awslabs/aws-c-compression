@@ -76,7 +76,8 @@ void read_code_points(const char *input_path) {
                         const char *current_char = &line[i + HC_KW_LEN];
                         skip_whitespace(&current_char);
                         /* Skip ( */
-                        assert(*current_char++ == '(');
+                        assert(*current_char == '(');
+                        ++current_char;
 
                         /* Parse symbol */
                         code->symbol = (uint16_t)atoi(current_char);
@@ -98,6 +99,8 @@ void read_code_points(const char *input_path) {
             }
         }
     }
+
+    fclose(file);
 
     assert(code_index == 257);
 }
@@ -305,7 +308,7 @@ int main(int argc, char *argv[]) {
 "\n"
 "struct aws_huffman_bit_pattern encode_character(uint16_t symbol, void *userdata) {\n"
 "    (void)userdata;\n\n"
-"    assert(symbol < %lu);\n"
+"    assert(symbol < %zu);\n"
 "    return code_points[symbol];\n"
 "}\n"
 "\n"
@@ -324,7 +327,7 @@ int main(int argc, char *argv[]) {
 "    static struct aws_huffman_character_coder coder = {\n"
 "        .encode = encode_character,\n"
 "        .decode = decode_character,\n"
-"        .eos_symbol = %lu,\n"
+"        .eos_symbol = %zu,\n"
 "        .userdata = NULL,\n"
 "    };\n"
 "    return &coder;\n"
