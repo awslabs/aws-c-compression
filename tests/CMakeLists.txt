@@ -1,7 +1,7 @@
 include(CTest)
 enable_testing()
 
-file(GLOB TEST_SRC "main.c")
+file(GLOB TEST_SRC "main.c" "test_huffman_static.c")
 file(GLOB TEST_HDRS "*.h")
 file(GLOB TESTS ${TEST_HDRS} ${TEST_SRC})
 

@@ -133,4 +133,4 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
 }
 #endif
 
-#endif // AWS_COMPRESSION_HUFFMAN_H
+#endif /* AWS_COMPRESSION_HUFFMAN_H */
