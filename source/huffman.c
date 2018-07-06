@@ -74,7 +74,7 @@ static aws_huffman_coder_state encode_write_bit_pattern(struct encoder_state *st
                 state->encoder->working_bits.num_bits = bits_to_write;
                 state->encoder->working_bits.pattern = (bit_pattern.pattern << bits_to_cut) >> (32 - bits_to_write);
 
-                return AWS_HUFFMAN_DECODE_NEED_MORE_OUTPUT;
+                return AWS_HUFFMAN_NEED_MORE_OUTPUT;
             }
 
             state->bit_pos = 8;
@@ -82,7 +82,7 @@ static aws_huffman_coder_state encode_write_bit_pattern(struct encoder_state *st
         }
     }
 
-    return AWS_HUFFMAN_DECODE_EOS_REACHED;
+    return AWS_HUFFMAN_EOS_REACHED;
 }
 
 aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t length, uint8_t *output, size_t *output_size, size_t *processed) {
@@ -104,7 +104,7 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
 
 #define CHECK_WRITE_BITS(bit_pattern) do {                                              \
         aws_huffman_coder_state result = encode_write_bit_pattern(&state, bit_pattern);  \
-        if (result != AWS_HUFFMAN_DECODE_EOS_REACHED) { return result; }                \
+        if (result != AWS_HUFFMAN_EOS_REACHED) { return result; }                \
     } while (0)
 
     /* Write any bits leftover from previous invocation */
@@ -145,7 +145,7 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
     state.encoder->eos_written = 0;
 
     *output_size -= state.output_cursor.len;
-    return AWS_HUFFMAN_DECODE_EOS_REACHED;
+    return AWS_HUFFMAN_EOS_REACHED;
 }
 
 /* Decode's reading is written in a helper function,
@@ -194,7 +194,7 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
 
         if (output_cursor.len == 0) {
             /* Check if we've hit the end of the output buffer */
-            return AWS_HUFFMAN_DECODE_NEED_MORE_OUTPUT;
+            return AWS_HUFFMAN_NEED_MORE_OUTPUT;
         }
 
         uint16_t symbol;
@@ -209,7 +209,7 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
             *processed = length - state.input_cursor.len;
             *output_size -= output_cursor.len;
 
-            return AWS_HUFFMAN_DECODE_NEED_MORE_DATA;
+            return AWS_HUFFMAN_NEED_MORE_DATA;
         }
 
         bits_left -= bits_read;
@@ -219,7 +219,7 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
         if (symbol == decoder->coder->eos_symbol) {
             /* Handle EOS */
 
-            aws_huffman_coder_state result = AWS_HUFFMAN_DECODE_EOS_REACHED;
+            aws_huffman_coder_state result = AWS_HUFFMAN_EOS_REACHED;
 
             /* Subtract bytes remaining */
             *output_size -= output_cursor.len;
@@ -229,7 +229,7 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
 
             if (*processed != length ||
                 (decoder->working_bits & padding) != padding) {
-                result = AWS_HUFFMAN_DECODE_ERROR;
+                result = AWS_HUFFMAN_RROR;
             }
 
             decoder->working_bits = 0;

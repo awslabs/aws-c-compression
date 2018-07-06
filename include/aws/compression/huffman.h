@@ -78,13 +78,13 @@ struct aws_huffman_decoder {
  */
 typedef enum aws_huffman_coder_state {
     /** The stream has successfully decoded */
-    AWS_HUFFMAN_DECODE_EOS_REACHED,
+    AWS_HUFFMAN_EOS_REACHED,
     /** More input data is needed */
-    AWS_HUFFMAN_DECODE_NEED_MORE_DATA,
+    AWS_HUFFMAN_NEED_MORE_DATA,
     /** More input data is needed */
-    AWS_HUFFMAN_DECODE_NEED_MORE_OUTPUT,
+    AWS_HUFFMAN_NEED_MORE_OUTPUT,
     /** An error occured while decoding */
-    AWS_HUFFMAN_DECODE_ERROR
+    AWS_HUFFMAN_RROR
 } aws_huffman_coder_state;
 
 #ifdef __cplusplus
