@@ -20,11 +20,34 @@
 
 #include <stdint.h>
 
+/**
+ * The intended use of file is to allow testing of huffman character coders.
+ * By doing the following, you can ensure the output of encoders decoders are correct:
+ * \code{c}
+ * static struct huffman_test_code_point code_points[] = {
+ * #include "test_huffman_static_table.def"
+ * };
+ * \endcode
+ * You may then iterate over each code point in the array, and test the following (pseudo-code):
+ * \code{c}
+ * for (cp in code_points) {
+ *     assert(my_coder->encode(cp.symbol) == cp.pattern);
+ *     assert(my_coder->decode(cp.pattern) == cp.symbol);
+ * }
+ * \endcode
+ */
+
+/**
+ * Structure containing all relevant information about a code point
+ */
 struct huffman_test_code_point {
     uint16_t symbol;
     struct aws_huffman_bit_pattern pattern;
 };
 
+/**
+ * Macro to be used when including a table def file, populates an array of huffman_test_code_points
+ */
 #define HUFFMAN_CODE(psymbol, pbit_string, pbit_pattern, pnum_bits) { .symbol = psymbol, .pattern = { .pattern = pbit_pattern, .num_bits = pnum_bits } },
 
 #endif /* AWS_COMPRESSION_TESTING_HUFFMAN_H */
