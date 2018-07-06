@@ -291,14 +291,13 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
         uint8_t *current_input = encoded_codes;
         char *current_output = output_buffer;
         size_t bytes_written = 0;
-        for (size_t bytes_to_process = encoded_codes_len; bytes_to_process > 0; ) {
+        for (size_t bytes_to_process = encoded_codes_len; bytes_written < all_codes_len; ) {
 
             size_t output_size = step_size;
             size_t processed = 0;
 
             aws_huffman_coder_state state = aws_huffman_decode(&decoder, current_input, bytes_to_process, current_output, &output_size, &processed);
 
-            ASSERT_TRUE(processed > 0, "0 bytes processed");
             ASSERT_TRUE(output_size > 0, "0 bytes written");
             ASSERT_BIN_ARRAYS_EQUALS(all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size, "Incorrect bytes written");
 
@@ -307,7 +306,7 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
             current_output += output_size;
             current_input += processed;
 
-            ASSERT_UINT_EQUALS(bytes_to_process == 0 ? AWS_HUFFMAN_DECODE_EOS_REACHED : AWS_HUFFMAN_DECODE_NEED_MORE_OUTPUT, state, "Decoder ended in the wrong state");
+            ASSERT_UINT_EQUALS(bytes_written == all_codes_len ? AWS_HUFFMAN_DECODE_EOS_REACHED : AWS_HUFFMAN_DECODE_NEED_MORE_OUTPUT, state, "Decoder ended in the wrong state");
         }
 
         ASSERT_UINT_EQUALS(all_codes_len, bytes_written);
