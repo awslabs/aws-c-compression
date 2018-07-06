@@ -13,6 +13,10 @@ file(GLOB AWS_COMPRESSION_PRIV_HEADERS
         "include/aws/compression/private/*.h"
         )
 
+file(GLOB AWS_COMPRESSION_TESTING_HEADERS
+        "include/aws/testing/compression/*.h"
+        )
+
 file(GLOB AWS_COMPRESSION_SRC
         "source/*.c"
         )
@@ -20,6 +24,7 @@ file(GLOB AWS_COMPRESSION_SRC
 file(GLOB COMPRESSION_HEADERS
         ${AWS_COMPRESSION_HEADERS}
         ${AWS_COMPRESSION_PRIV_HEADERS}
+        ${AWS_COMPRESSION_TESTING_HEADERS}
         )
 
 file(GLOB COMPRESSION_SRC
@@ -51,6 +56,7 @@ find_package(aws-c-common REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} aws-c-common ${PLATFORM_LIBS})
 
 install(FILES ${AWS_COMPRESSION_HEADERS} DESTINATION "include/aws/compression")
+install(FILES ${AWS_COMPRESSION_TESTING_HEADERS} DESTINATION "include/aws/testing/compression")
 
 install(
         TARGETS ${CMAKE_PROJECT_NAME} EXPORT ${CMAKE_PROJECT_NAME}-config
