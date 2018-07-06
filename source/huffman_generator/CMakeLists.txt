@@ -13,3 +13,8 @@ if (MSVC)
 else ()
     target_compile_options(${GENERATOR_BINARY_NAME} PRIVATE -Wall -Wno-long-long -Werror)
 endif ()
+
+install(
+        TARGETS ${GENERATOR_BINARY_NAME}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
