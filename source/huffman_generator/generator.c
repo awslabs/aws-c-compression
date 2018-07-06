@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <assert.h>
 
 struct bit_pattern {
@@ -49,12 +50,12 @@ void read_code_points(const char *input_path) {
 
     memset(code_points, 0, sizeof(code_points));
     FILE *file = fopen(input_path, "r");
+    assert(file);
 
     static const char HC_KEYWORD[] = "HUFFMAN_CODE";
     static const size_t HC_KW_LEN = sizeof(HC_KEYWORD) - 1;
 
     int is_comment = 0;
-    size_t code_index = 0;
     char line[120];
     while (fgets(line, sizeof(line), file) != NULL) {
         const size_t line_length = strlen(line);
@@ -70,7 +71,6 @@ void read_code_points(const char *input_path) {
                         is_comment = 1;
                     } else if (strncmp(&line[i], HC_KEYWORD, HC_KW_LEN) == 0) {
                         /* Found code, parse it */
-                        struct code_point *code = &code_points[code_index++];
 
                         /* Skip macro */
                         const char *current_char = &line[i + HC_KW_LEN];
@@ -80,7 +80,12 @@ void read_code_points(const char *input_path) {
                         ++current_char;
 
                         /* Parse symbol */
-                        code->symbol = (uint16_t)atoi(current_char);
+                        uint16_t symbol = (uint16_t)atoi(current_char);
+                        struct code_point *code = &code_points[symbol];
+
+                        assert(!code->symbol && "Symbol already found!");
+
+                        code->symbol = symbol;
 
                         read_past_comma(&current_char);
                         /* Skip the binary string form */
@@ -101,8 +106,6 @@ void read_code_points(const char *input_path) {
     }
 
     fclose(file);
-
-    assert(code_index == 257);
 }
 
 void bit_pattern_write(struct bit_pattern *pattern, FILE* file) {
@@ -152,7 +155,11 @@ void huffman_node_clean_up(struct huffman_node *node) {
 
 /* This function writes what to do if the pattern for node is a match */
 void huffman_node_write_decode_handle_value(struct huffman_node *node, FILE *file) {
-    if (node->value) {
+    if (!node) {
+        /* Invalid node, return 0 */
+        fprintf(file,
+"        return 0;\n");
+    } else if (node->value) {
         /* Attempt to inline value return */
         fprintf(file,
 "        *symbol = %u;\n"
@@ -172,7 +179,7 @@ void huffman_node_write_decode(struct huffman_node *node, FILE *file, uint8_t cu
 
     /* Value nodes should have been inlined into parent branch checks */
     assert(!node->value);
-    assert(node->children[0] && node->children[1]);
+    assert(node->children[0] || node->children[1]);
 
     static int write_label = 0;
 
@@ -187,15 +194,13 @@ void huffman_node_write_decode(struct huffman_node *node, FILE *file, uint8_t cu
     write_label = 1;
 
     /* Check 1 bit pattern */
-    struct huffman_node *child_1 = node->children[1];
-
     uint32_t single_bit_mask = 1 << (31 - current_bit);
-    uint32_t left_aligned_pattern = child_1->pattern.bits << (32 - child_1->pattern.num_bits);
+    uint32_t left_aligned_pattern = ((node->pattern.bits << 1) + 1) << (31 - node->pattern.num_bits);
     uint32_t check_pattern = left_aligned_pattern & single_bit_mask;
     fprintf(file,
 "    if (bit_pattern & 0x%x) {\n", check_pattern);
 
-    huffman_node_write_decode_handle_value(child_1, file);
+    huffman_node_write_decode_handle_value(node->children[1], file);
 
     fprintf(file,
 "    } else {\n");
@@ -221,7 +226,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr,
             "generator expects 3 arguments: [input file] [output file] [encoding name]\n"
             "A function of the following signature will be exported:\n"
-            "struct aws_huffman_character_coder *[encoding_get_coder()");
+            "struct aws_huffman_character_coder *[encoding name]_get_coder()\n");
         return 1;
     }
 
@@ -253,13 +258,11 @@ int main(int argc, char *argv[]) {
                 /* Not at the end yet, keep traversing */
                 current = current->children[encoded_bit];
             } else if (bit_idx > 0) {
-                assert(!current->children[encoded_bit]);
                 /* Not at the end yet, but this is the first time down this path. */
                 struct huffman_node *new_node = huffman_node_new(pattern);
                 current->children[encoded_bit] = new_node;
                 current = new_node;
             } else {
-                assert(!current->children[encoded_bit]);
                 /* Done traversing, add value as leaf */
                 current->children[encoded_bit] = huffman_node_new_value(value);
                 break;
@@ -299,8 +302,8 @@ int main(int argc, char *argv[]) {
     for (size_t code_point_idx = 0; code_point_idx < num_code_points; ++code_point_idx) {
         struct code_point *cp = &code_points[code_point_idx];
         fprintf(file,
-"    { .pattern = 0x%x, .num_bits = %u }, /* %u */\n",
-            cp->pattern.bits, cp->pattern.num_bits, cp->symbol);
+"    { .pattern = 0x%x, .num_bits = %u }, /* '%c' %u */\n",
+            cp->pattern.bits, cp->pattern.num_bits, isprint(cp->symbol) ? cp->symbol : ' ', cp->symbol);
     }
 
     fprintf(file,
