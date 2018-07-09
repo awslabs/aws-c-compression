@@ -85,6 +85,11 @@ static aws_huffman_coder_state encode_write_bit_pattern(struct encoder_state *st
     return AWS_HUFFMAN_EOS_REACHED;
 }
 
+#define CHECK_WRITE_BITS(bit_pattern) do {                                              \
+        aws_huffman_coder_state result = encode_write_bit_pattern(&state, bit_pattern);  \
+        if (result != AWS_HUFFMAN_EOS_REACHED) { return result; }                \
+    } while (0)
+
 aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t length, uint8_t *output, size_t *output_size, size_t *processed) {
     assert(encoder);
     assert(encoder->coder);
@@ -101,11 +106,6 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
     /* Counters for how far into the output we currently are */
     *processed = 0;
     struct aws_byte_cursor input_cursor = aws_byte_cursor_from_array(to_encode, length);
-
-#define CHECK_WRITE_BITS(bit_pattern) do {                                              \
-        aws_huffman_coder_state result = encode_write_bit_pattern(&state, bit_pattern);  \
-        if (result != AWS_HUFFMAN_EOS_REACHED) { return result; }                \
-    } while (0)
 
     /* Write any bits leftover from previous invocation */
     CHECK_WRITE_BITS(encoder->working_bits);
@@ -133,8 +133,6 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
         CHECK_WRITE_BITS(eos_cp);
     }
 
-#undef CHECK_WRITE_BITS
-
     if (state.bit_pos < 8) {
         /* Pad the rest out with 1s */
         uint8_t padding_mask = UINT8_MAX >> (8 - state.bit_pos);
@@ -147,6 +145,8 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
     *output_size -= state.output_cursor.len;
     return AWS_HUFFMAN_EOS_REACHED;
 }
+
+#undef CHECK_WRITE_BITS
 
 /* Decode's reading is written in a helper function,
    so this struct helps avoid passing all the parameters through by hand */
@@ -229,7 +229,7 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
 
             if (*processed != length ||
                 (decoder->working_bits & padding) != padding) {
-                result = AWS_HUFFMAN_RROR;
+                result = AWS_HUFFMAN_ERROR;
             }
 
             decoder->working_bits = 0;

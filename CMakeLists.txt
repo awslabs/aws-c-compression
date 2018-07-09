@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(aws-c-compression)
 
+include(CheckCCompilerFlag)
+
 option(BUILD_PORTABLE_BINARIES
         "Build Relocatable Binaries, this will turn off features that will fail on older kernels than used for the build."
         OFF)
@@ -42,10 +44,15 @@ if (MSVC)
     target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4 /WX)
 else ()
     target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -pedantic -Werror -Wno-long-long)
+endif ()
 
-    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wgnu)
-    endif()
+check_c_compiler_flag("-Wgnu" HAS_WGNU)
+if (HAS_WGNU)
+    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wgnu)
+endif()
+
+if (BUILD_SHARED_LIBS AND WIN32)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE "-DAWS_COMMON_EXPORTS")
 endif ()
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC

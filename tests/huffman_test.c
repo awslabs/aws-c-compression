@@ -59,8 +59,8 @@ static int test_huffman_character_encoder(struct aws_allocator *allocator, void 
 
         struct aws_huffman_bit_pattern pattern = coder->encode(value->symbol, NULL);
 
-        ASSERT_UINT_EQUALS(value->pattern.pattern, pattern.pattern, "Read incorrect symbol");
-        ASSERT_UINT_EQUALS(value->pattern.num_bits, pattern.num_bits, "Read incorrect number of bits");
+        ASSERT_UINT_EQUALS(value->pattern.pattern, pattern.pattern);
+        ASSERT_UINT_EQUALS(value->pattern.num_bits, pattern.num_bits);
     }
 
     return AWS_OP_SUCCESS;
@@ -80,11 +80,11 @@ static int test_huffman_encoder(struct aws_allocator *allocator, void *user_data
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
     aws_huffman_coder_state state = aws_huffman_encode(&encoder, url_string, url_string_len, output_buffer, &output_size, &processed);
-    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state, "Encoder ended in incorrect state");
+    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
 
-    ASSERT_UINT_EQUALS(encoded_url_len, output_size, "Encoder wrote incorrect number bytes");
-    ASSERT_UINT_EQUALS(0, output_buffer[encoded_url_len], "Encoder wrote too far!");
-    ASSERT_BIN_ARRAYS_EQUALS(encoded_url, encoded_url_len, output_buffer, output_size, "Data written is incorrect!");
+    ASSERT_UINT_EQUALS(encoded_url_len, output_size);
+    ASSERT_UINT_EQUALS(0, output_buffer[encoded_url_len]);
+    ASSERT_BIN_ARRAYS_EQUALS(encoded_url, encoded_url_len, output_buffer, output_size);
 
     return AWS_OP_SUCCESS;
 }
@@ -103,11 +103,11 @@ static int test_huffman_encoder_all_code_points(struct aws_allocator *allocator,
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
     aws_huffman_coder_state state = aws_huffman_encode(&encoder, all_codes, all_codes_len, output_buffer, &output_size, &processed);
-    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state, "Encoder ended in incorrect state");
+    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
 
-    ASSERT_UINT_EQUALS(encoded_codes_len, output_size, "Encoder wrote incorrect number bytes");
-    ASSERT_UINT_EQUALS(0, output_buffer[encoded_codes_len], "Encoder wrote too far!");
-    ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, encoded_codes_len, output_buffer, output_size, "Data written is incorrect!");
+    ASSERT_UINT_EQUALS(encoded_codes_len, output_size);
+    ASSERT_UINT_EQUALS(0, output_buffer[encoded_codes_len]);
+    ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, encoded_codes_len, output_buffer, output_size);
 
     return AWS_OP_SUCCESS;
 }
@@ -139,7 +139,7 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
             aws_huffman_coder_state state = aws_huffman_encode(&encoder, current_input, bytes_to_read, current_output, &output_size, &processed);
             (void)state;
 
-            ASSERT_TRUE(output_size > 0, "0 bytes written");
+            ASSERT_TRUE(output_size > 0);
 
             bytes_written += output_size;
             bytes_to_read -= processed;
@@ -147,16 +147,16 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
             current_output += output_size;
             current_input += processed;
 
-            ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, bytes_written, output_buffer, bytes_written, "Incorrect full byte buffer");
+            ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, bytes_written, output_buffer, bytes_written);
 
             ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, bytes_written, output_buffer, bytes_written);
-            ASSERT_TRUE(bytes_to_write >= 0, "Encoder wrote too many bytes");
-            ASSERT_UINT_EQUALS(bytes_to_write == 0 ? AWS_HUFFMAN_EOS_REACHED : AWS_HUFFMAN_NEED_MORE_OUTPUT, state, "Encoder ended in the wrong state step_size: %u", step_size);
+            ASSERT_TRUE(bytes_to_write >= 0);
+            ASSERT_UINT_EQUALS(bytes_to_write == 0 ? AWS_HUFFMAN_EOS_REACHED : AWS_HUFFMAN_NEED_MORE_OUTPUT, state);
         }
 
         ASSERT_UINT_EQUALS(encoded_codes_len, bytes_written);
 
-        ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, encoded_codes_len, output_buffer, bytes_written, "Incorrect full byte buffer");
+        ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, encoded_codes_len, output_buffer, bytes_written);
     }
 
     return AWS_OP_SUCCESS;
@@ -176,8 +176,8 @@ static int test_huffman_character_decoder(struct aws_allocator *allocator, void 
         uint16_t out;
         size_t bits_read = coder->decode(bit_pattern, &out, NULL);
 
-        ASSERT_UINT_EQUALS(value->symbol, out, "Read incorrect symbol");
-        ASSERT_UINT_EQUALS(value->pattern.num_bits, bits_read, "Read incorrect number of bits");
+        ASSERT_UINT_EQUALS(value->symbol, out);
+        ASSERT_UINT_EQUALS(value->pattern.num_bits, bits_read);
     }
 
     return AWS_OP_SUCCESS;
@@ -197,11 +197,11 @@ static int test_huffman_decoder(struct aws_allocator *allocator, void *user_data
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
     aws_huffman_coder_state state = aws_huffman_decode(&decoder, encoded_url, encoded_url_len, output_buffer, &output_size, &processed);
-    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state, "Decoder ended in the wrong state");
-    ASSERT_UINT_EQUALS(url_string_len, output_size, "Decoder wrote too many bytes");
-    ASSERT_UINT_EQUALS(encoded_url_len, processed, "Decoder read too few/many bytes");
-    ASSERT_UINT_EQUALS(output_buffer[url_string_len], 0, "Decoder wrote too far!");
-    ASSERT_BIN_ARRAYS_EQUALS(url_string, url_string_len, output_buffer, output_size, "Data written is incorrect");
+    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
+    ASSERT_UINT_EQUALS(url_string_len, output_size);
+    ASSERT_UINT_EQUALS(encoded_url_len, processed);
+    ASSERT_UINT_EQUALS(output_buffer[url_string_len], 0);
+    ASSERT_BIN_ARRAYS_EQUALS(url_string, url_string_len, output_buffer, output_size);
 
     return AWS_OP_SUCCESS;
 }
@@ -220,11 +220,11 @@ static int test_huffman_decoder_all_code_points(struct aws_allocator *allocator,
     size_t output_size = sizeof(output_buffer);
     size_t processed = 0;
     aws_huffman_coder_state state = aws_huffman_decode(&decoder, encoded_codes, encoded_codes_len, output_buffer, &output_size, &processed);
-    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state, "Decoder ended in the wrong state");
-    ASSERT_UINT_EQUALS(all_codes_len, output_size, "Decoder wrote too many bytes");
-    ASSERT_UINT_EQUALS(encoded_codes_len, processed, "Decoder read too few/many bytes");
-    ASSERT_UINT_EQUALS(output_buffer[all_codes_len], 0, "Decoder wrote too far!");
-    ASSERT_BIN_ARRAYS_EQUALS(all_codes, all_codes_len, output_buffer, output_size, "Data written is incorrect");
+    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
+    ASSERT_UINT_EQUALS(all_codes_len, output_size);
+    ASSERT_UINT_EQUALS(encoded_codes_len, processed);
+    ASSERT_UINT_EQUALS(output_buffer[all_codes_len], 0);
+    ASSERT_BIN_ARRAYS_EQUALS(all_codes, all_codes_len, output_buffer, output_size);
 
     return AWS_OP_SUCCESS;
 }
@@ -255,19 +255,19 @@ static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, v
 
             aws_huffman_coder_state state = aws_huffman_decode(&decoder, current_input, to_process, current_output, &output_size, &processed);
 
-            ASSERT_TRUE(processed > 0, "0 bytes processed");
-            ASSERT_BIN_ARRAYS_EQUALS(all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size, "Incorrect bytes written");
+            ASSERT_TRUE(processed > 0);
+            ASSERT_BIN_ARRAYS_EQUALS(all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size);
 
             bytes_written += output_size;
             bytes_to_process -= processed;
             current_output += output_size;
             current_input += processed;
 
-            ASSERT_UINT_EQUALS(bytes_to_process == 0 ? AWS_HUFFMAN_EOS_REACHED : AWS_HUFFMAN_NEED_MORE_DATA, state, "Decoder ended in the wrong state");
+            ASSERT_UINT_EQUALS(bytes_to_process == 0 ? AWS_HUFFMAN_EOS_REACHED : AWS_HUFFMAN_NEED_MORE_DATA, state);
         }
 
         ASSERT_UINT_EQUALS(all_codes_len, bytes_written);
-        ASSERT_BIN_ARRAYS_EQUALS(all_codes, all_codes_len, output_buffer, bytes_written, "Incorrect full byte buffer");
+        ASSERT_BIN_ARRAYS_EQUALS(all_codes, all_codes_len, output_buffer, bytes_written);
     }
 
     return AWS_OP_SUCCESS;
@@ -298,19 +298,19 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
 
             aws_huffman_coder_state state = aws_huffman_decode(&decoder, current_input, bytes_to_process, current_output, &output_size, &processed);
 
-            ASSERT_TRUE(output_size > 0, "0 bytes written");
-            ASSERT_BIN_ARRAYS_EQUALS(all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size, "Incorrect bytes written");
+            ASSERT_TRUE(output_size > 0);
+            ASSERT_BIN_ARRAYS_EQUALS(all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size);
 
             bytes_written += output_size;
             bytes_to_process -= processed;
             current_output += output_size;
             current_input += processed;
 
-            ASSERT_UINT_EQUALS(bytes_written == all_codes_len ? AWS_HUFFMAN_EOS_REACHED : AWS_HUFFMAN_NEED_MORE_OUTPUT, state, "Decoder ended in the wrong state");
+            ASSERT_UINT_EQUALS(bytes_written == all_codes_len ? AWS_HUFFMAN_EOS_REACHED : AWS_HUFFMAN_NEED_MORE_OUTPUT, state);
         }
 
         ASSERT_UINT_EQUALS(all_codes_len, bytes_written);
-        ASSERT_BIN_ARRAYS_EQUALS(all_codes, all_codes_len, output_buffer, bytes_written, "Incorrect full byte buffer");
+        ASSERT_BIN_ARRAYS_EQUALS(all_codes, all_codes_len, output_buffer, bytes_written);
     }
 
     return AWS_OP_SUCCESS;
@@ -335,19 +335,19 @@ static int test_huffman_transitive(struct aws_allocator *allocator, void *user_d
     size_t processed = 0;
     aws_huffman_encode(&encoder, url_string, url_string_len, intermediate_buffer, &encode_output_size, &processed);
 
-    ASSERT_UINT_EQUALS(encode_output_size, encoded_url_len, "Encoder wrote too many bytes");
-    ASSERT_UINT_EQUALS(intermediate_buffer[encoded_url_len], 0, "Encoder wrote too far!");
+    ASSERT_UINT_EQUALS(encode_output_size, encoded_url_len);
+    ASSERT_UINT_EQUALS(intermediate_buffer[encoded_url_len], 0);
 
     size_t decode_output_size = sizeof(output_string);
     processed = 0;
     aws_huffman_coder_state state = aws_huffman_decode(&decoder, intermediate_buffer, encode_output_size, output_string, &decode_output_size, &processed);
 
-    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state, "Decoder ended in the wrong state");
-    ASSERT_UINT_EQUALS(url_string_len, decode_output_size, "Decoder wrote too many bytes");
-    ASSERT_UINT_EQUALS(encode_output_size, processed, "Decoder read too few/many bytes");
-    ASSERT_UINT_EQUALS(output_string[url_string_len], 0, "Decoder wrote too far!");
+    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
+    ASSERT_UINT_EQUALS(url_string_len, decode_output_size);
+    ASSERT_UINT_EQUALS(encode_output_size, processed);
+    ASSERT_UINT_EQUALS(output_string[url_string_len], 0);
 
-    ASSERT_BIN_ARRAYS_EQUALS(url_string, url_string_len, output_string, decode_output_size, "Strings at begin and end don't match");
+    ASSERT_BIN_ARRAYS_EQUALS(url_string, url_string_len, output_string, decode_output_size);
 
     return AWS_OP_SUCCESS;
 }
@@ -371,19 +371,19 @@ static int test_huffman_transitive_all_code_points(struct aws_allocator *allocat
     size_t processed = 0;
     aws_huffman_encode(&encoder, all_codes, all_codes_len, intermediate_buffer, &encode_output_size, &processed);
 
-    ASSERT_UINT_EQUALS(encode_output_size, encoded_codes_len, "Encoder wrote too many bytes");
-    ASSERT_UINT_EQUALS(intermediate_buffer[encoded_codes_len], 0, "Encoder wrote too far!");
+    ASSERT_UINT_EQUALS(encode_output_size, encoded_codes_len);
+    ASSERT_UINT_EQUALS(intermediate_buffer[encoded_codes_len], 0);
 
     size_t output_size = sizeof(output_string);
     processed = 0;
     aws_huffman_coder_state state = aws_huffman_decode(&decoder, intermediate_buffer, encode_output_size, output_string, &output_size, &processed);
 
-    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state, "Decoder ended in the wrong state");
-    ASSERT_UINT_EQUALS(all_codes_len, output_size, "Decoder wrote too many bytes");
-    ASSERT_UINT_EQUALS(encode_output_size, processed, "Decoder read too few/many bytes");
-    ASSERT_UINT_EQUALS(output_string[all_codes_len], 0, "Decoder wrote too far!");
+    ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
+    ASSERT_UINT_EQUALS(all_codes_len, output_size);
+    ASSERT_UINT_EQUALS(encode_output_size, processed);
+    ASSERT_UINT_EQUALS(output_string[all_codes_len], 0);
 
-    ASSERT_BIN_ARRAYS_EQUALS(all_codes, all_codes_len, output_string, output_size, "Strings at begin and end don't match");
+    ASSERT_BIN_ARRAYS_EQUALS(all_codes, all_codes_len, output_string, output_size);
 
     return AWS_OP_SUCCESS;
 }

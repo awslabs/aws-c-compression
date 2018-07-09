@@ -33,24 +33,30 @@ struct code_point {
 static const size_t num_code_points = 257;
 static struct code_point code_points[num_code_points];
 
-static void skip_whitespace(const char **str) {
-    while (**str == ' ' || **str == '\t') {
-        ++(*str);
+static size_t skip_whitespace(const char *str) {
+    size_t offset = 0;
+    while (str[offset] == ' ' || str[offset] == '\t') {
+        ++offset;
     }
+    return offset;
 }
 
-static void read_past_comma(const char **str) {
-    while (**str != ',') {
-        ++(*str);
+static size_t read_past_comma(const char *str) {
+    size_t offset = 0;
+    while (str[offset] != ',') {
+        ++offset;
     }
-    ++(*str);
+    return offset + 1;
 }
 
-void read_code_points(const char *input_path) {
+int read_code_points(const char *input_path) {
 
     memset(code_points, 0, sizeof(code_points));
     FILE *file = fopen(input_path, "r");
-    assert(file);
+    if (!file) {
+        printf("Failed to open file '%s' for read.", input_path);
+        return 1;
+    }
 
     static const char HC_KEYWORD[] = "HUFFMAN_CODE";
     static const size_t HC_KW_LEN = sizeof(HC_KEYWORD) - 1;
@@ -64,7 +70,6 @@ void read_code_points(const char *input_path) {
             /* Ignore preprocessor directives */
             continue;
         } else {
-            /* Check for comments */
             for (size_t i = 0; i < line_length - 1; ++i) {
                 if (!is_comment) {
                     if (line[i] == '/' && line[i + 1] == '*') {
@@ -74,7 +79,7 @@ void read_code_points(const char *input_path) {
 
                         /* Skip macro */
                         const char *current_char = &line[i + HC_KW_LEN];
-                        skip_whitespace(&current_char);
+                        current_char += skip_whitespace(current_char);
                         /* Skip ( */
                         assert(*current_char == '(');
                         ++current_char;
@@ -87,14 +92,14 @@ void read_code_points(const char *input_path) {
 
                         code->symbol = symbol;
 
-                        read_past_comma(&current_char);
+                        current_char += read_past_comma(current_char);
                         /* Skip the binary string form */
-                        read_past_comma(&current_char);
+                        current_char += read_past_comma(current_char);
 
                         /* Parse bits */
                         code->pattern.bits = (uint32_t)strtol(current_char, NULL, 16);
 
-                        read_past_comma(&current_char);
+                        current_char += read_past_comma(current_char);
 
                         code->pattern.num_bits = (uint32_t)atoi(current_char);
                     }
@@ -106,6 +111,8 @@ void read_code_points(const char *input_path) {
     }
 
     fclose(file);
+
+    return 1;
 }
 
 void bit_pattern_write(struct bit_pattern *pattern, FILE* file) {
@@ -234,7 +241,9 @@ int main(int argc, char *argv[]) {
     const char *output_file = argv[2];
     const char *decoder_name = argv[3];
 
-    read_code_points(input_file);
+    if (read_code_points(input_file)) {
+        return 1;
+    }
 
     struct huffman_node tree_root;
     memset(&tree_root, 0, sizeof(struct huffman_node));
@@ -272,7 +281,10 @@ int main(int argc, char *argv[]) {
 
     /* Open the file */
     FILE *file = fopen(output_file, "w");
-    assert(file);
+    if (!file) {
+        printf("Failed to open file '%s' for write.", output_file);
+        return 1;
+    }
 
     /* Write the file/function header */
     fprintf(file,

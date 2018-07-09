@@ -16,6 +16,8 @@
 * permissions and limitations under the License.
 */
 
+#include <aws/compression/exports.h>
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -25,7 +27,7 @@
 struct aws_huffman_bit_pattern {
     /**
      * The value of the bit pattern
-     * \note The pattern is stored in the bottom bits
+     * \note The pattern is stored in the least significant bits
      */
     uint32_t pattern;
     /** The number of bits in pattern to use */
@@ -33,7 +35,7 @@ struct aws_huffman_bit_pattern {
 };
 
 /**
- * Function used to encode a single character to an aws_bit_pattern
+ * Function used to encode a single character to an aws_huffman_bit_pattern
  */
 typedef struct aws_huffman_bit_pattern (*aws_huffman_character_encoder)(uint16_t symbol, void *userdata);
 /**
@@ -84,7 +86,7 @@ typedef enum aws_huffman_coder_state {
     /** More input data is needed */
     AWS_HUFFMAN_NEED_MORE_OUTPUT,
     /** An error occured while decoding */
-    AWS_HUFFMAN_RROR
+    AWS_HUFFMAN_ERROR
 } aws_huffman_coder_state;
 
 #ifdef __cplusplus
@@ -94,12 +96,12 @@ extern "C" {
 /**
  * Initialize a encoder object with a character coder.
  */
-void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_character_coder *coder);
+AWS_COMPRESSION_API void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_character_coder *coder);
 
 /**
  * Initialize a decoder object with a character coder.
  */
-void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_character_coder *coder);
+AWS_COMPRESSION_API void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_character_coder *coder);
 
 /**
  * Encode a character buffer into the output buffer.
@@ -113,7 +115,7 @@ void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_hu
  *
  * \return The current state of the encoder \see aws_huffman_coder_state
  */
-aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t length, uint8_t *output, size_t *output_size, size_t *processed);
+AWS_COMPRESSION_API aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t length, uint8_t *output, size_t *output_size, size_t *processed);
 
 /**
  * Decodes a byte buffer into the provided character array.
@@ -127,7 +129,7 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
  *
  * \return The current state of the decoder \see aws_huffman_coder_state
  */
-aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t length, char *output, size_t *output_size, size_t *processed);
+AWS_COMPRESSION_API aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t length, char *output, size_t *output_size, size_t *processed);
 
 #ifdef __cplusplus
 }
