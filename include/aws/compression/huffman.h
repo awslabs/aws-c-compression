@@ -41,7 +41,7 @@ typedef struct aws_huffman_bit_pattern (*aws_huffman_character_encoder)(uint16_t
 /**
  * Function used to decode a bit pattern into a character
  */
-typedef size_t (*aws_huffman_character_decoder)(uint32_t bit_pattern, uint16_t *symbol, void *userdata);
+typedef uint8_t (*aws_huffman_character_decoder)(uint32_t bit_pattern, uint16_t *symbol, void *userdata);
 
 /**
  * Structure used to define how characters are encoded and decoded

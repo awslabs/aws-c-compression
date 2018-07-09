@@ -198,7 +198,7 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
         }
 
         uint16_t symbol;
-        size_t bits_read = decoder->coder->decode(decoder->working_bits >> 32, &symbol, decoder->coder->userdata);
+        uint8_t bits_read = decoder->coder->decode(decoder->working_bits >> 32, &symbol, decoder->coder->userdata);
 
         if (bits_read == 0 || bits_read >= bits_left) {
             /* Check if the buffer has been overrun.

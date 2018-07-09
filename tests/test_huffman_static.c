@@ -286,7 +286,7 @@ struct aws_huffman_bit_pattern encode_character(uint16_t symbol, void *userdata)
     return code_points[symbol];
 }
 
-static size_t decode_character(uint32_t bit_pattern, uint16_t *symbol, void *userdata) {
+static uint8_t decode_character(uint32_t bit_pattern, uint16_t *symbol, void *userdata) {
     (void)userdata;
 
     if (bit_pattern & 0x80000000) {

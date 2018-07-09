@@ -327,7 +327,7 @@ int main(int argc, char *argv[]) {
 "    return code_points[symbol];\n"
 "}\n"
 "\n"
-"static size_t decode_character(uint32_t bit_pattern, uint16_t *symbol, void *userdata) {\n"
+"static uint8_t decode_character(uint32_t bit_pattern, uint16_t *symbol, void *userdata) {\n"
 "    (void)userdata;\n\n", num_code_points);
 
      /* Traverse the tree */
