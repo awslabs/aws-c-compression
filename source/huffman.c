@@ -97,11 +97,11 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
     assert(output);
 
     struct encoder_state state = {
-        .encoder = encoder,
-        .output_cursor = aws_byte_cursor_from_array(output, *output_size),
         .working = 0,
         .bit_pos = 8,
     };
+    state.encoder = encoder;
+    state.output_cursor = aws_byte_cursor_from_array(output, *output_size);
 
     /* Counters for how far into the output we currently are */
     *processed = 0;
@@ -177,11 +177,10 @@ aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, 
     assert(to_decode);
     assert(output);
 
-    struct decoder_state state = {
-        .decoder = decoder,
-        .input_cursor = aws_byte_cursor_from_array(to_decode, length),
-        .processed = processed,
-    };
+    struct decoder_state state;
+    state.decoder = decoder;
+    state.input_cursor = aws_byte_cursor_from_array(to_decode, length);
+    state.processed = processed;
 
     /* Measures how much of the input was read */
     *processed = 0;

@@ -29,13 +29,13 @@ static struct huffman_test_code_point code_points[] = {
 
 /* Useful data for testing */
 static const char url_string[] = "www.example.com";
-static size_t url_string_len = sizeof(url_string) - 1;
+enum { url_string_len = sizeof(url_string) - 1 };
 static uint8_t encoded_url[] = { 0x9e, 0x79, 0xeb, 0x9b, 0x04, 0xb3, 0x5a, 0x94, 0xd5, 0xe0, 0x4c, 0xdf, 0xff, };
 
-static size_t encoded_url_len = sizeof(encoded_url);
+enum { encoded_url_len = sizeof(encoded_url) };
 
 static const char all_codes[] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-static size_t all_codes_len = sizeof(all_codes) - 1;
+enum { all_codes_len = sizeof(all_codes) - 1 };
 static uint8_t encoded_codes[] = {
     0x26, 0x9b, 0xa7, 0x69, 0xfa, 0x86, 0xa3, 0xa9, 0x56, 0xd4, 0xf5, 0x4d,
     0x57, 0x56, 0xb9, 0xc4, 0x57, 0xd5, 0xf5, 0x8d, 0x67, 0x5a, 0xd6, 0xf5,
@@ -47,7 +47,7 @@ static uint8_t encoded_codes[] = {
     0xf9, 0x25, 0x99, 0x09, 0xb5, 0x94, 0x52, 0xd8, 0xdc, 0x09, 0xf0, 0x68,
     0xde, 0x77, 0xad, 0xef, 0x7c, 0xdf, 0x7f, 0xff
 };
-static size_t encoded_codes_len = sizeof(encoded_codes);
+enum { encoded_codes_len = sizeof(encoded_codes) };
 
 static int test_huffman_character_encoder(struct aws_allocator *allocator, void *user_data) {
     /* Test encoding each character */
@@ -131,7 +131,7 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
         uint8_t *current_output = output_buffer;
         size_t bytes_written = 0;
         size_t bytes_to_read = all_codes_len;
-        for (int bytes_to_write = encoded_codes_len; bytes_to_write > 0; ) {
+        for (size_t bytes_to_write = encoded_codes_len; bytes_to_write > 0; ) {
 
             size_t output_size = bytes_to_write > step_size ? step_size : bytes_to_write;
             size_t processed = 0;

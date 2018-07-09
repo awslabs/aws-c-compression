@@ -14,6 +14,7 @@ target_compile_definitions(${TEST_BINARY_NAME} PRIVATE AWS_UNSTABLE_TESTING_API=
 target_include_directories(${TEST_BINARY_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 if (MSVC)
     target_compile_options(${TEST_BINARY_NAME} PRIVATE /W4 /WX)
+    target_compile_definitions(${TEST_BINARY_NAME} PRIVATE "-D_CRT_SECURE_NO_WARNINGS")
 else ()
     target_compile_options(${TEST_BINARY_NAME} PRIVATE -Wall -Wno-long-long -Werror)
 endif ()

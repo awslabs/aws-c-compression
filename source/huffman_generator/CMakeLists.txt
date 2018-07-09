@@ -10,6 +10,7 @@ target_include_directories(${GENERATOR_BINARY_NAME} PRIVATE
 
 if (MSVC)
     target_compile_options(${GENERATOR_BINARY_NAME} PRIVATE /W4 /WX)
+    target_compile_definitions(${GENERATOR_BINARY_NAME} PRIVATE "-D_CRT_SECURE_NO_WARNINGS")
 else ()
     target_compile_options(${GENERATOR_BINARY_NAME} PRIVATE -Wall -Wno-long-long -Werror)
 endif ()

@@ -30,7 +30,7 @@ struct code_point {
     struct bit_pattern pattern;
 };
 
-static const size_t num_code_points = 257;
+enum { num_code_points = 257 };
 static struct code_point code_points[num_code_points];
 
 static size_t skip_whitespace(const char *str) {
@@ -101,7 +101,7 @@ int read_code_points(const char *input_path) {
 
                         current_char += read_past_comma(current_char);
 
-                        code->pattern.num_bits = (uint32_t)atoi(current_char);
+                        code->pattern.num_bits = (uint8_t)atoi(current_char);
                     }
                 } else if (line[i] == '*' && line[i + 1] == '/') {
                     is_comment = 0;
@@ -254,7 +254,7 @@ int main(int argc, char *argv[]) {
         struct code_point *value = &code_points[code_point_idx];
         struct huffman_node *current = &tree_root;
 
-        for (int bit_idx = value->pattern.num_bits - 1; bit_idx >= 0; --bit_idx) {
+        for (uint8_t bit_idx = value->pattern.num_bits - 1; bit_idx >= 0; --bit_idx) {
 
             struct bit_pattern pattern = value->pattern;
             pattern.bits >>= bit_idx;
@@ -323,7 +323,7 @@ int main(int argc, char *argv[]) {
 "\n"
 "struct aws_huffman_bit_pattern encode_character(uint16_t symbol, void *userdata) {\n"
 "    (void)userdata;\n\n"
-"    assert(symbol < %zu);\n"
+"    assert(symbol < %d);\n"
 "    return code_points[symbol];\n"
 "}\n"
 "\n"
@@ -342,7 +342,7 @@ int main(int argc, char *argv[]) {
 "    static struct aws_huffman_character_coder coder = {\n"
 "        .encode = encode_character,\n"
 "        .decode = decode_character,\n"
-"        .eos_symbol = %zu,\n"
+"        .eos_symbol = %d,\n"
 "        .userdata = NULL,\n"
 "    };\n"
 "    return &coder;\n"
