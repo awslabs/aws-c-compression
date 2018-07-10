@@ -119,28 +119,26 @@ AWS_COMPRESSION_API void aws_huffman_decoder_init(struct aws_huffman_decoder *de
  *
  * \param[in]       encoder         The encoder object to use
  * \param[in]       to_encode       The character buffer to encode
- * \param[in]       length          The length of to_encode
+ * \param[in,out]   length          In: The length of to_decode Out: The number of bytes read from to_encode
  * \param[in]       output          The buffer to write encoded bytes to
  * \param[in,out]   output_size     In: The size of output Out: The number of bytes written to output
- * \param[out]      processed       The number of bytes read from to_encode before reaching the end or running out of output space
  *
  * \return The current state of the encoder \see aws_huffman_coder_state
  */
-AWS_COMPRESSION_API aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t length, uint8_t *output, size_t *output_size, size_t *processed);
+AWS_COMPRESSION_API aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t *length, uint8_t *output, size_t *output_size);
 
 /**
  * Decodes a byte buffer into the provided character array.
  *
  * \param[in]       decoder         The decoder object to use
  * \param[in]       to_decode       The encoded byte buffer to read from
- * \param[in]       length          The length of to_decode
+ * \param[in,out]   length          In: The length of to_decode Out: The number of bytes read from to_encode
  * \param[in]       output          The buffer to write decoded characters to
  * \param[in,out]   output_size     In: The size of output Out: The number of bytes written to output
- * \param[out]      processed       The number of bytes read from to_decode before reaching the end or running out of output space
  *
  * \return The current state of the decoder \see aws_huffman_coder_state
  */
-AWS_COMPRESSION_API aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t length, char *output, size_t *output_size, size_t *processed);
+AWS_COMPRESSION_API aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t *length, char *output, size_t *output_size);
 
 #ifdef __cplusplus
 }

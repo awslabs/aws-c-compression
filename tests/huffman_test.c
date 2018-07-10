@@ -78,8 +78,8 @@ static int test_huffman_encoder(struct aws_allocator *allocator, void *user_data
     aws_huffman_encoder_init(&encoder, coder);
 
     size_t output_size = sizeof(output_buffer);
-    size_t processed = 0;
-    aws_huffman_coder_state state = aws_huffman_encode(&encoder, url_string, url_string_len, output_buffer, &output_size, &processed);
+    size_t processed = url_string_len;
+    aws_huffman_coder_state state = aws_huffman_encode(&encoder, url_string, &processed, output_buffer, &output_size);
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
 
     ASSERT_UINT_EQUALS(encoded_url_len, output_size);
@@ -101,8 +101,8 @@ static int test_huffman_encoder_all_code_points(struct aws_allocator *allocator,
     aws_huffman_encoder_init(&encoder, coder);
 
     size_t output_size = sizeof(output_buffer);
-    size_t processed = 0;
-    aws_huffman_coder_state state = aws_huffman_encode(&encoder, all_codes, all_codes_len, output_buffer, &output_size, &processed);
+    size_t processed = all_codes_len;
+    aws_huffman_coder_state state = aws_huffman_encode(&encoder, all_codes, &processed, output_buffer, &output_size);
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
 
     ASSERT_UINT_EQUALS(encoded_codes_len, output_size);
@@ -134,9 +134,9 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
         for (size_t bytes_to_write = encoded_codes_len; bytes_to_write > 0; ) {
 
             size_t output_size = bytes_to_write > step_size ? step_size : bytes_to_write;
-            size_t processed = 0;
+            size_t processed = bytes_to_read;
 
-            aws_huffman_coder_state state = aws_huffman_encode(&encoder, current_input, bytes_to_read, current_output, &output_size, &processed);
+            aws_huffman_coder_state state = aws_huffman_encode(&encoder, current_input, &processed, current_output, &output_size);
             (void)state;
 
             ASSERT_TRUE(output_size > 0);
@@ -193,8 +193,8 @@ static int test_huffman_decoder(struct aws_allocator *allocator, void *user_data
     aws_huffman_decoder_init(&decoder, coder);
 
     size_t output_size = sizeof(output_buffer);
-    size_t processed = 0;
-    aws_huffman_coder_state state = aws_huffman_decode(&decoder, encoded_url, encoded_url_len, output_buffer, &output_size, &processed);
+    size_t processed = encoded_url_len;
+    aws_huffman_coder_state state = aws_huffman_decode(&decoder, encoded_url, &processed, output_buffer, &output_size);
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
     ASSERT_UINT_EQUALS(url_string_len, output_size);
     ASSERT_UINT_EQUALS(encoded_url_len, processed);
@@ -216,8 +216,8 @@ static int test_huffman_decoder_all_code_points(struct aws_allocator *allocator,
     aws_huffman_decoder_init(&decoder, coder);
 
     size_t output_size = sizeof(output_buffer);
-    size_t processed = 0;
-    aws_huffman_coder_state state = aws_huffman_decode(&decoder, encoded_codes, encoded_codes_len, output_buffer, &output_size, &processed);
+    size_t processed = encoded_codes_len;
+    aws_huffman_coder_state state = aws_huffman_decode(&decoder, encoded_codes, &processed, output_buffer, &output_size);
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
     ASSERT_UINT_EQUALS(all_codes_len, output_size);
     ASSERT_UINT_EQUALS(encoded_codes_len, processed);
@@ -248,18 +248,17 @@ static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, v
         for (size_t bytes_to_process = encoded_codes_len; bytes_to_process > 0; ) {
 
             size_t output_size = sizeof(output_buffer) - bytes_written;
-            size_t processed = 0;
             size_t to_process = bytes_to_process > step_size ? step_size : bytes_to_process;
 
-            aws_huffman_coder_state state = aws_huffman_decode(&decoder, current_input, to_process, current_output, &output_size, &processed);
+            aws_huffman_coder_state state = aws_huffman_decode(&decoder, current_input, &to_process, current_output, &output_size);
 
-            ASSERT_TRUE(processed > 0);
+            ASSERT_TRUE(to_process > 0);
             ASSERT_BIN_ARRAYS_EQUALS(all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size);
 
             bytes_written += output_size;
-            bytes_to_process -= processed;
+            bytes_to_process -= to_process;
             current_output += output_size;
-            current_input += processed;
+            current_input += to_process;
 
             ASSERT_UINT_EQUALS(bytes_to_process == 0 ? AWS_HUFFMAN_EOS_REACHED : AWS_HUFFMAN_NEED_MORE_DATA, state);
         }
@@ -292,9 +291,9 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
         for (size_t bytes_to_process = encoded_codes_len; bytes_written < all_codes_len; ) {
 
             size_t output_size = step_size;
-            size_t processed = 0;
+            size_t processed = bytes_to_process;
 
-            aws_huffman_coder_state state = aws_huffman_decode(&decoder, current_input, bytes_to_process, current_output, &output_size, &processed);
+            aws_huffman_coder_state state = aws_huffman_decode(&decoder, current_input, &processed, current_output, &output_size);
 
             ASSERT_TRUE(output_size > 0);
             ASSERT_BIN_ARRAYS_EQUALS(all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size);
@@ -330,15 +329,15 @@ static int test_huffman_transitive(struct aws_allocator *allocator, void *user_d
     AWS_ZERO_ARRAY(output_string);
 
     size_t encode_output_size = sizeof(intermediate_buffer);
-    size_t processed = 0;
-    aws_huffman_encode(&encoder, url_string, url_string_len, intermediate_buffer, &encode_output_size, &processed);
+    size_t processed = url_string_len;
+    aws_huffman_encode(&encoder, url_string, &processed, intermediate_buffer, &encode_output_size);
 
     ASSERT_UINT_EQUALS(encode_output_size, encoded_url_len);
     ASSERT_UINT_EQUALS(intermediate_buffer[encoded_url_len], 0);
 
     size_t decode_output_size = sizeof(output_string);
-    processed = 0;
-    aws_huffman_coder_state state = aws_huffman_decode(&decoder, intermediate_buffer, encode_output_size, output_string, &decode_output_size, &processed);
+    processed = encode_output_size;
+    aws_huffman_coder_state state = aws_huffman_decode(&decoder, intermediate_buffer, &processed, output_string, &decode_output_size);
 
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
     ASSERT_UINT_EQUALS(url_string_len, decode_output_size);
@@ -366,15 +365,15 @@ static int test_huffman_transitive_all_code_points(struct aws_allocator *allocat
     AWS_ZERO_ARRAY(output_string);
 
     size_t encode_output_size = sizeof(intermediate_buffer);
-    size_t processed = 0;
-    aws_huffman_encode(&encoder, all_codes, all_codes_len, intermediate_buffer, &encode_output_size, &processed);
+    size_t processed = all_codes_len;
+    aws_huffman_encode(&encoder, all_codes, &processed, intermediate_buffer, &encode_output_size);
 
     ASSERT_UINT_EQUALS(encode_output_size, encoded_codes_len);
     ASSERT_UINT_EQUALS(intermediate_buffer[encoded_codes_len], 0);
 
     size_t output_size = sizeof(output_string);
-    processed = 0;
-    aws_huffman_coder_state state = aws_huffman_decode(&decoder, intermediate_buffer, encode_output_size, output_string, &output_size, &processed);
+    processed = encode_output_size;
+    aws_huffman_coder_state state = aws_huffman_decode(&decoder, intermediate_buffer, &processed, output_string, &output_size);
 
     ASSERT_UINT_EQUALS(AWS_HUFFMAN_EOS_REACHED, state);
     ASSERT_UINT_EQUALS(all_codes_len, output_size);
