@@ -41,7 +41,7 @@
  * Structure containing all relevant information about a code point
  */
 struct huffman_test_code_point {
-    uint16_t symbol;
+    uint8_t symbol;
     struct aws_huffman_code code;
 };
 

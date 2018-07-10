@@ -26,11 +26,11 @@ struct huffman_code {
 };
 
 struct huffman_code_point {
-    uint16_t symbol;
+    uint8_t symbol;
     struct huffman_code code;
 };
 
-enum { num_code_points = 257 };
+enum { num_code_points = 256 };
 static struct huffman_code_point code_points[num_code_points];
 
 static size_t skip_whitespace(const char *str) {
@@ -85,7 +85,7 @@ int read_code_points(const char *input_path) {
                         ++current_char;
 
                         /* Parse symbol */
-                        uint16_t symbol = (uint16_t)atoi(current_char);
+                        uint8_t symbol = (uint8_t)atoi(current_char);
                         struct huffman_code_point *code_point = &code_points[symbol];
 
                         assert(!code_point->symbol && "Symbol already found!");
@@ -321,14 +321,13 @@ int main(int argc, char *argv[]) {
     fprintf(file,
 "};\n"
 "\n"
-"static struct aws_huffman_code encode_symbol(uint16_t symbol, void *userdata) {\n"
+"static struct aws_huffman_code encode_symbol(uint8_t symbol, void *userdata) {\n"
 "    (void)userdata;\n\n"
-"    assert(symbol < %d);\n"
 "    return code_points[symbol];\n"
 "}\n"
 "\n"
-"static uint8_t decode_symbol(uint32_t code, uint16_t *symbol, void *userdata) {\n"
-"    (void)userdata;\n\n", num_code_points);
+"static uint8_t decode_symbol(uint32_t code, uint8_t *symbol, void *userdata) {\n"
+"    (void)userdata;\n\n");
 
      /* Traverse the tree */
     huffman_node_write_decode(&tree_root, file, 0);

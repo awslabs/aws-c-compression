@@ -44,7 +44,7 @@ struct aws_huffman_code {
  *
  * \returns The code representing the symbol
  */
-typedef struct aws_huffman_code (*aws_huffman_symbol_encoder)(uint16_t symbol, void *userdata);
+typedef struct aws_huffman_code (*aws_huffman_symbol_encoder)(uint8_t symbol, void *userdata);
 /**
  * Function used to decode a bit pattern into a character
  *
@@ -54,7 +54,7 @@ typedef struct aws_huffman_code (*aws_huffman_symbol_encoder)(uint16_t symbol, v
  *
  * \returns The number of bits read from code
  */
-typedef uint8_t (*aws_huffman_symbol_decoder)(uint32_t code, uint16_t *symbol, void *userdata);
+typedef uint8_t (*aws_huffman_symbol_decoder)(uint32_t code, uint8_t *symbol, void *userdata);
 
 /**
  * Structure used to define how characters are encoded and decoded

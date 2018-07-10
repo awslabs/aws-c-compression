@@ -204,7 +204,7 @@ aws_common_error aws_huffman_decode(struct aws_huffman_decoder *decoder, const u
 
         decode_fill_working_bits(&state);
 
-        uint16_t symbol;
+        uint8_t symbol;
         uint8_t bits_read = decoder->coder->decode(decoder->working_bits >> 32, &symbol, decoder->coder->userdata);
 
         if (bits_read == 0 || bits_read >= bits_left) {

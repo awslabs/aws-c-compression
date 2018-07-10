@@ -172,7 +172,7 @@ static int test_huffman_symbol_decoder(struct aws_allocator *allocator, void *us
 
         uint32_t bit_pattern = value->code.pattern << (32 - value->code.num_bits);
 
-        uint16_t out;
+        uint8_t out;
         size_t bits_read = coder->decode(bit_pattern, &out, NULL);
 
         ASSERT_UINT_EQUALS(value->symbol, out);
