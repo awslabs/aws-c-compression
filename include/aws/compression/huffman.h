@@ -18,6 +18,8 @@
 
 #include <aws/compression/exports.h>
 
+#include <aws/common/common.h>
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -85,16 +87,6 @@ struct aws_huffman_decoder {
     uint8_t num_bits;
 };
 
-/**
- * The state the decoder is currently in.
- */
-typedef enum aws_huffman_coder_state {
-    /** The stream has successfully decoded */
-    AWS_HUFFMAN_SUCCESS,
-    /** More output space is needed */
-    AWS_HUFFMAN_NEED_MORE_OUTPUT,
-} aws_huffman_coder_state;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -128,9 +120,9 @@ AWS_COMPRESSION_API void aws_huffman_decoder_reset(struct aws_huffman_decoder *d
  * \param[in]       output          The buffer to write encoded bytes to
  * \param[in,out]   output_size     In: The size of output Out: The number of bytes written to output
  *
- * \return The current state of the encoder \see aws_huffman_coder_state
+ * \return AWS_ERROR_SUCCESS if encoding is successful, otherwise the code for the error that occured
  */
-AWS_COMPRESSION_API aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t *length, uint8_t *output, size_t *output_size);
+AWS_COMPRESSION_API aws_common_error aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t *length, uint8_t *output, size_t *output_size);
 
 /**
  * Decodes a byte buffer into the provided character array.
@@ -141,9 +133,9 @@ AWS_COMPRESSION_API aws_huffman_coder_state aws_huffman_encode(struct aws_huffma
  * \param[in]       output          The buffer to write decoded characters to
  * \param[in,out]   output_size     In: The size of output Out: The number of bytes written to output
  *
- * \return The current state of the decoder \see aws_huffman_coder_state
+ * \return AWS_ERROR_SUCCESS if encoding is successful, otherwise the code for the error that occured
  */
-AWS_COMPRESSION_API aws_huffman_coder_state aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t *length, char *output, size_t *output_size);
+AWS_COMPRESSION_API aws_common_error aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t *length, char *output, size_t *output_size);
 
 #ifdef __cplusplus
 }
