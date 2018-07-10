@@ -36,10 +36,21 @@ struct aws_huffman_bit_pattern {
 
 /**
  * Function used to encode a single character to an aws_huffman_bit_pattern
+ *
+ * \param[in] symbol    The symbol to encode
+ * \param[in] userdata  Optional userdata (aws_huffman_character_coder.userdata)
+ *
+ * \returns The code representing the symbol
  */
 typedef struct aws_huffman_bit_pattern (*aws_huffman_character_encoder)(uint16_t symbol, void *userdata);
 /**
  * Function used to decode a bit pattern into a character
+ *
+ * \param[in]   bit_pattern The bits to attemt to decode a symbol from
+ * \param[out]  symbol      The symbol found. Do not write to if no valid symbol found
+ * \param[in]   userdata    Optional userdata (aws_huffman_character_coder.userdata)
+ *
+ * \returns The number of bits read from bit_pattern
  */
 typedef uint8_t (*aws_huffman_character_decoder)(uint32_t bit_pattern, uint16_t *symbol, void *userdata);
 
@@ -61,8 +72,8 @@ struct aws_huffman_character_coder {
  */
 struct aws_huffman_encoder {
     struct aws_huffman_character_coder *coder;
-    struct aws_huffman_bit_pattern working_bits;
-    unsigned eos_written : 1;
+    struct aws_huffman_bit_pattern overflow_bits;
+    uint8_t eos_written;
 };
 
 /**
@@ -83,7 +94,7 @@ typedef enum aws_huffman_coder_state {
     AWS_HUFFMAN_EOS_REACHED,
     /** More input data is needed */
     AWS_HUFFMAN_NEED_MORE_DATA,
-    /** More input data is needed */
+    /** More output space is needed */
     AWS_HUFFMAN_NEED_MORE_OUTPUT,
     /** An error occured while decoding */
     AWS_HUFFMAN_ERROR

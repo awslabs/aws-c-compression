@@ -23,10 +23,10 @@
 #endif /* AWS_COMPRESSION_EXPORTS */
 #else
 #define AWS_COMPRESSION_API
-#endif // USE_IMPORT_EXPORT
+#endif /* USE_IMPORT_EXPORT */
 
-#else // defined (USE_WINDOWS_DLL_SEMANTICS) || defined (WIN32)
+#else /* defined (USE_WINDOWS_DLL_SEMANTICS) || defined (WIN32) */
 #define AWS_COMPRESSION_API
-#endif // defined (USE_WINDOWS_DLL_SEMANTICS) || defined (WIN32)
+#endif /* defined (USE_WINDOWS_DLL_SEMANTICS) || defined (WIN32) */
 
 #endif /*AWS_COMPRESSION_EXPORTS_H */

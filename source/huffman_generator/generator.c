@@ -112,7 +112,7 @@ int read_code_points(const char *input_path) {
 
     fclose(file);
 
-    return 1;
+    return 0;
 }
 
 void bit_pattern_write(struct bit_pattern *pattern, FILE* file) {
@@ -321,7 +321,7 @@ int main(int argc, char *argv[]) {
     fprintf(file,
 "};\n"
 "\n"
-"struct aws_huffman_bit_pattern encode_character(uint16_t symbol, void *userdata) {\n"
+"static struct aws_huffman_bit_pattern encode_character(uint16_t symbol, void *userdata) {\n"
 "    (void)userdata;\n\n"
 "    assert(symbol < %d);\n"
 "    return code_points[symbol];\n"

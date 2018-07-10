@@ -148,8 +148,6 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
             current_input += processed;
 
             ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, bytes_written, output_buffer, bytes_written);
-
-            ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, bytes_written, output_buffer, bytes_written);
             ASSERT_TRUE(bytes_to_write >= 0);
             ASSERT_UINT_EQUALS(bytes_to_write == 0 ? AWS_HUFFMAN_EOS_REACHED : AWS_HUFFMAN_NEED_MORE_OUTPUT, state);
         }

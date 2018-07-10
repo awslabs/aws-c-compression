@@ -279,7 +279,7 @@ static struct aws_huffman_bit_pattern code_points[] = {
     { .pattern = 0x3ff, .num_bits = 10 }, /* ' ' 256 */
 };
 
-struct aws_huffman_bit_pattern encode_character(uint16_t symbol, void *userdata) {
+static struct aws_huffman_bit_pattern encode_character(uint16_t symbol, void *userdata) {
     (void)userdata;
 
     assert(symbol < 257);
