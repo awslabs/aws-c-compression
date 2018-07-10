@@ -149,7 +149,6 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
             current_output += output_size;
 
             ASSERT_BIN_ARRAYS_EQUALS(encoded_codes, bytes_written, output_buffer, bytes_written);
-            ASSERT_TRUE(bytes_to_write >= 0);
             ASSERT_UINT_EQUALS(bytes_to_write == 0 ? AWS_ERROR_SUCCESS : AWS_ERROR_SHORT_BUFFER, result);
         }
 

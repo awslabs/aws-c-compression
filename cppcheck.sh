@@ -16,5 +16,6 @@ $INCLUDE_PATHS                                              \
 -USELF_TEST  -UCLOCK_MONOTONIC_RAW                          \
                                                             \
 --suppress=missingIncludeSystem                             \
+--suppress=unusedFunction                                   \
                                                             \
 -q .
