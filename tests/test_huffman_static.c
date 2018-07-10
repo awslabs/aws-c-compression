@@ -19,7 +19,7 @@
 
 #include <assert.h>
 
-static struct aws_huffman_bit_pattern code_points[] = {
+static struct aws_huffman_code code_points[] = {
     { .pattern = 0x32e, .num_bits = 10 }, /* ' ' 0 */
     { .pattern = 0x32f, .num_bits = 10 }, /* ' ' 1 */
     { .pattern = 0x330, .num_bits = 10 }, /* ' ' 2 */
@@ -279,45 +279,45 @@ static struct aws_huffman_bit_pattern code_points[] = {
     { .pattern = 0x3ff, .num_bits = 10 }, /* ' ' 256 */
 };
 
-static struct aws_huffman_bit_pattern encode_character(uint16_t symbol, void *userdata) {
+static struct aws_huffman_code encode_symbol(uint16_t symbol, void *userdata) {
     (void)userdata;
 
     assert(symbol < 257);
     return code_points[symbol];
 }
 
-static uint8_t decode_character(uint32_t bit_pattern, uint16_t *symbol, void *userdata) {
+static uint8_t decode_symbol(uint32_t code, uint16_t *symbol, void *userdata) {
     (void)userdata;
 
-    if (bit_pattern & 0x80000000) {
+    if (code & 0x80000000) {
         goto node_1;
     } else {
         goto node_0;
     }
 
 node_0:
-    if (bit_pattern & 0x40000000) {
+    if (code & 0x40000000) {
         goto node_01;
     } else {
         goto node_00;
     }
 
 node_00:
-    if (bit_pattern & 0x20000000) {
+    if (code & 0x20000000) {
         goto node_001;
     } else {
         return 0;
     }
 
 node_001:
-    if (bit_pattern & 0x10000000) {
+    if (code & 0x10000000) {
         goto node_0011;
     } else {
         goto node_0010;
     }
 
 node_0010:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         *symbol = 97;
         return 5;
     } else {
@@ -326,7 +326,7 @@ node_0010:
     }
 
 node_0011:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         *symbol = 105;
         return 5;
     } else {
@@ -335,21 +335,21 @@ node_0011:
     }
 
 node_01:
-    if (bit_pattern & 0x20000000) {
+    if (code & 0x20000000) {
         goto node_011;
     } else {
         goto node_010;
     }
 
 node_010:
-    if (bit_pattern & 0x10000000) {
+    if (code & 0x10000000) {
         goto node_0101;
     } else {
         goto node_0100;
     }
 
 node_0100:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         *symbol = 111;
         return 5;
     } else {
@@ -358,7 +358,7 @@ node_0100:
     }
 
 node_0101:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         *symbol = 115;
         return 5;
     } else {
@@ -367,14 +367,14 @@ node_0101:
     }
 
 node_011:
-    if (bit_pattern & 0x10000000) {
+    if (code & 0x10000000) {
         return 0;
     } else {
         goto node_0110;
     }
 
 node_0110:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         *symbol = 117;
         return 5;
     } else {
@@ -383,35 +383,35 @@ node_0110:
     }
 
 node_1:
-    if (bit_pattern & 0x40000000) {
+    if (code & 0x40000000) {
         goto node_11;
     } else {
         goto node_10;
     }
 
 node_10:
-    if (bit_pattern & 0x20000000) {
+    if (code & 0x20000000) {
         goto node_101;
     } else {
         goto node_100;
     }
 
 node_100:
-    if (bit_pattern & 0x10000000) {
+    if (code & 0x10000000) {
         goto node_1001;
     } else {
         goto node_1000;
     }
 
 node_1000:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         goto node_10001;
     } else {
         goto node_10000;
     }
 
 node_10000:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         *symbol = 100;
         return 6;
     } else {
@@ -420,7 +420,7 @@ node_10000:
     }
 
 node_10001:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         *symbol = 104;
         return 6;
     } else {
@@ -429,14 +429,14 @@ node_10001:
     }
 
 node_1001:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         goto node_10011;
     } else {
         goto node_10010;
     }
 
 node_10010:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         *symbol = 108;
         return 6;
     } else {
@@ -445,7 +445,7 @@ node_10010:
     }
 
 node_10011:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         *symbol = 119;
         return 6;
     } else {
@@ -454,21 +454,21 @@ node_10011:
     }
 
 node_101:
-    if (bit_pattern & 0x10000000) {
+    if (code & 0x10000000) {
         goto node_1011;
     } else {
         goto node_1010;
     }
 
 node_1010:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         goto node_10101;
     } else {
         goto node_10100;
     }
 
 node_10100:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         return 0;
     } else {
         *symbol = 121;
@@ -476,14 +476,14 @@ node_10100:
     }
 
 node_10101:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_101011;
     } else {
         return 0;
     }
 
 node_101011:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         *symbol = 46;
         return 7;
     } else {
@@ -492,21 +492,21 @@ node_101011:
     }
 
 node_1011:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         goto node_10111;
     } else {
         goto node_10110;
     }
 
 node_10110:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_101101;
     } else {
         goto node_101100;
     }
 
 node_101100:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         *symbol = 103;
         return 7;
     } else {
@@ -515,7 +515,7 @@ node_101100:
     }
 
 node_101101:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         return 0;
     } else {
         *symbol = 112;
@@ -523,21 +523,21 @@ node_101101:
     }
 
 node_10111:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_101111;
     } else {
         goto node_101110;
     }
 
 node_101110:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1011101;
     } else {
         goto node_1011100;
     }
 
 node_1011100:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         *symbol = 44;
         return 8;
     } else {
@@ -546,7 +546,7 @@ node_1011100:
     }
 
 node_1011101:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         *symbol = 66;
         return 8;
     } else {
@@ -555,14 +555,14 @@ node_1011101:
     }
 
 node_101111:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1011111;
     } else {
         goto node_1011110;
     }
 
 node_1011110:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         *symbol = 84;
         return 8;
     } else {
@@ -571,7 +571,7 @@ node_1011110:
     }
 
 node_1011111:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         *symbol = 106;
         return 8;
     } else {
@@ -580,42 +580,42 @@ node_1011111:
     }
 
 node_11:
-    if (bit_pattern & 0x20000000) {
+    if (code & 0x20000000) {
         goto node_111;
     } else {
         goto node_110;
     }
 
 node_110:
-    if (bit_pattern & 0x10000000) {
+    if (code & 0x10000000) {
         goto node_1101;
     } else {
         goto node_1100;
     }
 
 node_1100:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         goto node_11001;
     } else {
         goto node_11000;
     }
 
 node_11000:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_110001;
     } else {
         goto node_110000;
     }
 
 node_110000:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         return 0;
     } else {
         goto node_1100000;
     }
 
 node_1100000:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         *symbol = 120;
         return 8;
     } else {
@@ -624,21 +624,21 @@ node_1100000:
     }
 
 node_110001:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1100011;
     } else {
         goto node_1100010;
     }
 
 node_1100010:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11000101;
     } else {
         goto node_11000100;
     }
 
 node_11000100:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         *symbol = 67;
         return 9;
     } else {
@@ -647,7 +647,7 @@ node_11000100:
     }
 
 node_11000101:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         *symbol = 69;
         return 9;
     } else {
@@ -656,14 +656,14 @@ node_11000101:
     }
 
 node_1100011:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11000111;
     } else {
         goto node_11000110;
     }
 
 node_11000110:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         *symbol = 71;
         return 9;
     } else {
@@ -672,7 +672,7 @@ node_11000110:
     }
 
 node_11000111:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         *symbol = 76;
         return 9;
     } else {
@@ -681,28 +681,28 @@ node_11000111:
     }
 
 node_11001:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_110011;
     } else {
         goto node_110010;
     }
 
 node_110010:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1100101;
     } else {
         goto node_1100100;
     }
 
 node_1100100:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11001001;
     } else {
         goto node_11001000;
     }
 
 node_11001000:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         *symbol = 80;
         return 9;
     } else {
@@ -711,7 +711,7 @@ node_11001000:
     }
 
 node_11001001:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         *symbol = 89;
         return 9;
     } else {
@@ -720,14 +720,14 @@ node_11001001:
     }
 
 node_1100101:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11001011;
     } else {
         goto node_11001010;
     }
 
 node_11001010:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         return 0;
     } else {
         *symbol = 113;
@@ -735,14 +735,14 @@ node_11001010:
     }
 
 node_11001011:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110010111;
     } else {
         return 0;
     }
 
 node_110010111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 1;
         return 10;
     } else {
@@ -751,28 +751,28 @@ node_110010111:
     }
 
 node_110011:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1100111;
     } else {
         goto node_1100110;
     }
 
 node_1100110:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11001101;
     } else {
         goto node_11001100;
     }
 
 node_11001100:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110011001;
     } else {
         goto node_110011000;
     }
 
 node_110011000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 3;
         return 10;
     } else {
@@ -781,7 +781,7 @@ node_110011000:
     }
 
 node_110011001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 5;
         return 10;
     } else {
@@ -790,14 +790,14 @@ node_110011001:
     }
 
 node_11001101:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110011011;
     } else {
         goto node_110011010;
     }
 
 node_110011010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 7;
         return 10;
     } else {
@@ -806,7 +806,7 @@ node_110011010:
     }
 
 node_110011011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 9;
         return 10;
     } else {
@@ -815,21 +815,21 @@ node_110011011:
     }
 
 node_1100111:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11001111;
     } else {
         goto node_11001110;
     }
 
 node_11001110:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110011101;
     } else {
         goto node_110011100;
     }
 
 node_110011100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 12;
         return 10;
     } else {
@@ -838,7 +838,7 @@ node_110011100:
     }
 
 node_110011101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 14;
         return 10;
     } else {
@@ -847,14 +847,14 @@ node_110011101:
     }
 
 node_11001111:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110011111;
     } else {
         goto node_110011110;
     }
 
 node_110011110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 16;
         return 10;
     } else {
@@ -863,7 +863,7 @@ node_110011110:
     }
 
 node_110011111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 18;
         return 10;
     } else {
@@ -872,42 +872,42 @@ node_110011111:
     }
 
 node_1101:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         goto node_11011;
     } else {
         goto node_11010;
     }
 
 node_11010:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_110101;
     } else {
         goto node_110100;
     }
 
 node_110100:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1101001;
     } else {
         goto node_1101000;
     }
 
 node_1101000:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11010001;
     } else {
         goto node_11010000;
     }
 
 node_11010000:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110100001;
     } else {
         goto node_110100000;
     }
 
 node_110100000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 20;
         return 10;
     } else {
@@ -916,7 +916,7 @@ node_110100000:
     }
 
 node_110100001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 22;
         return 10;
     } else {
@@ -925,14 +925,14 @@ node_110100001:
     }
 
 node_11010001:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110100011;
     } else {
         goto node_110100010;
     }
 
 node_110100010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 24;
         return 10;
     } else {
@@ -941,7 +941,7 @@ node_110100010:
     }
 
 node_110100011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 26;
         return 10;
     } else {
@@ -950,21 +950,21 @@ node_110100011:
     }
 
 node_1101001:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11010011;
     } else {
         goto node_11010010;
     }
 
 node_11010010:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110100101;
     } else {
         goto node_110100100;
     }
 
 node_110100100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 28;
         return 10;
     } else {
@@ -973,7 +973,7 @@ node_110100100:
     }
 
 node_110100101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 30;
         return 10;
     } else {
@@ -982,14 +982,14 @@ node_110100101:
     }
 
 node_11010011:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110100111;
     } else {
         goto node_110100110;
     }
 
 node_110100110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 33;
         return 10;
     } else {
@@ -998,7 +998,7 @@ node_110100110:
     }
 
 node_110100111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 35;
         return 10;
     } else {
@@ -1007,28 +1007,28 @@ node_110100111:
     }
 
 node_110101:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1101011;
     } else {
         goto node_1101010;
     }
 
 node_1101010:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11010101;
     } else {
         goto node_11010100;
     }
 
 node_11010100:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110101001;
     } else {
         goto node_110101000;
     }
 
 node_110101000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 37;
         return 10;
     } else {
@@ -1037,7 +1037,7 @@ node_110101000:
     }
 
 node_110101001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 40;
         return 10;
     } else {
@@ -1046,14 +1046,14 @@ node_110101001:
     }
 
 node_11010101:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110101011;
     } else {
         goto node_110101010;
     }
 
 node_110101010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 42;
         return 10;
     } else {
@@ -1062,7 +1062,7 @@ node_110101010:
     }
 
 node_110101011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 47;
         return 10;
     } else {
@@ -1071,21 +1071,21 @@ node_110101011:
     }
 
 node_1101011:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11010111;
     } else {
         goto node_11010110;
     }
 
 node_11010110:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110101101;
     } else {
         goto node_110101100;
     }
 
 node_110101100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 49;
         return 10;
     } else {
@@ -1094,7 +1094,7 @@ node_110101100:
     }
 
 node_110101101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 51;
         return 10;
     } else {
@@ -1103,14 +1103,14 @@ node_110101101:
     }
 
 node_11010111:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110101111;
     } else {
         goto node_110101110;
     }
 
 node_110101110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 53;
         return 10;
     } else {
@@ -1119,7 +1119,7 @@ node_110101110:
     }
 
 node_110101111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 55;
         return 10;
     } else {
@@ -1128,35 +1128,35 @@ node_110101111:
     }
 
 node_11011:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_110111;
     } else {
         goto node_110110;
     }
 
 node_110110:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1101101;
     } else {
         goto node_1101100;
     }
 
 node_1101100:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11011001;
     } else {
         goto node_11011000;
     }
 
 node_11011000:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110110001;
     } else {
         goto node_110110000;
     }
 
 node_110110000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 57;
         return 10;
     } else {
@@ -1165,7 +1165,7 @@ node_110110000:
     }
 
 node_110110001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 59;
         return 10;
     } else {
@@ -1174,14 +1174,14 @@ node_110110001:
     }
 
 node_11011001:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110110011;
     } else {
         goto node_110110010;
     }
 
 node_110110010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 61;
         return 10;
     } else {
@@ -1190,7 +1190,7 @@ node_110110010:
     }
 
 node_110110011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 64;
         return 10;
     } else {
@@ -1199,21 +1199,21 @@ node_110110011:
     }
 
 node_1101101:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11011011;
     } else {
         goto node_11011010;
     }
 
 node_11011010:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110110101;
     } else {
         goto node_110110100;
     }
 
 node_110110100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 74;
         return 10;
     } else {
@@ -1222,7 +1222,7 @@ node_110110100:
     }
 
 node_110110101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 78;
         return 10;
     } else {
@@ -1231,14 +1231,14 @@ node_110110101:
     }
 
 node_11011011:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110110111;
     } else {
         goto node_110110110;
     }
 
 node_110110110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 81;
         return 10;
     } else {
@@ -1247,7 +1247,7 @@ node_110110110:
     }
 
 node_110110111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 83;
         return 10;
     } else {
@@ -1256,28 +1256,28 @@ node_110110111:
     }
 
 node_110111:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1101111;
     } else {
         goto node_1101110;
     }
 
 node_1101110:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11011101;
     } else {
         goto node_11011100;
     }
 
 node_11011100:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110111001;
     } else {
         goto node_110111000;
     }
 
 node_110111000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 88;
         return 10;
     } else {
@@ -1286,7 +1286,7 @@ node_110111000:
     }
 
 node_110111001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 91;
         return 10;
     } else {
@@ -1295,14 +1295,14 @@ node_110111001:
     }
 
 node_11011101:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110111011;
     } else {
         goto node_110111010;
     }
 
 node_110111010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 93;
         return 10;
     } else {
@@ -1311,7 +1311,7 @@ node_110111010:
     }
 
 node_110111011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 95;
         return 10;
     } else {
@@ -1320,21 +1320,21 @@ node_110111011:
     }
 
 node_1101111:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11011111;
     } else {
         goto node_11011110;
     }
 
 node_11011110:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110111101;
     } else {
         goto node_110111100;
     }
 
 node_110111100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 122;
         return 10;
     } else {
@@ -1343,7 +1343,7 @@ node_110111100:
     }
 
 node_110111101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 124;
         return 10;
     } else {
@@ -1352,14 +1352,14 @@ node_110111101:
     }
 
 node_11011111:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_110111111;
     } else {
         goto node_110111110;
     }
 
 node_110111110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 126;
         return 10;
     } else {
@@ -1368,7 +1368,7 @@ node_110111110:
     }
 
 node_110111111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 128;
         return 10;
     } else {
@@ -1377,49 +1377,49 @@ node_110111111:
     }
 
 node_111:
-    if (bit_pattern & 0x10000000) {
+    if (code & 0x10000000) {
         goto node_1111;
     } else {
         goto node_1110;
     }
 
 node_1110:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         goto node_11101;
     } else {
         goto node_11100;
     }
 
 node_11100:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_111001;
     } else {
         goto node_111000;
     }
 
 node_111000:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1110001;
     } else {
         goto node_1110000;
     }
 
 node_1110000:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11100001;
     } else {
         goto node_11100000;
     }
 
 node_11100000:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111000001;
     } else {
         goto node_111000000;
     }
 
 node_111000000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 130;
         return 10;
     } else {
@@ -1428,7 +1428,7 @@ node_111000000:
     }
 
 node_111000001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 132;
         return 10;
     } else {
@@ -1437,14 +1437,14 @@ node_111000001:
     }
 
 node_11100001:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111000011;
     } else {
         goto node_111000010;
     }
 
 node_111000010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 134;
         return 10;
     } else {
@@ -1453,7 +1453,7 @@ node_111000010:
     }
 
 node_111000011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 136;
         return 10;
     } else {
@@ -1462,21 +1462,21 @@ node_111000011:
     }
 
 node_1110001:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11100011;
     } else {
         goto node_11100010;
     }
 
 node_11100010:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111000101;
     } else {
         goto node_111000100;
     }
 
 node_111000100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 138;
         return 10;
     } else {
@@ -1485,7 +1485,7 @@ node_111000100:
     }
 
 node_111000101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 140;
         return 10;
     } else {
@@ -1494,14 +1494,14 @@ node_111000101:
     }
 
 node_11100011:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111000111;
     } else {
         goto node_111000110;
     }
 
 node_111000110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 142;
         return 10;
     } else {
@@ -1510,7 +1510,7 @@ node_111000110:
     }
 
 node_111000111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 144;
         return 10;
     } else {
@@ -1519,28 +1519,28 @@ node_111000111:
     }
 
 node_111001:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1110011;
     } else {
         goto node_1110010;
     }
 
 node_1110010:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11100101;
     } else {
         goto node_11100100;
     }
 
 node_11100100:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111001001;
     } else {
         goto node_111001000;
     }
 
 node_111001000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 146;
         return 10;
     } else {
@@ -1549,7 +1549,7 @@ node_111001000:
     }
 
 node_111001001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 148;
         return 10;
     } else {
@@ -1558,14 +1558,14 @@ node_111001001:
     }
 
 node_11100101:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111001011;
     } else {
         goto node_111001010;
     }
 
 node_111001010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 150;
         return 10;
     } else {
@@ -1574,7 +1574,7 @@ node_111001010:
     }
 
 node_111001011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 152;
         return 10;
     } else {
@@ -1583,21 +1583,21 @@ node_111001011:
     }
 
 node_1110011:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11100111;
     } else {
         goto node_11100110;
     }
 
 node_11100110:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111001101;
     } else {
         goto node_111001100;
     }
 
 node_111001100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 154;
         return 10;
     } else {
@@ -1606,7 +1606,7 @@ node_111001100:
     }
 
 node_111001101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 156;
         return 10;
     } else {
@@ -1615,14 +1615,14 @@ node_111001101:
     }
 
 node_11100111:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111001111;
     } else {
         goto node_111001110;
     }
 
 node_111001110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 158;
         return 10;
     } else {
@@ -1631,7 +1631,7 @@ node_111001110:
     }
 
 node_111001111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 160;
         return 10;
     } else {
@@ -1640,35 +1640,35 @@ node_111001111:
     }
 
 node_11101:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_111011;
     } else {
         goto node_111010;
     }
 
 node_111010:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1110101;
     } else {
         goto node_1110100;
     }
 
 node_1110100:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11101001;
     } else {
         goto node_11101000;
     }
 
 node_11101000:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111010001;
     } else {
         goto node_111010000;
     }
 
 node_111010000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 162;
         return 10;
     } else {
@@ -1677,7 +1677,7 @@ node_111010000:
     }
 
 node_111010001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 164;
         return 10;
     } else {
@@ -1686,14 +1686,14 @@ node_111010001:
     }
 
 node_11101001:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111010011;
     } else {
         goto node_111010010;
     }
 
 node_111010010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 166;
         return 10;
     } else {
@@ -1702,7 +1702,7 @@ node_111010010:
     }
 
 node_111010011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 168;
         return 10;
     } else {
@@ -1711,21 +1711,21 @@ node_111010011:
     }
 
 node_1110101:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11101011;
     } else {
         goto node_11101010;
     }
 
 node_11101010:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111010101;
     } else {
         goto node_111010100;
     }
 
 node_111010100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 170;
         return 10;
     } else {
@@ -1734,7 +1734,7 @@ node_111010100:
     }
 
 node_111010101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 172;
         return 10;
     } else {
@@ -1743,14 +1743,14 @@ node_111010101:
     }
 
 node_11101011:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111010111;
     } else {
         goto node_111010110;
     }
 
 node_111010110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 174;
         return 10;
     } else {
@@ -1759,7 +1759,7 @@ node_111010110:
     }
 
 node_111010111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 176;
         return 10;
     } else {
@@ -1768,28 +1768,28 @@ node_111010111:
     }
 
 node_111011:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1110111;
     } else {
         goto node_1110110;
     }
 
 node_1110110:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11101101;
     } else {
         goto node_11101100;
     }
 
 node_11101100:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111011001;
     } else {
         goto node_111011000;
     }
 
 node_111011000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 178;
         return 10;
     } else {
@@ -1798,7 +1798,7 @@ node_111011000:
     }
 
 node_111011001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 180;
         return 10;
     } else {
@@ -1807,14 +1807,14 @@ node_111011001:
     }
 
 node_11101101:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111011011;
     } else {
         goto node_111011010;
     }
 
 node_111011010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 182;
         return 10;
     } else {
@@ -1823,7 +1823,7 @@ node_111011010:
     }
 
 node_111011011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 184;
         return 10;
     } else {
@@ -1832,21 +1832,21 @@ node_111011011:
     }
 
 node_1110111:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11101111;
     } else {
         goto node_11101110;
     }
 
 node_11101110:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111011101;
     } else {
         goto node_111011100;
     }
 
 node_111011100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 186;
         return 10;
     } else {
@@ -1855,7 +1855,7 @@ node_111011100:
     }
 
 node_111011101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 188;
         return 10;
     } else {
@@ -1864,14 +1864,14 @@ node_111011101:
     }
 
 node_11101111:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111011111;
     } else {
         goto node_111011110;
     }
 
 node_111011110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 190;
         return 10;
     } else {
@@ -1880,7 +1880,7 @@ node_111011110:
     }
 
 node_111011111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 192;
         return 10;
     } else {
@@ -1889,42 +1889,42 @@ node_111011111:
     }
 
 node_1111:
-    if (bit_pattern & 0x8000000) {
+    if (code & 0x8000000) {
         goto node_11111;
     } else {
         goto node_11110;
     }
 
 node_11110:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_111101;
     } else {
         goto node_111100;
     }
 
 node_111100:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1111001;
     } else {
         goto node_1111000;
     }
 
 node_1111000:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11110001;
     } else {
         goto node_11110000;
     }
 
 node_11110000:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111100001;
     } else {
         goto node_111100000;
     }
 
 node_111100000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 194;
         return 10;
     } else {
@@ -1933,7 +1933,7 @@ node_111100000:
     }
 
 node_111100001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 196;
         return 10;
     } else {
@@ -1942,14 +1942,14 @@ node_111100001:
     }
 
 node_11110001:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111100011;
     } else {
         goto node_111100010;
     }
 
 node_111100010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 198;
         return 10;
     } else {
@@ -1958,7 +1958,7 @@ node_111100010:
     }
 
 node_111100011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 200;
         return 10;
     } else {
@@ -1967,21 +1967,21 @@ node_111100011:
     }
 
 node_1111001:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11110011;
     } else {
         goto node_11110010;
     }
 
 node_11110010:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111100101;
     } else {
         goto node_111100100;
     }
 
 node_111100100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 202;
         return 10;
     } else {
@@ -1990,7 +1990,7 @@ node_111100100:
     }
 
 node_111100101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 204;
         return 10;
     } else {
@@ -1999,14 +1999,14 @@ node_111100101:
     }
 
 node_11110011:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111100111;
     } else {
         goto node_111100110;
     }
 
 node_111100110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 206;
         return 10;
     } else {
@@ -2015,7 +2015,7 @@ node_111100110:
     }
 
 node_111100111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 208;
         return 10;
     } else {
@@ -2024,28 +2024,28 @@ node_111100111:
     }
 
 node_111101:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1111011;
     } else {
         goto node_1111010;
     }
 
 node_1111010:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11110101;
     } else {
         goto node_11110100;
     }
 
 node_11110100:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111101001;
     } else {
         goto node_111101000;
     }
 
 node_111101000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 210;
         return 10;
     } else {
@@ -2054,7 +2054,7 @@ node_111101000:
     }
 
 node_111101001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 212;
         return 10;
     } else {
@@ -2063,14 +2063,14 @@ node_111101001:
     }
 
 node_11110101:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111101011;
     } else {
         goto node_111101010;
     }
 
 node_111101010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 214;
         return 10;
     } else {
@@ -2079,7 +2079,7 @@ node_111101010:
     }
 
 node_111101011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 216;
         return 10;
     } else {
@@ -2088,21 +2088,21 @@ node_111101011:
     }
 
 node_1111011:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11110111;
     } else {
         goto node_11110110;
     }
 
 node_11110110:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111101101;
     } else {
         goto node_111101100;
     }
 
 node_111101100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 218;
         return 10;
     } else {
@@ -2111,7 +2111,7 @@ node_111101100:
     }
 
 node_111101101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 220;
         return 10;
     } else {
@@ -2120,14 +2120,14 @@ node_111101101:
     }
 
 node_11110111:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111101111;
     } else {
         goto node_111101110;
     }
 
 node_111101110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 222;
         return 10;
     } else {
@@ -2136,7 +2136,7 @@ node_111101110:
     }
 
 node_111101111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 224;
         return 10;
     } else {
@@ -2145,35 +2145,35 @@ node_111101111:
     }
 
 node_11111:
-    if (bit_pattern & 0x4000000) {
+    if (code & 0x4000000) {
         goto node_111111;
     } else {
         goto node_111110;
     }
 
 node_111110:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1111101;
     } else {
         goto node_1111100;
     }
 
 node_1111100:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11111001;
     } else {
         goto node_11111000;
     }
 
 node_11111000:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111110001;
     } else {
         goto node_111110000;
     }
 
 node_111110000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 226;
         return 10;
     } else {
@@ -2182,7 +2182,7 @@ node_111110000:
     }
 
 node_111110001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 228;
         return 10;
     } else {
@@ -2191,14 +2191,14 @@ node_111110001:
     }
 
 node_11111001:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111110011;
     } else {
         goto node_111110010;
     }
 
 node_111110010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 230;
         return 10;
     } else {
@@ -2207,7 +2207,7 @@ node_111110010:
     }
 
 node_111110011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 232;
         return 10;
     } else {
@@ -2216,21 +2216,21 @@ node_111110011:
     }
 
 node_1111101:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11111011;
     } else {
         goto node_11111010;
     }
 
 node_11111010:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111110101;
     } else {
         goto node_111110100;
     }
 
 node_111110100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 234;
         return 10;
     } else {
@@ -2239,7 +2239,7 @@ node_111110100:
     }
 
 node_111110101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 236;
         return 10;
     } else {
@@ -2248,14 +2248,14 @@ node_111110101:
     }
 
 node_11111011:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111110111;
     } else {
         goto node_111110110;
     }
 
 node_111110110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 238;
         return 10;
     } else {
@@ -2264,7 +2264,7 @@ node_111110110:
     }
 
 node_111110111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 240;
         return 10;
     } else {
@@ -2273,28 +2273,28 @@ node_111110111:
     }
 
 node_111111:
-    if (bit_pattern & 0x2000000) {
+    if (code & 0x2000000) {
         goto node_1111111;
     } else {
         goto node_1111110;
     }
 
 node_1111110:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11111101;
     } else {
         goto node_11111100;
     }
 
 node_11111100:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111111001;
     } else {
         goto node_111111000;
     }
 
 node_111111000:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 242;
         return 10;
     } else {
@@ -2303,7 +2303,7 @@ node_111111000:
     }
 
 node_111111001:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 244;
         return 10;
     } else {
@@ -2312,14 +2312,14 @@ node_111111001:
     }
 
 node_11111101:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111111011;
     } else {
         goto node_111111010;
     }
 
 node_111111010:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 246;
         return 10;
     } else {
@@ -2328,7 +2328,7 @@ node_111111010:
     }
 
 node_111111011:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 248;
         return 10;
     } else {
@@ -2337,21 +2337,21 @@ node_111111011:
     }
 
 node_1111111:
-    if (bit_pattern & 0x1000000) {
+    if (code & 0x1000000) {
         goto node_11111111;
     } else {
         goto node_11111110;
     }
 
 node_11111110:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111111101;
     } else {
         goto node_111111100;
     }
 
 node_111111100:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 250;
         return 10;
     } else {
@@ -2360,7 +2360,7 @@ node_111111100:
     }
 
 node_111111101:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 252;
         return 10;
     } else {
@@ -2369,14 +2369,14 @@ node_111111101:
     }
 
 node_11111111:
-    if (bit_pattern & 0x800000) {
+    if (code & 0x800000) {
         goto node_111111111;
     } else {
         goto node_111111110;
     }
 
 node_111111110:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 254;
         return 10;
     } else {
@@ -2385,7 +2385,7 @@ node_111111110:
     }
 
 node_111111111:
-    if (bit_pattern & 0x400000) {
+    if (code & 0x400000) {
         *symbol = 256;
         return 10;
     } else {
@@ -2395,11 +2395,11 @@ node_111111111:
 
 }
 
-struct aws_huffman_character_coder *test_get_coder() {
+struct aws_huffman_symbol_coder *test_get_coder() {
 
-    static struct aws_huffman_character_coder coder = {
-        .encode = encode_character,
-        .decode = decode_character,
+    static struct aws_huffman_symbol_coder coder = {
+        .encode = encode_symbol,
+        .decode = decode_symbol,
         .eos_symbol = 256,
         .userdata = NULL,
     };

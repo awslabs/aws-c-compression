@@ -25,12 +25,12 @@
 
 static int run_tests(int argc, char *argv[]) {
     AWS_RUN_TEST_CASES(
-        &huffman_character_encoder,
+        &huffman_symbol_encoder,
         &huffman_encoder,
         &huffman_encoder_all_code_points,
         &huffman_encoder_partial_output,
 
-        &huffman_character_decoder,
+        &huffman_symbol_decoder,
         &huffman_decoder,
         &huffman_decoder_all_code_points,
         &huffman_decoder_partial_input,

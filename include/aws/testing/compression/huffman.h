@@ -42,12 +42,12 @@
  */
 struct huffman_test_code_point {
     uint16_t symbol;
-    struct aws_huffman_bit_pattern pattern;
+    struct aws_huffman_code code;
 };
 
 /**
  * Macro to be used when including a table def file, populates an array of huffman_test_code_points
  */
-#define HUFFMAN_CODE(psymbol, pbit_string, pbit_pattern, pnum_bits) { .symbol = psymbol, .pattern = { .pattern = pbit_pattern, .num_bits = pnum_bits } },
+#define HUFFMAN_CODE(psymbol, pbit_string, pbit_pattern, pnum_bits) { .symbol = psymbol, .code = { .pattern = pbit_pattern, .num_bits = pnum_bits } },
 
 #endif /* AWS_COMPRESSION_TESTING_HUFFMAN_H */

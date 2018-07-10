@@ -24,7 +24,7 @@
 /**
  * Represents an encoded bit pattern
  */
-struct aws_huffman_bit_pattern {
+struct aws_huffman_code {
     /**
      * The value of the bit pattern
      * \note The pattern is stored in the least significant bits
@@ -35,33 +35,33 @@ struct aws_huffman_bit_pattern {
 };
 
 /**
- * Function used to encode a single character to an aws_huffman_bit_pattern
+ * Function used to encode a single character to an aws_huffman_code
  *
  * \param[in] symbol    The symbol to encode
- * \param[in] userdata  Optional userdata (aws_huffman_character_coder.userdata)
+ * \param[in] userdata  Optional userdata (aws_huffman_symbol_coder.userdata)
  *
  * \returns The code representing the symbol
  */
-typedef struct aws_huffman_bit_pattern (*aws_huffman_character_encoder)(uint16_t symbol, void *userdata);
+typedef struct aws_huffman_code (*aws_huffman_symbol_encoder)(uint16_t symbol, void *userdata);
 /**
  * Function used to decode a bit pattern into a character
  *
- * \param[in]   bit_pattern The bits to attemt to decode a symbol from
+ * \param[in]   code        The bits to attemt to decode a symbol from
  * \param[out]  symbol      The symbol found. Do not write to if no valid symbol found
- * \param[in]   userdata    Optional userdata (aws_huffman_character_coder.userdata)
+ * \param[in]   userdata    Optional userdata (aws_huffman_symbol_coder.userdata)
  *
- * \returns The number of bits read from bit_pattern
+ * \returns The number of bits read from code
  */
-typedef uint8_t (*aws_huffman_character_decoder)(uint32_t bit_pattern, uint16_t *symbol, void *userdata);
+typedef uint8_t (*aws_huffman_symbol_decoder)(uint32_t code, uint16_t *symbol, void *userdata);
 
 /**
  * Structure used to define how characters are encoded and decoded
  *
  * This struct may be provided by the code generator
  */
-struct aws_huffman_character_coder {
-    aws_huffman_character_encoder encode;
-    aws_huffman_character_decoder decode;
+struct aws_huffman_symbol_coder {
+    aws_huffman_symbol_encoder encode;
+    aws_huffman_symbol_decoder decode;
     uint16_t eos_symbol;
     void *userdata;
 };
@@ -71,8 +71,8 @@ struct aws_huffman_character_coder {
  * Allows for reading from or writing to incomplete buffers.
  */
 struct aws_huffman_encoder {
-    struct aws_huffman_character_coder *coder;
-    struct aws_huffman_bit_pattern overflow_bits;
+    struct aws_huffman_symbol_coder *coder;
+    struct aws_huffman_code overflow_bits;
     uint8_t eos_written;
 };
 
@@ -81,7 +81,7 @@ struct aws_huffman_encoder {
  * Allows for reading from or writing to incomplete buffers.
  */
 struct aws_huffman_decoder {
-    struct aws_huffman_character_coder *coder;
+    struct aws_huffman_symbol_coder *coder;
     uint64_t working_bits;
     uint8_t num_bits;
 };
@@ -107,12 +107,12 @@ extern "C" {
 /**
  * Initialize a encoder object with a character coder.
  */
-AWS_COMPRESSION_API void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_character_coder *coder);
+AWS_COMPRESSION_API void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_symbol_coder *coder);
 
 /**
  * Initialize a decoder object with a character coder.
  */
-AWS_COMPRESSION_API void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_character_coder *coder);
+AWS_COMPRESSION_API void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_symbol_coder *coder);
 
 /**
  * Encode a character buffer into the output buffer.

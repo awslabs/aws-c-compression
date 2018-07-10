@@ -20,7 +20,7 @@
 
 #include <assert.h>
 
-void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_character_coder *coder) {
+void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_symbol_coder *coder) {
     assert(encoder);
     assert(coder);
 
@@ -28,7 +28,7 @@ void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_hu
     encoder->coder = coder;
 }
 
-void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_character_coder *coder) {
+void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_symbol_coder *coder) {
     assert(decoder);
     assert(coder);
 
@@ -46,7 +46,7 @@ struct encoder_state {
 };
 
 /* Helper function to write a single bit_pattern to memory (or working_bits if out of buffer space) */
-static aws_huffman_coder_state encode_write_bit_pattern(struct encoder_state *state, struct aws_huffman_bit_pattern bit_pattern) {
+static aws_huffman_coder_state encode_write_bit_pattern(struct encoder_state *state, struct aws_huffman_code bit_pattern) {
 
     uint8_t bits_to_write = bit_pattern.num_bits;
     while (bits_to_write > 0) {
@@ -123,7 +123,7 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
     while (input_cursor.len) {
         uint8_t new_byte = 0;
         aws_byte_cursor_read_u8(&input_cursor, &new_byte);
-        struct aws_huffman_bit_pattern code_point = encoder->coder->encode(new_byte, encoder->coder->userdata);
+        struct aws_huffman_code code_point = encoder->coder->encode(new_byte, encoder->coder->userdata);
 
         CHECK_WRITE_BITS(code_point);
     }
@@ -132,7 +132,7 @@ aws_huffman_coder_state aws_huffman_encode(struct aws_huffman_encoder *encoder, 
 
     if (!state.encoder->eos_written) {
         /* If whole buffer processed, write EOS */
-        struct aws_huffman_bit_pattern eos_cp = encoder->coder->encode(
+        struct aws_huffman_code eos_cp = encoder->coder->encode(
             encoder->coder->eos_symbol, encoder->coder->userdata);
 
         /* Signal the EOS was already written to working_bits, don't try again
