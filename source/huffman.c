@@ -22,6 +22,8 @@
 
 #define BITSIZEOF(val) (sizeof(val) * 8)
 
+static uint8_t max_pattern_bits = BITSIZEOF(((struct aws_huffman_code *)0)->pattern);
+
 void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_symbol_coder *coder) {
     assert(encoder);
     assert(coder);
@@ -72,7 +74,7 @@ static aws_common_error encode_write_bit_pattern(struct encoder_state *state, st
         /* Write the appropiate number of bits to this byte
             Shift to the left to cut any unneeded bits
             Shift to the right to position the bits correctly */
-        state->working |= (bit_pattern.pattern << bits_to_cut) >> (32 - state->bit_pos);
+        state->working |= (bit_pattern.pattern << bits_to_cut) >> (max_pattern_bits - state->bit_pos);
 
         bits_to_write -= bits_for_current;
         state->bit_pos -= bits_for_current;
@@ -90,7 +92,7 @@ static aws_common_error encode_write_bit_pattern(struct encoder_state *state, st
                 bits_to_cut += bits_for_current;
 
                 state->encoder->overflow_bits.num_bits = bits_to_write;
-                state->encoder->overflow_bits.pattern = (bit_pattern.pattern << bits_to_cut) >> (32 - bits_to_write);
+                state->encoder->overflow_bits.pattern = (bit_pattern.pattern << bits_to_cut) >> (max_pattern_bits - bits_to_write);
 
                 return AWS_ERROR_SHORT_BUFFER;
             }
@@ -168,7 +170,7 @@ struct decoder_state {
 
 static void decode_fill_working_bits(struct decoder_state *state) {
     /* Read from bytes in the buffer until there are enough bytes to process */
-    while (state->decoder->num_bits < 32 && state->input_cursor.len) {
+    while (state->decoder->num_bits < max_pattern_bits && state->input_cursor.len) {
         /* Read the appropiate number of bits from this byte */
         uint8_t new_byte = 0;
         aws_byte_cursor_read_u8(&state->input_cursor, &new_byte);
@@ -205,7 +207,10 @@ aws_common_error aws_huffman_decode(struct aws_huffman_decoder *decoder, const u
         decode_fill_working_bits(&state);
 
         uint8_t symbol;
-        uint8_t bits_read = decoder->coder->decode(decoder->working_bits >> 32, &symbol, decoder->coder->userdata);
+        uint8_t bits_read = decoder->coder->decode(
+            decoder->working_bits >> (BITSIZEOF(decoder->working_bits) - max_pattern_bits),
+            &symbol,
+            decoder->coder->userdata);
 
         if (bits_read == 0 || bits_read >= bits_left) {
             /* Check if the buffer has been overrun.
