@@ -73,7 +73,6 @@ struct aws_huffman_symbol_coder {
 struct aws_huffman_encoder {
     struct aws_huffman_symbol_coder *coder;
     struct aws_huffman_code overflow_bits;
-    uint8_t eos_written;
 };
 
 /**
@@ -91,13 +90,9 @@ struct aws_huffman_decoder {
  */
 typedef enum aws_huffman_coder_state {
     /** The stream has successfully decoded */
-    AWS_HUFFMAN_EOS_REACHED,
-    /** More input data is needed */
-    AWS_HUFFMAN_NEED_MORE_DATA,
+    AWS_HUFFMAN_SUCCESS,
     /** More output space is needed */
     AWS_HUFFMAN_NEED_MORE_OUTPUT,
-    /** An error occured while decoding */
-    AWS_HUFFMAN_ERROR
 } aws_huffman_coder_state;
 
 #ifdef __cplusplus
@@ -110,9 +105,19 @@ extern "C" {
 AWS_COMPRESSION_API void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_symbol_coder *coder);
 
 /**
+ * Resets a decoder for use with a new binary stream
+ */
+AWS_COMPRESSION_API void aws_huffman_encoder_reset(struct aws_huffman_encoder *encoder);
+
+/**
  * Initialize a decoder object with a character coder.
  */
 AWS_COMPRESSION_API void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_symbol_coder *coder);
+
+/**
+ * Resets a decoder for use with a new binary stream
+ */
+AWS_COMPRESSION_API void aws_huffman_decoder_reset(struct aws_huffman_decoder *decoder);
 
 /**
  * Encode a character buffer into the output buffer.
