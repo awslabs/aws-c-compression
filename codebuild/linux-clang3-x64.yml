@@ -5,22 +5,16 @@ phases:
     commands:
       - sudo apt-get update -y
       - sudo apt-get update
-      - sudo apt-get install clang cmake3 cppcheck clang-tidy-3.9 -y
+      - sudo apt-get install clang-3.9 cmake3 cppcheck clang-tidy-3.9 -y
 
   pre_build:
     commands:
-      - export CC=clang
-      - export CXX=clang++
+      - export CC=clang-3.9
+      - export CXX=clang++-3.9
   build:
     commands:
       - echo Build started on `date`
-      - ./cppcheck.sh
-      - mkdir build
-      - cd build
-      - cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../
-      - make
-      - make test
-      - cd ..
+      - ./codebuild/common-trusty.sh
       - clang-tidy-3.9 -p=build **/*.c
   post_build:
     commands:
