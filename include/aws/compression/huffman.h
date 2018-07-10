@@ -64,7 +64,6 @@ typedef uint8_t (*aws_huffman_symbol_decoder)(uint32_t code, uint16_t *symbol, v
 struct aws_huffman_symbol_coder {
     aws_huffman_symbol_encoder encode;
     aws_huffman_symbol_decoder decode;
-    uint16_t eos_symbol;
     void *userdata;
 };
 
@@ -73,7 +72,11 @@ struct aws_huffman_symbol_coder {
  * Allows for reading from or writing to incomplete buffers.
  */
 struct aws_huffman_encoder {
+    /* Params */
     struct aws_huffman_symbol_coder *coder;
+    uint8_t eos_padding;
+
+    /* State */
     struct aws_huffman_code overflow_bits;
 };
 
@@ -82,7 +85,10 @@ struct aws_huffman_encoder {
  * Allows for reading from or writing to incomplete buffers.
  */
 struct aws_huffman_decoder {
+    /* Param */
     struct aws_huffman_symbol_coder *coder;
+
+    /* State */
     uint64_t working_bits;
     uint8_t num_bits;
 };

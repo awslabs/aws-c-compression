@@ -28,10 +28,15 @@ void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_hu
 
     AWS_ZERO_STRUCT(*encoder);
     encoder->coder = coder;
+    encoder->eos_padding = UINT8_MAX;
 }
 
 void aws_huffman_encoder_reset(struct aws_huffman_encoder *encoder) {
+    assert(encoder);
+
+    uint8_t eos_padding = encoder->eos_padding;
     aws_huffman_encoder_init(encoder, encoder->coder);
+    encoder->eos_padding = eos_padding;
 }
 
 void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_symbol_coder *coder) {
@@ -140,10 +145,9 @@ aws_common_error aws_huffman_encode(struct aws_huffman_encoder *encoder, const c
 
     /* The following code only runs when the buffer has written successfully */
 
-        /* If whole buffer processed, write EOS */
-        struct aws_huffman_code eos_cp = encoder->coder->encode(
-            encoder->coder->eos_symbol, encoder->coder->userdata);
-    /* Only write enough bits to fill the current byte */
+    /* If whole buffer processed, write EOS */
+    struct aws_huffman_code eos_cp;
+    eos_cp.pattern = encoder->eos_padding;
     eos_cp.num_bits = state.bit_pos;
     encode_write_bit_pattern(&state, eos_cp);
     assert(state.bit_pos == 8);

@@ -165,7 +165,7 @@ void huffman_node_write_decode_handle_value(struct huffman_node *node, FILE *fil
     if (!node) {
         /* Invalid node, return 0 */
         fprintf(file,
-"        return 0;\n");
+"        return 0; /* invalid node */\n");
     } else if (node->value) {
         /* Attempt to inline value return */
         fprintf(file,
@@ -342,11 +342,10 @@ int main(int argc, char *argv[]) {
 "    static struct aws_huffman_symbol_coder coder = {\n"
 "        .encode = encode_symbol,\n"
 "        .decode = decode_symbol,\n"
-"        .eos_symbol = %d,\n"
 "        .userdata = NULL,\n"
 "    };\n"
 "    return &coder;\n"
-"}\n", decoder_name, num_code_points - 1);
+"}\n", decoder_name);
 
     fclose(file);
 
