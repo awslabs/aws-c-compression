@@ -10,12 +10,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - mkdir build
-      - cd build
-      - cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE="Release" ../
-      - msbuild.exe aws-c-compression.vcxproj /p:Configuration=Release
-      - msbuild.exe tests/aws-c-compression-tests.vcxproj /p:Configuration=Release
-      - ctest -V
+      - .\codebuild\common-windows.bat "Visual Studio 14 2015 Win64"
   post_build:
     commands:
       - echo Build completed on `date`
