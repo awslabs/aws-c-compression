@@ -14,6 +14,7 @@
 */
 
 #include <aws/compression/huffman.h>
+#include <aws/compression/error.h>
 
 #include <aws/common/common.h>
 #include <aws/common/byte_buf.h>
@@ -64,6 +65,10 @@ struct encoder_state {
 
 /* Helper function to write a single bit_pattern to memory (or working_bits if out of buffer space) */
 static int encode_write_bit_pattern(struct encoder_state *state, struct aws_huffman_code bit_pattern) {
+
+    if (bit_pattern.num_bits == 0) {
+        return aws_raise_error(AWS_ERROR_COMPRESSION_UNKNOWN_SYMBOL);
+    }
 
     uint8_t bits_to_write = bit_pattern.num_bits;
     while (bits_to_write > 0) {
@@ -134,8 +139,10 @@ int aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encod
     struct aws_byte_cursor input_cursor = aws_byte_cursor_from_array(to_encode, *length);
 
     /* Write any bits leftover from previous invocation */
-    CHECK_WRITE_BITS(encoder->overflow_bits);
-    AWS_ZERO_STRUCT(encoder->overflow_bits);
+    if (encoder->overflow_bits.num_bits) {
+        CHECK_WRITE_BITS(encoder->overflow_bits);
+        AWS_ZERO_STRUCT(encoder->overflow_bits);
+    }
 
     while (input_cursor.len) {
         uint8_t new_byte = 0;
@@ -212,11 +219,22 @@ int aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_de
             &symbol,
             decoder->coder->userdata);
 
-        if (bits_read == 0 || bits_read >= bits_left) {
+        if (bits_read == 0) {
+            *length -= state.input_cursor.len;
+            *output_size -= output_cursor.len;
+
+            if (bits_left < max_pattern_bits) {
+                /* More input is needed to continue */
+                return AWS_OP_SUCCESS;
+            } else {
+                /* Unknown symbol found */
+                return aws_raise_error(AWS_ERROR_COMPRESSION_UNKNOWN_SYMBOL);
+            }
+        } else if (bits_read >= bits_left) {
             /* Check if the buffer has been overrun.
-               Note: because of the check in decode_fill_working_bits,
-               the buffer won't actually overrun, instead there will
-               be 0's in the bottom of working_bits. */
+            Note: because of the check in decode_fill_working_bits,
+            the buffer won't actually overrun, instead there will
+            be 0's in the bottom of working_bits. */
 
             *length -= state.input_cursor.len;
             *output_size -= output_cursor.len;
