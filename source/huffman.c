@@ -63,7 +63,7 @@ struct encoder_state {
 };
 
 /* Helper function to write a single bit_pattern to memory (or working_bits if out of buffer space) */
-static aws_common_error encode_write_bit_pattern(struct encoder_state *state, struct aws_huffman_code bit_pattern) {
+static int encode_write_bit_pattern(struct encoder_state *state, struct aws_huffman_code bit_pattern) {
 
     uint8_t bits_to_write = bit_pattern.num_bits;
     while (bits_to_write > 0) {
@@ -94,24 +94,24 @@ static aws_common_error encode_write_bit_pattern(struct encoder_state *state, st
                 state->encoder->overflow_bits.num_bits = bits_to_write;
                 state->encoder->overflow_bits.pattern = (bit_pattern.pattern << bits_to_cut) >> (max_pattern_bits - bits_to_write);
 
-                return AWS_ERROR_SHORT_BUFFER;
+                return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
             }
         }
     }
 
-    return AWS_ERROR_SUCCESS;
+    return AWS_OP_SUCCESS;
 }
 
 #define CHECK_WRITE_BITS(bit_pattern) do {                                              \
-        aws_common_error result = encode_write_bit_pattern(&state, bit_pattern); \
-        if (result != AWS_ERROR_SUCCESS) {                                            \
+        int result = encode_write_bit_pattern(&state, bit_pattern);                     \
+        if (result != AWS_OP_SUCCESS) {                                                 \
             *length -= input_cursor.len;                                                \
             *output_size -= state.output_cursor.len;                                    \
-            return result;                                                              \
+            return AWS_OP_ERR;                                                          \
         }                                                                               \
     } while (0)
 
-aws_common_error aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t *length, uint8_t *output, size_t *output_size) {
+int aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t *length, uint8_t *output, size_t *output_size) {
     assert(encoder);
     assert(encoder->coder);
     assert(to_encode);
@@ -120,7 +120,7 @@ aws_common_error aws_huffman_encode(struct aws_huffman_encoder *encoder, const c
     assert(output_size);
 
     if (*output_size == 0) {
-        return AWS_ERROR_SHORT_BUFFER;
+        return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
     }
 
     struct encoder_state state = {
@@ -156,7 +156,7 @@ aws_common_error aws_huffman_encode(struct aws_huffman_encoder *encoder, const c
 
     *length -= input_cursor.len;
     *output_size -= state.output_cursor.len;
-    return AWS_ERROR_SUCCESS;
+    return AWS_OP_SUCCESS;
 }
 
 #undef CHECK_WRITE_BITS
@@ -182,7 +182,7 @@ static void decode_fill_working_bits(struct decoder_state *state) {
     }
 }
 
-aws_common_error aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t *length, char *output, size_t *output_size) {
+int aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t *length, char *output, size_t *output_size) {
     assert(decoder);
     assert(decoder->coder);
     assert(to_decode);
@@ -191,7 +191,7 @@ aws_common_error aws_huffman_decode(struct aws_huffman_decoder *decoder, const u
     assert(output_size);
 
     if (*output_size == 0) {
-        return AWS_ERROR_SHORT_BUFFER;
+        return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
     }
 
     struct decoder_state state;
@@ -221,16 +221,14 @@ aws_common_error aws_huffman_decode(struct aws_huffman_decoder *decoder, const u
             *length -= state.input_cursor.len;
             *output_size -= output_cursor.len;
 
-            return AWS_ERROR_SUCCESS;
+            return AWS_OP_SUCCESS;
         }
 
         if (output_cursor.len == 0) {
             /* Check if we've hit the end of the output buffer */
             *length -= state.input_cursor.len;
-            return AWS_ERROR_SHORT_BUFFER;
+            return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
         }
-
-        assert(symbol < UINT8_MAX);
 
         bits_left -= bits_read;
         decoder->working_bits <<= bits_read;

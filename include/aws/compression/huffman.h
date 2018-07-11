@@ -24,11 +24,11 @@
 #include <stdint.h>
 
 /**
- * Represents an encoded bit pattern
+ * Represents an encoded code
  */
 struct aws_huffman_code {
     /**
-     * The value of the bit pattern
+     * The value of the code
      * \note The pattern is stored in the least significant bits
      */
     uint32_t pattern;
@@ -37,29 +37,27 @@ struct aws_huffman_code {
 };
 
 /**
- * Function used to encode a single character to an aws_huffman_code
+ * Function used to encode a single symbol to an aws_huffman_code
  *
  * \param[in] symbol    The symbol to encode
  * \param[in] userdata  Optional userdata (aws_huffman_symbol_coder.userdata)
  *
- * \returns The code representing the symbol
+ * \returns The code representing the symbol. If this symbol is not recognized, return a code with num_bits set to 0.
  */
 typedef struct aws_huffman_code (*aws_huffman_symbol_encoder)(uint8_t symbol, void *userdata);
 /**
- * Function used to decode a bit pattern into a character
+ * Function used to decode a code into a symbol
  *
- * \param[in]   code        The bits to attemt to decode a symbol from
+ * \param[in]   bits        The bits to attept to decode a symbol from
  * \param[out]  symbol      The symbol found. Do not write to if no valid symbol found
  * \param[in]   userdata    Optional userdata (aws_huffman_symbol_coder.userdata)
  *
- * \returns The number of bits read from code
+ * \returns The number of bits read from bits
  */
-typedef uint8_t (*aws_huffman_symbol_decoder)(uint32_t code, uint8_t *symbol, void *userdata);
+typedef uint8_t (*aws_huffman_symbol_decoder)(uint32_t bits, uint8_t *symbol, void *userdata);
 
 /**
- * Structure used to define how characters are encoded and decoded
- *
- * This struct may be provided by the code generator
+ * Structure used to define how symbols are encoded and decoded
  */
 struct aws_huffman_symbol_coder {
     aws_huffman_symbol_encoder encode;
@@ -98,7 +96,7 @@ extern "C" {
 #endif
 
 /**
- * Initialize a encoder object with a character coder.
+ * Initialize a encoder object with a symbol coder.
  */
 AWS_COMPRESSION_API void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_symbol_coder *coder);
 
@@ -108,7 +106,7 @@ AWS_COMPRESSION_API void aws_huffman_encoder_init(struct aws_huffman_encoder *en
 AWS_COMPRESSION_API void aws_huffman_encoder_reset(struct aws_huffman_encoder *encoder);
 
 /**
- * Initialize a decoder object with a character coder.
+ * Initialize a decoder object with a symbol coder.
  */
 AWS_COMPRESSION_API void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_symbol_coder *coder);
 
@@ -118,30 +116,30 @@ AWS_COMPRESSION_API void aws_huffman_decoder_init(struct aws_huffman_decoder *de
 AWS_COMPRESSION_API void aws_huffman_decoder_reset(struct aws_huffman_decoder *decoder);
 
 /**
- * Encode a character buffer into the output buffer.
+ * Encode a symbol buffer into the output buffer.
  *
  * \param[in]       encoder         The encoder object to use
- * \param[in]       to_encode       The character buffer to encode
- * \param[in,out]   length          In: The length of to_decode Out: The number of bytes read from to_encode
+ * \param[in]       to_encode       The symbol buffer to encode
+ * \param[in,out]   length          In: The length of to_decode. Out: The number of bytes read from to_encode
  * \param[in]       output          The buffer to write encoded bytes to
- * \param[in,out]   output_size     In: The size of output Out: The number of bytes written to output
+ * \param[in,out]   output_size     In: The size of output. Out: The number of bytes written to output
  *
  * \return AWS_ERROR_SUCCESS if encoding is successful, otherwise the code for the error that occured
  */
-AWS_COMPRESSION_API aws_common_error aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t *length, uint8_t *output, size_t *output_size);
+AWS_COMPRESSION_API int aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t *length, uint8_t *output, size_t *output_size);
 
 /**
- * Decodes a byte buffer into the provided character array.
+ * Decodes a byte buffer into the provided symbol array.
  *
  * \param[in]       decoder         The decoder object to use
  * \param[in]       to_decode       The encoded byte buffer to read from
- * \param[in,out]   length          In: The length of to_decode Out: The number of bytes read from to_encode
- * \param[in]       output          The buffer to write decoded characters to
- * \param[in,out]   output_size     In: The size of output Out: The number of bytes written to output
+ * \param[in,out]   length          In: The length of to_decode. Out: The number of bytes read from to_encode
+ * \param[in]       output          The buffer to write decoded symbols to
+ * \param[in,out]   output_size     In: The size of output. Out: The number of bytes written to output
  *
  * \return AWS_ERROR_SUCCESS if encoding is successful, otherwise the code for the error that occured
  */
-AWS_COMPRESSION_API aws_common_error aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t *length, char *output, size_t *output_size);
+AWS_COMPRESSION_API int aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t *length, char *output, size_t *output_size);
 
 #ifdef __cplusplus
 }

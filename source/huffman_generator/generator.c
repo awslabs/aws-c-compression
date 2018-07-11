@@ -205,7 +205,7 @@ void huffman_node_write_decode(struct huffman_node *node, FILE *file, uint8_t cu
     uint32_t left_aligned_pattern = ((node->code.bits << 1) + 1) << (31 - node->code.num_bits);
     uint32_t check_pattern = left_aligned_pattern & single_bit_mask;
     fprintf(file,
-"    if (code & 0x%x) {\n", check_pattern);
+"    if (bits & 0x%x) {\n", check_pattern);
 
     huffman_node_write_decode_handle_value(node->children[1], file);
 
@@ -326,7 +326,7 @@ int main(int argc, char *argv[]) {
 "    return code_points[symbol];\n"
 "}\n"
 "\n"
-"static uint8_t decode_symbol(uint32_t code, uint8_t *symbol, void *userdata) {\n"
+"static uint8_t decode_symbol(uint32_t bits, uint8_t *symbol, void *userdata) {\n"
 "    (void)userdata;\n\n");
 
      /* Traverse the tree */
