@@ -215,7 +215,7 @@ int aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_de
 
         uint8_t symbol;
         uint8_t bits_read = decoder->coder->decode(
-            decoder->working_bits >> (BITSIZEOF(decoder->working_bits) - max_pattern_bits),
+            (uint32_t)(decoder->working_bits >> (BITSIZEOF(decoder->working_bits) - max_pattern_bits)),
             &symbol,
             decoder->coder->userdata);
 
