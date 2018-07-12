@@ -124,7 +124,7 @@ AWS_COMPRESSION_API void aws_huffman_decoder_reset(struct aws_huffman_decoder *d
  * \param[in]       output          The buffer to write encoded bytes to
  * \param[in,out]   output_size     In: The size of output. Out: The number of bytes written to output
  *
- * \return AWS_ERROR_SUCCESS if encoding is successful, otherwise the code for the error that occured
+ * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR the code for the error that occured
  */
 AWS_COMPRESSION_API int aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t *length, uint8_t *output, size_t *output_size);
 
@@ -133,11 +133,11 @@ AWS_COMPRESSION_API int aws_huffman_encode(struct aws_huffman_encoder *encoder, 
  *
  * \param[in]       decoder         The decoder object to use
  * \param[in]       to_decode       The encoded byte buffer to read from
- * \param[in,out]   length          In: The length of to_decode. Out: The number of bytes read from to_encode
+ * \param[in,out]   length          In: The length of to_decode. Out: The number of bytes read from to_decode
  * \param[in]       output          The buffer to write decoded symbols to
  * \param[in,out]   output_size     In: The size of output. Out: The number of bytes written to output
  *
- * \return AWS_ERROR_SUCCESS if encoding is successful, otherwise the code for the error that occured
+ * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR the code for the error that occured
  */
 AWS_COMPRESSION_API int aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t *length, char *output, size_t *output_size);
 
