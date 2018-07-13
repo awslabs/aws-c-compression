@@ -252,10 +252,14 @@ int main(int argc, char *argv[]) {
     for (size_t code_point_idx = 0; code_point_idx < num_code_points; ++code_point_idx) {
 
         struct huffman_code_point *value = &code_points[code_point_idx];
+        if (value->code.num_bits == 0) {
+            continue;
+        }
+
         struct huffman_node *current = &tree_root;
 
-        for (uint8_t bit_idx = value->code.num_bits - 1; bit_idx >= 0; --bit_idx) {
-
+        uint8_t bit_idx = value->code.num_bits - 1;
+        while(1) {
             struct huffman_code code = value->code;
             code.bits >>= bit_idx;
             code.num_bits = value->code.num_bits - bit_idx;
@@ -263,19 +267,22 @@ int main(int argc, char *argv[]) {
             uint8_t encoded_bit = (uint8_t)((code.bits) & 0x01);
             assert(encoded_bit == 0 || encoded_bit == 1);
 
-            if (current->children[encoded_bit]) {
+            if (bit_idx == 0) {
+                /* Done traversing, add value as leaf */
+                assert(!current->children[encoded_bit]);
+                current->children[encoded_bit] = huffman_node_new_value(value);
+                break;
+            } else if (current->children[encoded_bit]) {
                 /* Not at the end yet, keep traversing */
                 current = current->children[encoded_bit];
-            } else if (bit_idx > 0) {
+            } else {
                 /* Not at the end yet, but this is the first time down this path. */
                 struct huffman_node *new_node = huffman_node_new(code);
                 current->children[encoded_bit] = new_node;
                 current = new_node;
-            } else {
-                /* Done traversing, add value as leaf */
-                current->children[encoded_bit] = huffman_node_new_value(value);
-                break;
             }
+
+            --bit_idx;
         }
     }
 

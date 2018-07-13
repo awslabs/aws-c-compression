@@ -38,6 +38,7 @@ static int run_tests(int argc, char *argv[]) {
 
         &huffman_transitive,
         &huffman_transitive_all_code_points,
+        &huffman_transitive_chunked,
     );
 }
 
