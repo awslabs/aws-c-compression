@@ -1,5 +1,4 @@
 include(CTest)
-include(CMakeDependentOption)
 enable_testing()
 
 file(GLOB TEST_SRC "main.c" "test_huffman_static.c")

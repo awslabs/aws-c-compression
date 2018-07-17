@@ -80,4 +80,6 @@ int huffman_test_transitive(struct aws_huffman_symbol_coder *coder, const char *
  */
 int huffman_test_transitive_chunked(struct aws_huffman_symbol_coder *coder, const char *input, size_t size, size_t output_chunk_size, const char **error_string);
 
+#include <aws/testing/compression/huffman.inl>
+
 #endif /* AWS_COMPRESSION_TESTING_HUFFMAN_H */

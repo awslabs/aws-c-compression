@@ -14,7 +14,7 @@
 */
 
 #include <aws/testing/aws_test_harness.h>
-#include <aws/testing/compression/huffman.inl>
+#include <aws/testing/compression/huffman.h>
 
 #include <aws/compression/huffman.h>
 

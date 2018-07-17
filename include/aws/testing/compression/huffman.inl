@@ -20,8 +20,6 @@
  * See aws/testing/compression/huffman.h for docs.
  */
 
-#include <aws/testing/compression/huffman.h>
-
 #ifdef _WIN32
 #include <malloc.h>
 #define alloca _alloca
