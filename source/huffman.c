@@ -97,7 +97,9 @@ static int encode_write_bit_pattern(struct encoder_state *state, struct aws_huff
                 bits_to_cut += bits_for_current;
 
                 state->encoder->overflow_bits.num_bits = bits_to_write;
-                state->encoder->overflow_bits.pattern = (bit_pattern.pattern << bits_to_cut) >> (max_pattern_bits - bits_to_write);
+                if (bits_to_write) {
+                    state->encoder->overflow_bits.pattern = (bit_pattern.pattern << bits_to_cut) >> (max_pattern_bits - bits_to_write);
+                }
 
                 return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
             }

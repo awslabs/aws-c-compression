@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.1)
 project(aws-c-compression)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake")
+
+include(AwsCFlags)
+include(Sanitizers)
 include(CheckCCompilerFlag)
 
 option(BUILD_PORTABLE_BINARIES
@@ -34,26 +38,8 @@ file(GLOB COMPRESSION_SRC
         )
 
 add_library(${CMAKE_PROJECT_NAME} ${LIBTYPE} ${COMPRESSION_HEADERS} ${COMPRESSION_SRC})
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES LINKER_LANGUAGE C)
-
-set(CMAKE_C_FLAGS_DEBUGOPT "")
-set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY C_STANDARD 99)
-
-#set warnings
-if (MSVC)
-    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4 /WX)
-else ()
-    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -pedantic -Werror -Wno-long-long)
-endif ()
-
-check_c_compiler_flag("-Wgnu" HAS_WGNU)
-if (HAS_WGNU)
-    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wgnu)
-endif()
-
-if (BUILD_SHARED_LIBS AND WIN32)
-    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE "-DAWS_COMMON_EXPORTS")
-endif ()
+aws_set_common_properties(${CMAKE_PROJECT_NAME})
+aws_add_sanitizers(${CMAKE_PROJECT_NAME})
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

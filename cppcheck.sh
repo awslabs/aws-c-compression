@@ -17,5 +17,6 @@ $INCLUDE_PATHS                                              \
                                                             \
 --suppress=missingIncludeSystem                             \
 --suppress=unusedFunction                                   \
+--suppress=allocaCalled --suppress=obsoleteFunctionsalloca  \
                                                             \
 -q .
