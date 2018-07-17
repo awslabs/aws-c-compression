@@ -23,6 +23,8 @@
 #ifdef _WIN32
 #include <malloc.h>
 #define alloca _alloca
+#else
+#include <alloca.h>
 #endif /* _WIN32 */
 
 int huffman_test_transitive(struct aws_huffman_symbol_coder *coder, const char *input, size_t size, const char **error_string) {
