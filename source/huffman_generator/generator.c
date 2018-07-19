@@ -201,7 +201,7 @@ void huffman_node_write_decode(struct huffman_node *node, FILE *file, uint8_t cu
     write_label = 1;
 
     /* Check 1 bit pattern */
-    uint32_t single_bit_mask = 1 << (31 - current_bit);
+    uint32_t single_bit_mask = 1ull << (31 - current_bit);
     uint32_t left_aligned_pattern = ((node->code.bits << 1) + 1) << (31 - node->code.num_bits);
     uint32_t check_pattern = left_aligned_pattern & single_bit_mask;
     fprintf(file,
@@ -333,6 +333,7 @@ int main(int argc, char *argv[]) {
 "    return code_points[symbol];\n"
 "}\n"
 "\n"
+"/* NOLINTNEXTLINE(readability-function-size) */\n"
 "static uint8_t decode_symbol(uint32_t bits, uint8_t *symbol, void *userdata) {\n"
 "    (void)userdata;\n\n");
 
