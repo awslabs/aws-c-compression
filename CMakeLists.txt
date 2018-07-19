@@ -21,6 +21,7 @@ file(GLOB AWS_COMPRESSION_PRIV_HEADERS
 
 file(GLOB AWS_COMPRESSION_TESTING_HEADERS
         "include/aws/testing/compression/*.h"
+        "include/aws/testing/compression/*.inl"
         )
 
 file(GLOB AWS_COMPRESSION_SRC
