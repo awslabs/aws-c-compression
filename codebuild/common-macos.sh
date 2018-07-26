@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Until CodeBuild supports macOS, this script is just used by Travis.
+
 cd ../
 
 mkdir install
@@ -22,7 +24,3 @@ cmake -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_SANITIZERS=ON $@ ../ || exit
 make || exit 1
 
 LSAN_OPTIONS=verbosity=1:log_threads=1 ctest --output-on-failure || exit 1
-
-cd ..
-
-./cppcheck.sh ../install/include || exit 1
