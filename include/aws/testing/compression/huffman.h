@@ -1,5 +1,5 @@
-#ifndef AWS_COMPRESSION_TESTING_HUFFMAN_H
-#define AWS_COMPRESSION_TESTING_HUFFMAN_H
+#ifndef AWS_TESTING_COMPRESSION_HUFFMAN_H
+#define AWS_TESTING_COMPRESSION_HUFFMAN_H
 
 /*
  * Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -25,15 +25,19 @@
 
 /**
  * The intended use of file is to allow testing of huffman character coders.
- * By doing the following, you can ensure the output of encoders decoders are correct:
+ * By doing the following, you can ensure the output of encoders decoders are
+ * correct:
+ *
  * \code{c}
  * static struct huffman_test_code_point code_points[] = {
  * #include "test_huffman_static_table.def"
  * };
  * \endcode
- * You may then iterate over each code point in the array, and test the following (pseudo-code):
- * \code{c}
- * for (cp in code_points) {
+ *
+ * You may then iterate over each code point in the array, and test the
+ * following (pseudo-code):
+ *
+ * \code{c} for (cp in code_points) {
  *     assert(my_coder->encode(cp.symbol) == cp.pattern);
  *     assert(my_coder->decode(cp.pattern) == cp.symbol);
  * }
@@ -49,9 +53,18 @@ struct huffman_test_code_point {
 };
 
 /**
- * Macro to be used when including a table def file, populates an array of huffman_test_code_points
+ * Macro to be used when including a table def file, populates an array of
+ * huffman_test_code_points
  */
-#define HUFFMAN_CODE(psymbol, pbit_string, pbit_pattern, pnum_bits) { .symbol = psymbol, .code = { .pattern = pbit_pattern, .num_bits = pnum_bits } },
+#define HUFFMAN_CODE(psymbol, pbit_string, pbit_pattern, pnum_bits)            \
+    {                                                                          \
+        .symbol = (psymbol),                                                   \
+        .code =                                                                \
+            {                                                                  \
+                .pattern = (pbit_pattern),                                     \
+                .num_bits = (pnum_bits),                                       \
+            },                                                                 \
+    },
 
 /**
  * Function to test a huffman coder to ensure the transitive property applies
@@ -62,24 +75,36 @@ struct huffman_test_code_point {
  * \param[in]   input_size      The size of input
  * \param[out]  error_string    In case of failure, the error string to report
  *
- * \return AWS_OP_SUCCESS on success, AWS_OP_FAILURE on failure (error_string will be set)
+ * \return AWS_OP_SUCCESS on success, AWS_OP_FAILURE on failure (error_string
+ * will be set)
  */
-int huffman_test_transitive(struct aws_huffman_symbol_coder *coder, const char *input, size_t size, const char **error_string);
+int huffman_test_transitive(
+    struct aws_huffman_symbol_coder *coder,
+    const char *input,
+    size_t size,
+    const char **error_string);
 
 /**
- * Function to test a huffman coder to ensure the transitive property applies when doing partial encodes/decodes
- * (input == decode(incode(input)))
+ * Function to test a huffman coder to ensure the transitive property applies
+ * when doing partial encodes/decodes (input == decode(incode(input)))
  *
  * \param[in]   coder               The symbol coder to test
  * \param[in]   input               The buffer to test
  * \param[in]   input_size          The size of input
  * \param[in]   output_chunk_size   The amount of output to write at once
- * \param[out]  error_string        In case of failure, the error string to report
+ * \param[out]  error_string        In case of failure, the error string to
+ * report
  *
- * \return AWS_OP_SUCCESS on success, AWS_OP_FAILURE on failure (error_string will be set)
+ * \return AWS_OP_SUCCESS on success, AWS_OP_FAILURE on failure (error_string
+ * will be set)
  */
-int huffman_test_transitive_chunked(struct aws_huffman_symbol_coder *coder, const char *input, size_t size, size_t output_chunk_size, const char **error_string);
+int huffman_test_transitive_chunked(
+    struct aws_huffman_symbol_coder *coder,
+    const char *input,
+    size_t size,
+    size_t output_chunk_size,
+    const char **error_string);
 
 #include <aws/testing/compression/huffman.inl>
 
-#endif /* AWS_COMPRESSION_TESTING_HUFFMAN_H */
+#endif /* AWS_TESTING_COMPRESSION_HUFFMAN_H */

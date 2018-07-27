@@ -284,6 +284,7 @@ static struct aws_huffman_code encode_symbol(uint8_t symbol, void *userdata) {
     return code_points[symbol];
 }
 
+/* NOLINTNEXTLINE(readability-function-size) */
 static uint8_t decode_symbol(uint32_t bits, uint8_t *symbol, void *userdata) {
     (void)userdata;
 
