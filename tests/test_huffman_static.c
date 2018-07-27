@@ -1,17 +1,17 @@
 /*
-* Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License").
-* You may not use this file except in compliance with the License.
-* A copy of the License is located at
-*
-*  http://aws.amazon.com/apache2.0
-*
-* or in the "license" file accompanying this file. This file is distributed
-* on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-* express or implied. See the License for the specific language governing
-* permissions and limitations under the License.
-*/
+ * Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *  http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 
 /* WARNING: THIS FILE WAS AUTOMATICALLY GENERATED. DO NOT EDIT. */
 
@@ -20,262 +20,262 @@
 #include <assert.h>
 
 static struct aws_huffman_code code_points[] = {
-    { .pattern = 0x32e, .num_bits = 10 }, /* ' ' 0 */
-    { .pattern = 0x32f, .num_bits = 10 }, /* ' ' 1 */
-    { .pattern = 0x330, .num_bits = 10 }, /* ' ' 2 */
-    { .pattern = 0x331, .num_bits = 10 }, /* ' ' 3 */
-    { .pattern = 0x332, .num_bits = 10 }, /* ' ' 4 */
-    { .pattern = 0x333, .num_bits = 10 }, /* ' ' 5 */
-    { .pattern = 0x334, .num_bits = 10 }, /* ' ' 6 */
-    { .pattern = 0x335, .num_bits = 10 }, /* ' ' 7 */
-    { .pattern = 0x336, .num_bits = 10 }, /* ' ' 8 */
-    { .pattern = 0x337, .num_bits = 10 }, /* ' ' 9 */
-    { .pattern = 0xb8, .num_bits = 8 }, /* ' ' 10 */
-    { .pattern = 0x338, .num_bits = 10 }, /* ' ' 11 */
-    { .pattern = 0x339, .num_bits = 10 }, /* ' ' 12 */
-    { .pattern = 0x33a, .num_bits = 10 }, /* ' ' 13 */
-    { .pattern = 0x33b, .num_bits = 10 }, /* ' ' 14 */
-    { .pattern = 0x33c, .num_bits = 10 }, /* ' ' 15 */
-    { .pattern = 0x33d, .num_bits = 10 }, /* ' ' 16 */
-    { .pattern = 0x33e, .num_bits = 10 }, /* ' ' 17 */
-    { .pattern = 0x33f, .num_bits = 10 }, /* ' ' 18 */
-    { .pattern = 0x340, .num_bits = 10 }, /* ' ' 19 */
-    { .pattern = 0x341, .num_bits = 10 }, /* ' ' 20 */
-    { .pattern = 0x342, .num_bits = 10 }, /* ' ' 21 */
-    { .pattern = 0x343, .num_bits = 10 }, /* ' ' 22 */
-    { .pattern = 0x344, .num_bits = 10 }, /* ' ' 23 */
-    { .pattern = 0x345, .num_bits = 10 }, /* ' ' 24 */
-    { .pattern = 0x346, .num_bits = 10 }, /* ' ' 25 */
-    { .pattern = 0x347, .num_bits = 10 }, /* ' ' 26 */
-    { .pattern = 0x348, .num_bits = 10 }, /* ' ' 27 */
-    { .pattern = 0x349, .num_bits = 10 }, /* ' ' 28 */
-    { .pattern = 0x34a, .num_bits = 10 }, /* ' ' 29 */
-    { .pattern = 0x34b, .num_bits = 10 }, /* ' ' 30 */
-    { .pattern = 0x34c, .num_bits = 10 }, /* ' ' 31 */
-    { .pattern = 0x4, .num_bits = 5 }, /* ' ' 32 */
-    { .pattern = 0x34d, .num_bits = 10 }, /* '!' 33 */
-    { .pattern = 0x34e, .num_bits = 10 }, /* '"' 34 */
-    { .pattern = 0x34f, .num_bits = 10 }, /* '#' 35 */
-    { .pattern = 0x350, .num_bits = 10 }, /* '$' 36 */
-    { .pattern = 0x351, .num_bits = 10 }, /* '%' 37 */
-    { .pattern = 0x352, .num_bits = 10 }, /* '&' 38 */
-    { .pattern = 0x56, .num_bits = 7 }, /* ''' 39 */
-    { .pattern = 0x353, .num_bits = 10 }, /* '(' 40 */
-    { .pattern = 0x354, .num_bits = 10 }, /* ')' 41 */
-    { .pattern = 0x355, .num_bits = 10 }, /* '*' 42 */
-    { .pattern = 0x356, .num_bits = 10 }, /* '+' 43 */
-    { .pattern = 0xb9, .num_bits = 8 }, /* ',' 44 */
-    { .pattern = 0x188, .num_bits = 9 }, /* '-' 45 */
-    { .pattern = 0x57, .num_bits = 7 }, /* '.' 46 */
-    { .pattern = 0x357, .num_bits = 10 }, /* '/' 47 */
-    { .pattern = 0x358, .num_bits = 10 }, /* '0' 48 */
-    { .pattern = 0x359, .num_bits = 10 }, /* '1' 49 */
-    { .pattern = 0x35a, .num_bits = 10 }, /* '2' 50 */
-    { .pattern = 0x35b, .num_bits = 10 }, /* '3' 51 */
-    { .pattern = 0x35c, .num_bits = 10 }, /* '4' 52 */
-    { .pattern = 0x35d, .num_bits = 10 }, /* '5' 53 */
-    { .pattern = 0x35e, .num_bits = 10 }, /* '6' 54 */
-    { .pattern = 0x35f, .num_bits = 10 }, /* '7' 55 */
-    { .pattern = 0x360, .num_bits = 10 }, /* '8' 56 */
-    { .pattern = 0x361, .num_bits = 10 }, /* '9' 57 */
-    { .pattern = 0x362, .num_bits = 10 }, /* ':' 58 */
-    { .pattern = 0x363, .num_bits = 10 }, /* ';' 59 */
-    { .pattern = 0x364, .num_bits = 10 }, /* '<' 60 */
-    { .pattern = 0x365, .num_bits = 10 }, /* '=' 61 */
-    { .pattern = 0x366, .num_bits = 10 }, /* '>' 62 */
-    { .pattern = 0xba, .num_bits = 8 }, /* '?' 63 */
-    { .pattern = 0x367, .num_bits = 10 }, /* '@' 64 */
-    { .pattern = 0x368, .num_bits = 10 }, /* 'A' 65 */
-    { .pattern = 0xbb, .num_bits = 8 }, /* 'B' 66 */
-    { .pattern = 0x189, .num_bits = 9 }, /* 'C' 67 */
-    { .pattern = 0x18a, .num_bits = 9 }, /* 'D' 68 */
-    { .pattern = 0x18b, .num_bits = 9 }, /* 'E' 69 */
-    { .pattern = 0x18c, .num_bits = 9 }, /* 'F' 70 */
-    { .pattern = 0x18d, .num_bits = 9 }, /* 'G' 71 */
-    { .pattern = 0x18e, .num_bits = 9 }, /* 'H' 72 */
-    { .pattern = 0xbc, .num_bits = 8 }, /* 'I' 73 */
-    { .pattern = 0x369, .num_bits = 10 }, /* 'J' 74 */
-    { .pattern = 0x36a, .num_bits = 10 }, /* 'K' 75 */
-    { .pattern = 0x18f, .num_bits = 9 }, /* 'L' 76 */
-    { .pattern = 0x190, .num_bits = 9 }, /* 'M' 77 */
-    { .pattern = 0x36b, .num_bits = 10 }, /* 'N' 78 */
-    { .pattern = 0x36c, .num_bits = 10 }, /* 'O' 79 */
-    { .pattern = 0x191, .num_bits = 9 }, /* 'P' 80 */
-    { .pattern = 0x36d, .num_bits = 10 }, /* 'Q' 81 */
-    { .pattern = 0x36e, .num_bits = 10 }, /* 'R' 82 */
-    { .pattern = 0x36f, .num_bits = 10 }, /* 'S' 83 */
-    { .pattern = 0xbd, .num_bits = 8 }, /* 'T' 84 */
-    { .pattern = 0x370, .num_bits = 10 }, /* 'U' 85 */
-    { .pattern = 0x192, .num_bits = 9 }, /* 'V' 86 */
-    { .pattern = 0xbe, .num_bits = 8 }, /* 'W' 87 */
-    { .pattern = 0x371, .num_bits = 10 }, /* 'X' 88 */
-    { .pattern = 0x193, .num_bits = 9 }, /* 'Y' 89 */
-    { .pattern = 0x372, .num_bits = 10 }, /* 'Z' 90 */
-    { .pattern = 0x373, .num_bits = 10 }, /* '[' 91 */
-    { .pattern = 0x374, .num_bits = 10 }, /* '\' 92 */
-    { .pattern = 0x375, .num_bits = 10 }, /* ']' 93 */
-    { .pattern = 0x376, .num_bits = 10 }, /* '^' 94 */
-    { .pattern = 0x377, .num_bits = 10 }, /* '_' 95 */
-    { .pattern = 0x378, .num_bits = 10 }, /* '`' 96 */
-    { .pattern = 0x5, .num_bits = 5 }, /* 'a' 97 */
-    { .pattern = 0x58, .num_bits = 7 }, /* 'b' 98 */
-    { .pattern = 0x20, .num_bits = 6 }, /* 'c' 99 */
-    { .pattern = 0x21, .num_bits = 6 }, /* 'd' 100 */
-    { .pattern = 0x6, .num_bits = 5 }, /* 'e' 101 */
-    { .pattern = 0x22, .num_bits = 6 }, /* 'f' 102 */
-    { .pattern = 0x59, .num_bits = 7 }, /* 'g' 103 */
-    { .pattern = 0x23, .num_bits = 6 }, /* 'h' 104 */
-    { .pattern = 0x7, .num_bits = 5 }, /* 'i' 105 */
-    { .pattern = 0xbf, .num_bits = 8 }, /* 'j' 106 */
-    { .pattern = 0x24, .num_bits = 6 }, /* 'k' 107 */
-    { .pattern = 0x25, .num_bits = 6 }, /* 'l' 108 */
-    { .pattern = 0x26, .num_bits = 6 }, /* 'm' 109 */
-    { .pattern = 0x8, .num_bits = 5 }, /* 'n' 110 */
-    { .pattern = 0x9, .num_bits = 5 }, /* 'o' 111 */
-    { .pattern = 0x5a, .num_bits = 7 }, /* 'p' 112 */
-    { .pattern = 0x194, .num_bits = 9 }, /* 'q' 113 */
-    { .pattern = 0xa, .num_bits = 5 }, /* 'r' 114 */
-    { .pattern = 0xb, .num_bits = 5 }, /* 's' 115 */
-    { .pattern = 0xc, .num_bits = 5 }, /* 't' 116 */
-    { .pattern = 0xd, .num_bits = 5 }, /* 'u' 117 */
-    { .pattern = 0xc0, .num_bits = 8 }, /* 'v' 118 */
-    { .pattern = 0x27, .num_bits = 6 }, /* 'w' 119 */
-    { .pattern = 0xc1, .num_bits = 8 }, /* 'x' 120 */
-    { .pattern = 0x28, .num_bits = 6 }, /* 'y' 121 */
-    { .pattern = 0x379, .num_bits = 10 }, /* 'z' 122 */
-    { .pattern = 0x37a, .num_bits = 10 }, /* '{' 123 */
-    { .pattern = 0x37b, .num_bits = 10 }, /* '|' 124 */
-    { .pattern = 0x37c, .num_bits = 10 }, /* '}' 125 */
-    { .pattern = 0x37d, .num_bits = 10 }, /* '~' 126 */
-    { .pattern = 0x37e, .num_bits = 10 }, /* ' ' 127 */
-    { .pattern = 0x37f, .num_bits = 10 }, /* ' ' 128 */
-    { .pattern = 0x380, .num_bits = 10 }, /* ' ' 129 */
-    { .pattern = 0x381, .num_bits = 10 }, /* ' ' 130 */
-    { .pattern = 0x382, .num_bits = 10 }, /* ' ' 131 */
-    { .pattern = 0x383, .num_bits = 10 }, /* ' ' 132 */
-    { .pattern = 0x384, .num_bits = 10 }, /* ' ' 133 */
-    { .pattern = 0x385, .num_bits = 10 }, /* ' ' 134 */
-    { .pattern = 0x386, .num_bits = 10 }, /* ' ' 135 */
-    { .pattern = 0x387, .num_bits = 10 }, /* ' ' 136 */
-    { .pattern = 0x388, .num_bits = 10 }, /* ' ' 137 */
-    { .pattern = 0x389, .num_bits = 10 }, /* ' ' 138 */
-    { .pattern = 0x38a, .num_bits = 10 }, /* ' ' 139 */
-    { .pattern = 0x38b, .num_bits = 10 }, /* ' ' 140 */
-    { .pattern = 0x38c, .num_bits = 10 }, /* ' ' 141 */
-    { .pattern = 0x38d, .num_bits = 10 }, /* ' ' 142 */
-    { .pattern = 0x38e, .num_bits = 10 }, /* ' ' 143 */
-    { .pattern = 0x38f, .num_bits = 10 }, /* ' ' 144 */
-    { .pattern = 0x390, .num_bits = 10 }, /* ' ' 145 */
-    { .pattern = 0x391, .num_bits = 10 }, /* ' ' 146 */
-    { .pattern = 0x392, .num_bits = 10 }, /* ' ' 147 */
-    { .pattern = 0x393, .num_bits = 10 }, /* ' ' 148 */
-    { .pattern = 0x394, .num_bits = 10 }, /* ' ' 149 */
-    { .pattern = 0x395, .num_bits = 10 }, /* ' ' 150 */
-    { .pattern = 0x396, .num_bits = 10 }, /* ' ' 151 */
-    { .pattern = 0x397, .num_bits = 10 }, /* ' ' 152 */
-    { .pattern = 0x398, .num_bits = 10 }, /* ' ' 153 */
-    { .pattern = 0x399, .num_bits = 10 }, /* ' ' 154 */
-    { .pattern = 0x39a, .num_bits = 10 }, /* ' ' 155 */
-    { .pattern = 0x39b, .num_bits = 10 }, /* ' ' 156 */
-    { .pattern = 0x39c, .num_bits = 10 }, /* ' ' 157 */
-    { .pattern = 0x39d, .num_bits = 10 }, /* ' ' 158 */
-    { .pattern = 0x39e, .num_bits = 10 }, /* ' ' 159 */
-    { .pattern = 0x39f, .num_bits = 10 }, /* ' ' 160 */
-    { .pattern = 0x3a0, .num_bits = 10 }, /* ' ' 161 */
-    { .pattern = 0x3a1, .num_bits = 10 }, /* ' ' 162 */
-    { .pattern = 0x3a2, .num_bits = 10 }, /* ' ' 163 */
-    { .pattern = 0x3a3, .num_bits = 10 }, /* ' ' 164 */
-    { .pattern = 0x3a4, .num_bits = 10 }, /* ' ' 165 */
-    { .pattern = 0x3a5, .num_bits = 10 }, /* ' ' 166 */
-    { .pattern = 0x3a6, .num_bits = 10 }, /* ' ' 167 */
-    { .pattern = 0x3a7, .num_bits = 10 }, /* ' ' 168 */
-    { .pattern = 0x3a8, .num_bits = 10 }, /* ' ' 169 */
-    { .pattern = 0x3a9, .num_bits = 10 }, /* ' ' 170 */
-    { .pattern = 0x3aa, .num_bits = 10 }, /* ' ' 171 */
-    { .pattern = 0x3ab, .num_bits = 10 }, /* ' ' 172 */
-    { .pattern = 0x3ac, .num_bits = 10 }, /* ' ' 173 */
-    { .pattern = 0x3ad, .num_bits = 10 }, /* ' ' 174 */
-    { .pattern = 0x3ae, .num_bits = 10 }, /* ' ' 175 */
-    { .pattern = 0x3af, .num_bits = 10 }, /* ' ' 176 */
-    { .pattern = 0x3b0, .num_bits = 10 }, /* ' ' 177 */
-    { .pattern = 0x3b1, .num_bits = 10 }, /* ' ' 178 */
-    { .pattern = 0x3b2, .num_bits = 10 }, /* ' ' 179 */
-    { .pattern = 0x3b3, .num_bits = 10 }, /* ' ' 180 */
-    { .pattern = 0x3b4, .num_bits = 10 }, /* ' ' 181 */
-    { .pattern = 0x3b5, .num_bits = 10 }, /* ' ' 182 */
-    { .pattern = 0x3b6, .num_bits = 10 }, /* ' ' 183 */
-    { .pattern = 0x3b7, .num_bits = 10 }, /* ' ' 184 */
-    { .pattern = 0x3b8, .num_bits = 10 }, /* ' ' 185 */
-    { .pattern = 0x3b9, .num_bits = 10 }, /* ' ' 186 */
-    { .pattern = 0x3ba, .num_bits = 10 }, /* ' ' 187 */
-    { .pattern = 0x3bb, .num_bits = 10 }, /* ' ' 188 */
-    { .pattern = 0x3bc, .num_bits = 10 }, /* ' ' 189 */
-    { .pattern = 0x3bd, .num_bits = 10 }, /* ' ' 190 */
-    { .pattern = 0x3be, .num_bits = 10 }, /* ' ' 191 */
-    { .pattern = 0x3bf, .num_bits = 10 }, /* ' ' 192 */
-    { .pattern = 0x3c0, .num_bits = 10 }, /* ' ' 193 */
-    { .pattern = 0x3c1, .num_bits = 10 }, /* ' ' 194 */
-    { .pattern = 0x3c2, .num_bits = 10 }, /* ' ' 195 */
-    { .pattern = 0x3c3, .num_bits = 10 }, /* ' ' 196 */
-    { .pattern = 0x3c4, .num_bits = 10 }, /* ' ' 197 */
-    { .pattern = 0x3c5, .num_bits = 10 }, /* ' ' 198 */
-    { .pattern = 0x3c6, .num_bits = 10 }, /* ' ' 199 */
-    { .pattern = 0x3c7, .num_bits = 10 }, /* ' ' 200 */
-    { .pattern = 0x3c8, .num_bits = 10 }, /* ' ' 201 */
-    { .pattern = 0x3c9, .num_bits = 10 }, /* ' ' 202 */
-    { .pattern = 0x3ca, .num_bits = 10 }, /* ' ' 203 */
-    { .pattern = 0x3cb, .num_bits = 10 }, /* ' ' 204 */
-    { .pattern = 0x3cc, .num_bits = 10 }, /* ' ' 205 */
-    { .pattern = 0x3cd, .num_bits = 10 }, /* ' ' 206 */
-    { .pattern = 0x3ce, .num_bits = 10 }, /* ' ' 207 */
-    { .pattern = 0x3cf, .num_bits = 10 }, /* ' ' 208 */
-    { .pattern = 0x3d0, .num_bits = 10 }, /* ' ' 209 */
-    { .pattern = 0x3d1, .num_bits = 10 }, /* ' ' 210 */
-    { .pattern = 0x3d2, .num_bits = 10 }, /* ' ' 211 */
-    { .pattern = 0x3d3, .num_bits = 10 }, /* ' ' 212 */
-    { .pattern = 0x3d4, .num_bits = 10 }, /* ' ' 213 */
-    { .pattern = 0x3d5, .num_bits = 10 }, /* ' ' 214 */
-    { .pattern = 0x3d6, .num_bits = 10 }, /* ' ' 215 */
-    { .pattern = 0x3d7, .num_bits = 10 }, /* ' ' 216 */
-    { .pattern = 0x3d8, .num_bits = 10 }, /* ' ' 217 */
-    { .pattern = 0x3d9, .num_bits = 10 }, /* ' ' 218 */
-    { .pattern = 0x3da, .num_bits = 10 }, /* ' ' 219 */
-    { .pattern = 0x3db, .num_bits = 10 }, /* ' ' 220 */
-    { .pattern = 0x3dc, .num_bits = 10 }, /* ' ' 221 */
-    { .pattern = 0x3dd, .num_bits = 10 }, /* ' ' 222 */
-    { .pattern = 0x3de, .num_bits = 10 }, /* ' ' 223 */
-    { .pattern = 0x3df, .num_bits = 10 }, /* ' ' 224 */
-    { .pattern = 0x3e0, .num_bits = 10 }, /* ' ' 225 */
-    { .pattern = 0x3e1, .num_bits = 10 }, /* ' ' 226 */
-    { .pattern = 0x3e2, .num_bits = 10 }, /* ' ' 227 */
-    { .pattern = 0x3e3, .num_bits = 10 }, /* ' ' 228 */
-    { .pattern = 0x3e4, .num_bits = 10 }, /* ' ' 229 */
-    { .pattern = 0x3e5, .num_bits = 10 }, /* ' ' 230 */
-    { .pattern = 0x3e6, .num_bits = 10 }, /* ' ' 231 */
-    { .pattern = 0x3e7, .num_bits = 10 }, /* ' ' 232 */
-    { .pattern = 0x3e8, .num_bits = 10 }, /* ' ' 233 */
-    { .pattern = 0x3e9, .num_bits = 10 }, /* ' ' 234 */
-    { .pattern = 0x3ea, .num_bits = 10 }, /* ' ' 235 */
-    { .pattern = 0x3eb, .num_bits = 10 }, /* ' ' 236 */
-    { .pattern = 0x3ec, .num_bits = 10 }, /* ' ' 237 */
-    { .pattern = 0x3ed, .num_bits = 10 }, /* ' ' 238 */
-    { .pattern = 0x3ee, .num_bits = 10 }, /* ' ' 239 */
-    { .pattern = 0x3ef, .num_bits = 10 }, /* ' ' 240 */
-    { .pattern = 0x3f0, .num_bits = 10 }, /* ' ' 241 */
-    { .pattern = 0x3f1, .num_bits = 10 }, /* ' ' 242 */
-    { .pattern = 0x3f2, .num_bits = 10 }, /* ' ' 243 */
-    { .pattern = 0x3f3, .num_bits = 10 }, /* ' ' 244 */
-    { .pattern = 0x3f4, .num_bits = 10 }, /* ' ' 245 */
-    { .pattern = 0x3f5, .num_bits = 10 }, /* ' ' 246 */
-    { .pattern = 0x3f6, .num_bits = 10 }, /* ' ' 247 */
-    { .pattern = 0x3f7, .num_bits = 10 }, /* ' ' 248 */
-    { .pattern = 0x3f8, .num_bits = 10 }, /* ' ' 249 */
-    { .pattern = 0x3f9, .num_bits = 10 }, /* ' ' 250 */
-    { .pattern = 0x3fa, .num_bits = 10 }, /* ' ' 251 */
-    { .pattern = 0x3fb, .num_bits = 10 }, /* ' ' 252 */
-    { .pattern = 0x3fc, .num_bits = 10 }, /* ' ' 253 */
-    { .pattern = 0x3fd, .num_bits = 10 }, /* ' ' 254 */
-    { .pattern = 0x3fe, .num_bits = 10 }, /* ' ' 255 */
+    {.pattern = 0x32e, .num_bits = 10}, /* ' ' 0 */
+    {.pattern = 0x32f, .num_bits = 10}, /* ' ' 1 */
+    {.pattern = 0x330, .num_bits = 10}, /* ' ' 2 */
+    {.pattern = 0x331, .num_bits = 10}, /* ' ' 3 */
+    {.pattern = 0x332, .num_bits = 10}, /* ' ' 4 */
+    {.pattern = 0x333, .num_bits = 10}, /* ' ' 5 */
+    {.pattern = 0x334, .num_bits = 10}, /* ' ' 6 */
+    {.pattern = 0x335, .num_bits = 10}, /* ' ' 7 */
+    {.pattern = 0x336, .num_bits = 10}, /* ' ' 8 */
+    {.pattern = 0x337, .num_bits = 10}, /* ' ' 9 */
+    {.pattern = 0xb8, .num_bits = 8},   /* ' ' 10 */
+    {.pattern = 0x338, .num_bits = 10}, /* ' ' 11 */
+    {.pattern = 0x339, .num_bits = 10}, /* ' ' 12 */
+    {.pattern = 0x33a, .num_bits = 10}, /* ' ' 13 */
+    {.pattern = 0x33b, .num_bits = 10}, /* ' ' 14 */
+    {.pattern = 0x33c, .num_bits = 10}, /* ' ' 15 */
+    {.pattern = 0x33d, .num_bits = 10}, /* ' ' 16 */
+    {.pattern = 0x33e, .num_bits = 10}, /* ' ' 17 */
+    {.pattern = 0x33f, .num_bits = 10}, /* ' ' 18 */
+    {.pattern = 0x340, .num_bits = 10}, /* ' ' 19 */
+    {.pattern = 0x341, .num_bits = 10}, /* ' ' 20 */
+    {.pattern = 0x342, .num_bits = 10}, /* ' ' 21 */
+    {.pattern = 0x343, .num_bits = 10}, /* ' ' 22 */
+    {.pattern = 0x344, .num_bits = 10}, /* ' ' 23 */
+    {.pattern = 0x345, .num_bits = 10}, /* ' ' 24 */
+    {.pattern = 0x346, .num_bits = 10}, /* ' ' 25 */
+    {.pattern = 0x347, .num_bits = 10}, /* ' ' 26 */
+    {.pattern = 0x348, .num_bits = 10}, /* ' ' 27 */
+    {.pattern = 0x349, .num_bits = 10}, /* ' ' 28 */
+    {.pattern = 0x34a, .num_bits = 10}, /* ' ' 29 */
+    {.pattern = 0x34b, .num_bits = 10}, /* ' ' 30 */
+    {.pattern = 0x34c, .num_bits = 10}, /* ' ' 31 */
+    {.pattern = 0x4, .num_bits = 5},    /* ' ' 32 */
+    {.pattern = 0x34d, .num_bits = 10}, /* '!' 33 */
+    {.pattern = 0x34e, .num_bits = 10}, /* '"' 34 */
+    {.pattern = 0x34f, .num_bits = 10}, /* '#' 35 */
+    {.pattern = 0x350, .num_bits = 10}, /* '$' 36 */
+    {.pattern = 0x351, .num_bits = 10}, /* '%' 37 */
+    {.pattern = 0x352, .num_bits = 10}, /* '&' 38 */
+    {.pattern = 0x56, .num_bits = 7},   /* ''' 39 */
+    {.pattern = 0x353, .num_bits = 10}, /* '(' 40 */
+    {.pattern = 0x354, .num_bits = 10}, /* ')' 41 */
+    {.pattern = 0x355, .num_bits = 10}, /* '*' 42 */
+    {.pattern = 0x356, .num_bits = 10}, /* '+' 43 */
+    {.pattern = 0xb9, .num_bits = 8},   /* ',' 44 */
+    {.pattern = 0x188, .num_bits = 9},  /* '-' 45 */
+    {.pattern = 0x57, .num_bits = 7},   /* '.' 46 */
+    {.pattern = 0x357, .num_bits = 10}, /* '/' 47 */
+    {.pattern = 0x358, .num_bits = 10}, /* '0' 48 */
+    {.pattern = 0x359, .num_bits = 10}, /* '1' 49 */
+    {.pattern = 0x35a, .num_bits = 10}, /* '2' 50 */
+    {.pattern = 0x35b, .num_bits = 10}, /* '3' 51 */
+    {.pattern = 0x35c, .num_bits = 10}, /* '4' 52 */
+    {.pattern = 0x35d, .num_bits = 10}, /* '5' 53 */
+    {.pattern = 0x35e, .num_bits = 10}, /* '6' 54 */
+    {.pattern = 0x35f, .num_bits = 10}, /* '7' 55 */
+    {.pattern = 0x360, .num_bits = 10}, /* '8' 56 */
+    {.pattern = 0x361, .num_bits = 10}, /* '9' 57 */
+    {.pattern = 0x362, .num_bits = 10}, /* ':' 58 */
+    {.pattern = 0x363, .num_bits = 10}, /* ';' 59 */
+    {.pattern = 0x364, .num_bits = 10}, /* '<' 60 */
+    {.pattern = 0x365, .num_bits = 10}, /* '=' 61 */
+    {.pattern = 0x366, .num_bits = 10}, /* '>' 62 */
+    {.pattern = 0xba, .num_bits = 8},   /* '?' 63 */
+    {.pattern = 0x367, .num_bits = 10}, /* '@' 64 */
+    {.pattern = 0x368, .num_bits = 10}, /* 'A' 65 */
+    {.pattern = 0xbb, .num_bits = 8},   /* 'B' 66 */
+    {.pattern = 0x189, .num_bits = 9},  /* 'C' 67 */
+    {.pattern = 0x18a, .num_bits = 9},  /* 'D' 68 */
+    {.pattern = 0x18b, .num_bits = 9},  /* 'E' 69 */
+    {.pattern = 0x18c, .num_bits = 9},  /* 'F' 70 */
+    {.pattern = 0x18d, .num_bits = 9},  /* 'G' 71 */
+    {.pattern = 0x18e, .num_bits = 9},  /* 'H' 72 */
+    {.pattern = 0xbc, .num_bits = 8},   /* 'I' 73 */
+    {.pattern = 0x369, .num_bits = 10}, /* 'J' 74 */
+    {.pattern = 0x36a, .num_bits = 10}, /* 'K' 75 */
+    {.pattern = 0x18f, .num_bits = 9},  /* 'L' 76 */
+    {.pattern = 0x190, .num_bits = 9},  /* 'M' 77 */
+    {.pattern = 0x36b, .num_bits = 10}, /* 'N' 78 */
+    {.pattern = 0x36c, .num_bits = 10}, /* 'O' 79 */
+    {.pattern = 0x191, .num_bits = 9},  /* 'P' 80 */
+    {.pattern = 0x36d, .num_bits = 10}, /* 'Q' 81 */
+    {.pattern = 0x36e, .num_bits = 10}, /* 'R' 82 */
+    {.pattern = 0x36f, .num_bits = 10}, /* 'S' 83 */
+    {.pattern = 0xbd, .num_bits = 8},   /* 'T' 84 */
+    {.pattern = 0x370, .num_bits = 10}, /* 'U' 85 */
+    {.pattern = 0x192, .num_bits = 9},  /* 'V' 86 */
+    {.pattern = 0xbe, .num_bits = 8},   /* 'W' 87 */
+    {.pattern = 0x371, .num_bits = 10}, /* 'X' 88 */
+    {.pattern = 0x193, .num_bits = 9},  /* 'Y' 89 */
+    {.pattern = 0x372, .num_bits = 10}, /* 'Z' 90 */
+    {.pattern = 0x373, .num_bits = 10}, /* '[' 91 */
+    {.pattern = 0x374, .num_bits = 10}, /* '\' 92 */
+    {.pattern = 0x375, .num_bits = 10}, /* ']' 93 */
+    {.pattern = 0x376, .num_bits = 10}, /* '^' 94 */
+    {.pattern = 0x377, .num_bits = 10}, /* '_' 95 */
+    {.pattern = 0x378, .num_bits = 10}, /* '`' 96 */
+    {.pattern = 0x5, .num_bits = 5},    /* 'a' 97 */
+    {.pattern = 0x58, .num_bits = 7},   /* 'b' 98 */
+    {.pattern = 0x20, .num_bits = 6},   /* 'c' 99 */
+    {.pattern = 0x21, .num_bits = 6},   /* 'd' 100 */
+    {.pattern = 0x6, .num_bits = 5},    /* 'e' 101 */
+    {.pattern = 0x22, .num_bits = 6},   /* 'f' 102 */
+    {.pattern = 0x59, .num_bits = 7},   /* 'g' 103 */
+    {.pattern = 0x23, .num_bits = 6},   /* 'h' 104 */
+    {.pattern = 0x7, .num_bits = 5},    /* 'i' 105 */
+    {.pattern = 0xbf, .num_bits = 8},   /* 'j' 106 */
+    {.pattern = 0x24, .num_bits = 6},   /* 'k' 107 */
+    {.pattern = 0x25, .num_bits = 6},   /* 'l' 108 */
+    {.pattern = 0x26, .num_bits = 6},   /* 'm' 109 */
+    {.pattern = 0x8, .num_bits = 5},    /* 'n' 110 */
+    {.pattern = 0x9, .num_bits = 5},    /* 'o' 111 */
+    {.pattern = 0x5a, .num_bits = 7},   /* 'p' 112 */
+    {.pattern = 0x194, .num_bits = 9},  /* 'q' 113 */
+    {.pattern = 0xa, .num_bits = 5},    /* 'r' 114 */
+    {.pattern = 0xb, .num_bits = 5},    /* 's' 115 */
+    {.pattern = 0xc, .num_bits = 5},    /* 't' 116 */
+    {.pattern = 0xd, .num_bits = 5},    /* 'u' 117 */
+    {.pattern = 0xc0, .num_bits = 8},   /* 'v' 118 */
+    {.pattern = 0x27, .num_bits = 6},   /* 'w' 119 */
+    {.pattern = 0xc1, .num_bits = 8},   /* 'x' 120 */
+    {.pattern = 0x28, .num_bits = 6},   /* 'y' 121 */
+    {.pattern = 0x379, .num_bits = 10}, /* 'z' 122 */
+    {.pattern = 0x37a, .num_bits = 10}, /* '{' 123 */
+    {.pattern = 0x37b, .num_bits = 10}, /* '|' 124 */
+    {.pattern = 0x37c, .num_bits = 10}, /* '}' 125 */
+    {.pattern = 0x37d, .num_bits = 10}, /* '~' 126 */
+    {.pattern = 0x37e, .num_bits = 10}, /* ' ' 127 */
+    {.pattern = 0x37f, .num_bits = 10}, /* ' ' 128 */
+    {.pattern = 0x380, .num_bits = 10}, /* ' ' 129 */
+    {.pattern = 0x381, .num_bits = 10}, /* ' ' 130 */
+    {.pattern = 0x382, .num_bits = 10}, /* ' ' 131 */
+    {.pattern = 0x383, .num_bits = 10}, /* ' ' 132 */
+    {.pattern = 0x384, .num_bits = 10}, /* ' ' 133 */
+    {.pattern = 0x385, .num_bits = 10}, /* ' ' 134 */
+    {.pattern = 0x386, .num_bits = 10}, /* ' ' 135 */
+    {.pattern = 0x387, .num_bits = 10}, /* ' ' 136 */
+    {.pattern = 0x388, .num_bits = 10}, /* ' ' 137 */
+    {.pattern = 0x389, .num_bits = 10}, /* ' ' 138 */
+    {.pattern = 0x38a, .num_bits = 10}, /* ' ' 139 */
+    {.pattern = 0x38b, .num_bits = 10}, /* ' ' 140 */
+    {.pattern = 0x38c, .num_bits = 10}, /* ' ' 141 */
+    {.pattern = 0x38d, .num_bits = 10}, /* ' ' 142 */
+    {.pattern = 0x38e, .num_bits = 10}, /* ' ' 143 */
+    {.pattern = 0x38f, .num_bits = 10}, /* ' ' 144 */
+    {.pattern = 0x390, .num_bits = 10}, /* ' ' 145 */
+    {.pattern = 0x391, .num_bits = 10}, /* ' ' 146 */
+    {.pattern = 0x392, .num_bits = 10}, /* ' ' 147 */
+    {.pattern = 0x393, .num_bits = 10}, /* ' ' 148 */
+    {.pattern = 0x394, .num_bits = 10}, /* ' ' 149 */
+    {.pattern = 0x395, .num_bits = 10}, /* ' ' 150 */
+    {.pattern = 0x396, .num_bits = 10}, /* ' ' 151 */
+    {.pattern = 0x397, .num_bits = 10}, /* ' ' 152 */
+    {.pattern = 0x398, .num_bits = 10}, /* ' ' 153 */
+    {.pattern = 0x399, .num_bits = 10}, /* ' ' 154 */
+    {.pattern = 0x39a, .num_bits = 10}, /* ' ' 155 */
+    {.pattern = 0x39b, .num_bits = 10}, /* ' ' 156 */
+    {.pattern = 0x39c, .num_bits = 10}, /* ' ' 157 */
+    {.pattern = 0x39d, .num_bits = 10}, /* ' ' 158 */
+    {.pattern = 0x39e, .num_bits = 10}, /* ' ' 159 */
+    {.pattern = 0x39f, .num_bits = 10}, /* ' ' 160 */
+    {.pattern = 0x3a0, .num_bits = 10}, /* ' ' 161 */
+    {.pattern = 0x3a1, .num_bits = 10}, /* ' ' 162 */
+    {.pattern = 0x3a2, .num_bits = 10}, /* ' ' 163 */
+    {.pattern = 0x3a3, .num_bits = 10}, /* ' ' 164 */
+    {.pattern = 0x3a4, .num_bits = 10}, /* ' ' 165 */
+    {.pattern = 0x3a5, .num_bits = 10}, /* ' ' 166 */
+    {.pattern = 0x3a6, .num_bits = 10}, /* ' ' 167 */
+    {.pattern = 0x3a7, .num_bits = 10}, /* ' ' 168 */
+    {.pattern = 0x3a8, .num_bits = 10}, /* ' ' 169 */
+    {.pattern = 0x3a9, .num_bits = 10}, /* ' ' 170 */
+    {.pattern = 0x3aa, .num_bits = 10}, /* ' ' 171 */
+    {.pattern = 0x3ab, .num_bits = 10}, /* ' ' 172 */
+    {.pattern = 0x3ac, .num_bits = 10}, /* ' ' 173 */
+    {.pattern = 0x3ad, .num_bits = 10}, /* ' ' 174 */
+    {.pattern = 0x3ae, .num_bits = 10}, /* ' ' 175 */
+    {.pattern = 0x3af, .num_bits = 10}, /* ' ' 176 */
+    {.pattern = 0x3b0, .num_bits = 10}, /* ' ' 177 */
+    {.pattern = 0x3b1, .num_bits = 10}, /* ' ' 178 */
+    {.pattern = 0x3b2, .num_bits = 10}, /* ' ' 179 */
+    {.pattern = 0x3b3, .num_bits = 10}, /* ' ' 180 */
+    {.pattern = 0x3b4, .num_bits = 10}, /* ' ' 181 */
+    {.pattern = 0x3b5, .num_bits = 10}, /* ' ' 182 */
+    {.pattern = 0x3b6, .num_bits = 10}, /* ' ' 183 */
+    {.pattern = 0x3b7, .num_bits = 10}, /* ' ' 184 */
+    {.pattern = 0x3b8, .num_bits = 10}, /* ' ' 185 */
+    {.pattern = 0x3b9, .num_bits = 10}, /* ' ' 186 */
+    {.pattern = 0x3ba, .num_bits = 10}, /* ' ' 187 */
+    {.pattern = 0x3bb, .num_bits = 10}, /* ' ' 188 */
+    {.pattern = 0x3bc, .num_bits = 10}, /* ' ' 189 */
+    {.pattern = 0x3bd, .num_bits = 10}, /* ' ' 190 */
+    {.pattern = 0x3be, .num_bits = 10}, /* ' ' 191 */
+    {.pattern = 0x3bf, .num_bits = 10}, /* ' ' 192 */
+    {.pattern = 0x3c0, .num_bits = 10}, /* ' ' 193 */
+    {.pattern = 0x3c1, .num_bits = 10}, /* ' ' 194 */
+    {.pattern = 0x3c2, .num_bits = 10}, /* ' ' 195 */
+    {.pattern = 0x3c3, .num_bits = 10}, /* ' ' 196 */
+    {.pattern = 0x3c4, .num_bits = 10}, /* ' ' 197 */
+    {.pattern = 0x3c5, .num_bits = 10}, /* ' ' 198 */
+    {.pattern = 0x3c6, .num_bits = 10}, /* ' ' 199 */
+    {.pattern = 0x3c7, .num_bits = 10}, /* ' ' 200 */
+    {.pattern = 0x3c8, .num_bits = 10}, /* ' ' 201 */
+    {.pattern = 0x3c9, .num_bits = 10}, /* ' ' 202 */
+    {.pattern = 0x3ca, .num_bits = 10}, /* ' ' 203 */
+    {.pattern = 0x3cb, .num_bits = 10}, /* ' ' 204 */
+    {.pattern = 0x3cc, .num_bits = 10}, /* ' ' 205 */
+    {.pattern = 0x3cd, .num_bits = 10}, /* ' ' 206 */
+    {.pattern = 0x3ce, .num_bits = 10}, /* ' ' 207 */
+    {.pattern = 0x3cf, .num_bits = 10}, /* ' ' 208 */
+    {.pattern = 0x3d0, .num_bits = 10}, /* ' ' 209 */
+    {.pattern = 0x3d1, .num_bits = 10}, /* ' ' 210 */
+    {.pattern = 0x3d2, .num_bits = 10}, /* ' ' 211 */
+    {.pattern = 0x3d3, .num_bits = 10}, /* ' ' 212 */
+    {.pattern = 0x3d4, .num_bits = 10}, /* ' ' 213 */
+    {.pattern = 0x3d5, .num_bits = 10}, /* ' ' 214 */
+    {.pattern = 0x3d6, .num_bits = 10}, /* ' ' 215 */
+    {.pattern = 0x3d7, .num_bits = 10}, /* ' ' 216 */
+    {.pattern = 0x3d8, .num_bits = 10}, /* ' ' 217 */
+    {.pattern = 0x3d9, .num_bits = 10}, /* ' ' 218 */
+    {.pattern = 0x3da, .num_bits = 10}, /* ' ' 219 */
+    {.pattern = 0x3db, .num_bits = 10}, /* ' ' 220 */
+    {.pattern = 0x3dc, .num_bits = 10}, /* ' ' 221 */
+    {.pattern = 0x3dd, .num_bits = 10}, /* ' ' 222 */
+    {.pattern = 0x3de, .num_bits = 10}, /* ' ' 223 */
+    {.pattern = 0x3df, .num_bits = 10}, /* ' ' 224 */
+    {.pattern = 0x3e0, .num_bits = 10}, /* ' ' 225 */
+    {.pattern = 0x3e1, .num_bits = 10}, /* ' ' 226 */
+    {.pattern = 0x3e2, .num_bits = 10}, /* ' ' 227 */
+    {.pattern = 0x3e3, .num_bits = 10}, /* ' ' 228 */
+    {.pattern = 0x3e4, .num_bits = 10}, /* ' ' 229 */
+    {.pattern = 0x3e5, .num_bits = 10}, /* ' ' 230 */
+    {.pattern = 0x3e6, .num_bits = 10}, /* ' ' 231 */
+    {.pattern = 0x3e7, .num_bits = 10}, /* ' ' 232 */
+    {.pattern = 0x3e8, .num_bits = 10}, /* ' ' 233 */
+    {.pattern = 0x3e9, .num_bits = 10}, /* ' ' 234 */
+    {.pattern = 0x3ea, .num_bits = 10}, /* ' ' 235 */
+    {.pattern = 0x3eb, .num_bits = 10}, /* ' ' 236 */
+    {.pattern = 0x3ec, .num_bits = 10}, /* ' ' 237 */
+    {.pattern = 0x3ed, .num_bits = 10}, /* ' ' 238 */
+    {.pattern = 0x3ee, .num_bits = 10}, /* ' ' 239 */
+    {.pattern = 0x3ef, .num_bits = 10}, /* ' ' 240 */
+    {.pattern = 0x3f0, .num_bits = 10}, /* ' ' 241 */
+    {.pattern = 0x3f1, .num_bits = 10}, /* ' ' 242 */
+    {.pattern = 0x3f2, .num_bits = 10}, /* ' ' 243 */
+    {.pattern = 0x3f3, .num_bits = 10}, /* ' ' 244 */
+    {.pattern = 0x3f4, .num_bits = 10}, /* ' ' 245 */
+    {.pattern = 0x3f5, .num_bits = 10}, /* ' ' 246 */
+    {.pattern = 0x3f6, .num_bits = 10}, /* ' ' 247 */
+    {.pattern = 0x3f7, .num_bits = 10}, /* ' ' 248 */
+    {.pattern = 0x3f8, .num_bits = 10}, /* ' ' 249 */
+    {.pattern = 0x3f9, .num_bits = 10}, /* ' ' 250 */
+    {.pattern = 0x3fa, .num_bits = 10}, /* ' ' 251 */
+    {.pattern = 0x3fb, .num_bits = 10}, /* ' ' 252 */
+    {.pattern = 0x3fc, .num_bits = 10}, /* ' ' 253 */
+    {.pattern = 0x3fd, .num_bits = 10}, /* ' ' 254 */
+    {.pattern = 0x3fe, .num_bits = 10}, /* ' ' 255 */
 };
 
 static struct aws_huffman_code encode_symbol(uint8_t symbol, void *userdata) {
@@ -2390,7 +2390,6 @@ node_111111111:
         *symbol = 255;
         return 10;
     }
-
 }
 
 struct aws_huffman_symbol_coder *test_get_coder() {

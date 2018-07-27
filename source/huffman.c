@@ -23,12 +23,9 @@
 
 #define BITSIZEOF(val) (sizeof(val) * 8)
 
-static uint8_t MAX_PATTERN_BITS =
-    BITSIZEOF(((struct aws_huffman_code *)0)->pattern);
+static uint8_t MAX_PATTERN_BITS = BITSIZEOF(((struct aws_huffman_code *)0)->pattern);
 
-void aws_huffman_encoder_init(
-    struct aws_huffman_encoder *encoder,
-    struct aws_huffman_symbol_coder *coder) {
+void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_symbol_coder *coder) {
 
     assert(encoder);
     assert(coder);
@@ -47,9 +44,7 @@ void aws_huffman_encoder_reset(struct aws_huffman_encoder *encoder) {
     encoder->eos_padding = eos_padding;
 }
 
-void aws_huffman_decoder_init(
-    struct aws_huffman_decoder *decoder,
-    struct aws_huffman_symbol_coder *coder) {
+void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_symbol_coder *coder) {
 
     assert(decoder);
     assert(coder);
@@ -74,9 +69,7 @@ struct encoder_state {
 
 /* Helper function to write a single bit_pattern to memory (or working_bits if
  * out of buffer space) */
-static int encode_write_bit_pattern(
-    struct encoder_state *state,
-    struct aws_huffman_code bit_pattern) {
+static int encode_write_bit_pattern(struct encoder_state *state, struct aws_huffman_code bit_pattern) {
 
     if (bit_pattern.num_bits == 0) {
         return aws_raise_error(AWS_ERROR_COMPRESSION_UNKNOWN_SYMBOL);
@@ -84,18 +77,15 @@ static int encode_write_bit_pattern(
 
     uint8_t bits_to_write = bit_pattern.num_bits;
     while (bits_to_write > 0) {
-        uint8_t bits_for_current =
-            bits_to_write > state->bit_pos ? state->bit_pos : bits_to_write;
+        uint8_t bits_for_current = bits_to_write > state->bit_pos ? state->bit_pos : bits_to_write;
         /* Chop off the top 0s and bits that have already been read */
         uint8_t bits_to_cut =
-            (BITSIZEOF(bit_pattern.pattern) - bit_pattern.num_bits) +
-            (bit_pattern.num_bits - bits_to_write);
+            (BITSIZEOF(bit_pattern.pattern) - bit_pattern.num_bits) + (bit_pattern.num_bits - bits_to_write);
 
         /* Write the appropiate number of bits to this byte
             Shift to the left to cut any unneeded bits
             Shift to the right to position the bits correctly */
-        state->working |= (bit_pattern.pattern << bits_to_cut) >>
-                          (MAX_PATTERN_BITS - state->bit_pos);
+        state->working |= (bit_pattern.pattern << bits_to_cut) >> (MAX_PATTERN_BITS - state->bit_pos);
 
         bits_to_write -= bits_for_current;
         state->bit_pos -= bits_for_current;
@@ -115,8 +105,7 @@ static int encode_write_bit_pattern(
                 state->encoder->overflow_bits.num_bits = bits_to_write;
                 if (bits_to_write) {
                     state->encoder->overflow_bits.pattern =
-                        (bit_pattern.pattern << bits_to_cut) >>
-                        (MAX_PATTERN_BITS - bits_to_write);
+                        (bit_pattern.pattern << bits_to_cut) >> (MAX_PATTERN_BITS - bits_to_write);
                 }
 
                 return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
@@ -127,14 +116,14 @@ static int encode_write_bit_pattern(
     return AWS_OP_SUCCESS;
 }
 
-#define CHECK_WRITE_BITS(bit_pattern)                                          \
-    do {                                                                       \
-        int result = encode_write_bit_pattern(&state, bit_pattern);            \
-        if (result != AWS_OP_SUCCESS) {                                        \
-            *length -= input_cursor.len;                                       \
-            *output_size -= state.output_cursor.len;                           \
-            return AWS_OP_ERR;                                                 \
-        }                                                                      \
+#define CHECK_WRITE_BITS(bit_pattern)                                                                                  \
+    do {                                                                                                               \
+        int result = encode_write_bit_pattern(&state, bit_pattern);                                                    \
+        if (result != AWS_OP_SUCCESS) {                                                                                \
+            *length -= input_cursor.len;                                                                               \
+            *output_size -= state.output_cursor.len;                                                                   \
+            return AWS_OP_ERR;                                                                                         \
+        }                                                                                                              \
     } while (0)
 
 int aws_huffman_encode(
@@ -163,8 +152,7 @@ int aws_huffman_encode(
     state.output_cursor = aws_byte_cursor_from_array(output, *output_size);
 
     /* Counters for how far into the output we currently are */
-    struct aws_byte_cursor input_cursor =
-        aws_byte_cursor_from_array(to_encode, *length);
+    struct aws_byte_cursor input_cursor = aws_byte_cursor_from_array(to_encode, *length);
 
     /* Write any bits leftover from previous invocation */
     if (encoder->overflow_bits.num_bits) {
@@ -175,8 +163,7 @@ int aws_huffman_encode(
     while (input_cursor.len) {
         uint8_t new_byte = 0;
         aws_byte_cursor_read_u8(&input_cursor, &new_byte);
-        struct aws_huffman_code code_point =
-            encoder->coder->encode(new_byte, encoder->coder->userdata);
+        struct aws_huffman_code code_point = encoder->coder->encode(new_byte, encoder->coder->userdata);
 
         CHECK_WRITE_BITS(code_point);
     }
@@ -207,16 +194,14 @@ struct decoder_state {
 static void decode_fill_working_bits(struct decoder_state *state) {
 
     /* Read from bytes in the buffer until there are enough bytes to process */
-    while (state->decoder->num_bits < MAX_PATTERN_BITS &&
-           state->input_cursor.len) {
+    while (state->decoder->num_bits < MAX_PATTERN_BITS && state->input_cursor.len) {
 
         /* Read the appropiate number of bits from this byte */
         uint8_t new_byte = 0;
         aws_byte_cursor_read_u8(&state->input_cursor, &new_byte);
 
         uint64_t positioned = ((uint64_t)new_byte)
-                              << (BITSIZEOF(state->decoder->working_bits) - 8 -
-                                  state->decoder->num_bits);
+                              << (BITSIZEOF(state->decoder->working_bits) - 8 - state->decoder->num_bits);
         state->decoder->working_bits |= positioned;
 
         state->decoder->num_bits += 8;
@@ -247,8 +232,7 @@ int aws_huffman_decode(
 
     /* Measures how much of the input was read */
     size_t bits_left = decoder->num_bits + *length * 8;
-    struct aws_byte_cursor output_cursor =
-        aws_byte_cursor_from_array(output, *output_size);
+    struct aws_byte_cursor output_cursor = aws_byte_cursor_from_array(output, *output_size);
 
     while (1) {
 
@@ -256,9 +240,7 @@ int aws_huffman_decode(
 
         uint8_t symbol;
         uint8_t bits_read = decoder->coder->decode(
-            (uint32_t)(
-                decoder->working_bits >>
-                (BITSIZEOF(decoder->working_bits) - MAX_PATTERN_BITS)),
+            (uint32_t)(decoder->working_bits >> (BITSIZEOF(decoder->working_bits) - MAX_PATTERN_BITS)),
             &symbol,
             decoder->coder->userdata);
 

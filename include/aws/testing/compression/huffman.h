@@ -56,14 +56,14 @@ struct huffman_test_code_point {
  * Macro to be used when including a table def file, populates an array of
  * huffman_test_code_points
  */
-#define HUFFMAN_CODE(psymbol, pbit_string, pbit_pattern, pnum_bits)            \
-    {                                                                          \
-        .symbol = (psymbol),                                                   \
-        .code =                                                                \
-            {                                                                  \
-                .pattern = (pbit_pattern),                                     \
-                .num_bits = (pnum_bits),                                       \
-            },                                                                 \
+#define HUFFMAN_CODE(psymbol, pbit_string, pbit_pattern, pnum_bits)                                                    \
+    {                                                                                                                  \
+        .symbol = (psymbol),                                                                                           \
+        .code =                                                                                                        \
+            {                                                                                                          \
+                .pattern = (pbit_pattern),                                                                             \
+                .num_bits = (pnum_bits),                                                                               \
+            },                                                                                                         \
     },
 
 /**

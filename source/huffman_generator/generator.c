@@ -86,8 +86,7 @@ int read_code_points(const char *input_path) {
 
                     /* Parse symbol */
                     uint8_t symbol = (uint8_t)atoi(current_char);
-                    struct huffman_code_point *code_point =
-                        &code_points[symbol];
+                    struct huffman_code_point *code_point = &code_points[symbol];
 
                     assert(!code_point->symbol && "Symbol already found!");
 
@@ -98,8 +97,7 @@ int read_code_points(const char *input_path) {
                     current_char += read_past_comma(current_char);
 
                     /* Parse bits */
-                    code_point->code.bits =
-                        (uint32_t)strtol(current_char, NULL, 16);
+                    code_point->code.bits = (uint32_t)strtol(current_char, NULL, 16);
 
                     current_char += read_past_comma(current_char);
 
@@ -163,9 +161,7 @@ void huffman_node_clean_up(struct huffman_node *node) {
 }
 
 /* This function writes what to do if the pattern for node is a match */
-void huffman_node_write_decode_handle_value(
-    struct huffman_node *node,
-    FILE *file) {
+void huffman_node_write_decode_handle_value(struct huffman_node *node, FILE *file) {
 
     if (!node) {
         /* Invalid node, return 0 */
@@ -186,10 +182,7 @@ void huffman_node_write_decode_handle_value(
     }
 }
 
-void huffman_node_write_decode(
-    struct huffman_node *node,
-    FILE *file,
-    uint8_t current_bit) {
+void huffman_node_write_decode(struct huffman_node *node, FILE *file, uint8_t current_bit) {
 
     /* Value nodes should have been inlined into parent branch checks */
     assert(!node->value);
@@ -208,8 +201,7 @@ void huffman_node_write_decode(
 
     /* Check 1 bit pattern */
     uint32_t single_bit_mask = 1ull << (31 - current_bit);
-    uint32_t left_aligned_pattern = ((node->code.bits << 1) + 1)
-                                    << (31 - node->code.num_bits);
+    uint32_t left_aligned_pattern = ((node->code.bits << 1) + 1) << (31 - node->code.num_bits);
     uint32_t check_pattern = left_aligned_pattern & single_bit_mask;
     fprintf(file, "    if (bits & 0x%x) {\n", check_pattern);
 

@@ -45,8 +45,7 @@ struct aws_huffman_code {
  * \returns The code representing the symbol. If this symbol is not recognized,
  * return a code with num_bits set to 0.
  */
-typedef struct aws_huffman_code(
-    aws_huffman_symbol_encoder_fn)(uint8_t symbol, void *userdata);
+typedef struct aws_huffman_code(aws_huffman_symbol_encoder_fn)(uint8_t symbol, void *userdata);
 /**
  * Function used to decode a code into a symbol
  *
@@ -57,10 +56,7 @@ typedef struct aws_huffman_code(
  *
  * \returns The number of bits read from bits
  */
-typedef uint8_t(aws_huffman_symbol_decoder_fn)(
-    uint32_t bits,
-    uint8_t *symbol,
-    void *userdata);
+typedef uint8_t(aws_huffman_symbol_decoder_fn)(uint32_t bits, uint8_t *symbol, void *userdata);
 
 /**
  * Structure used to define how symbols are encoded and decoded
@@ -105,9 +101,7 @@ extern "C" {
  * Initialize a encoder object with a symbol coder.
  */
 AWS_COMPRESSION_API
-void aws_huffman_encoder_init(
-    struct aws_huffman_encoder *encoder,
-    struct aws_huffman_symbol_coder *coder);
+void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_symbol_coder *coder);
 
 /**
  * Resets a decoder for use with a new binary stream
@@ -119,9 +113,7 @@ void aws_huffman_encoder_reset(struct aws_huffman_encoder *encoder);
  * Initialize a decoder object with a symbol coder.
  */
 AWS_COMPRESSION_API
-void aws_huffman_decoder_init(
-    struct aws_huffman_decoder *decoder,
-    struct aws_huffman_symbol_coder *coder);
+void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_symbol_coder *coder);
 
 /**
  * Resets a decoder for use with a new binary stream

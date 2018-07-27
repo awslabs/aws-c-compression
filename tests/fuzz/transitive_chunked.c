@@ -30,12 +30,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         size_t step_size = step_sizes[i];
 
         const char *error_message = NULL;
-        int result = huffman_test_transitive_chunked(
-            test_get_coder(),
-            (const char *)data,
-            size,
-            step_size,
-            &error_message);
+        int result =
+            huffman_test_transitive_chunked(test_get_coder(), (const char *)data, size, step_size, &error_message);
         ASSERT_SUCCESS(result, error_message);
     }
 

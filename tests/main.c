@@ -16,7 +16,7 @@
 #if _MSC_VER
 #    pragma warning(disable : 4100) /* unreferenced formal parameter */
 #    pragma warning(disable : 4204) /* non-constant aggregate initializer */
-#    pragma warning(disable : 4221) /* initialization using address of         \
+#    pragma warning(disable : 4221) /* initialization using address of                                                 \
                                        automatic variable */
 #endif
 

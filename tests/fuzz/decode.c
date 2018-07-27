@@ -32,8 +32,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     char output_buffer[output_buffer_size];
 
     /* Don't really care about result, just make sure there's no crash */
-    aws_huffman_decode(
-        &decoder, data, &size, output_buffer, &output_buffer_size);
+    aws_huffman_decode(&decoder, data, &size, output_buffer, &output_buffer_size);
 
     return 0; // Non-zero return values are reserved for future use.
 }

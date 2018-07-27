@@ -46,12 +46,7 @@ int huffman_test_transitive(
 
     size_t encode_input_size = size;
     size_t encode_output_size = intermediate_buffer_size;
-    int result = aws_huffman_encode(
-        &encoder,
-        input,
-        &encode_input_size,
-        intermediate_buffer,
-        &encode_output_size);
+    int result = aws_huffman_encode(&encoder, input, &encode_input_size, intermediate_buffer, &encode_output_size);
 
     if (result != AWS_OP_SUCCESS) {
         *error_string = "aws_huffman_encode failed";
@@ -68,12 +63,7 @@ int huffman_test_transitive(
 
     size_t decode_input_size = encode_output_size;
     size_t decode_output_size = size;
-    result = aws_huffman_decode(
-        &decoder,
-        intermediate_buffer,
-        &decode_input_size,
-        output_buffer,
-        &decode_output_size);
+    result = aws_huffman_decode(&decoder, intermediate_buffer, &decode_input_size, output_buffer, &decode_output_size);
 
     if (result != AWS_OP_SUCCESS) {
         *error_string = "aws_huffman_decode failed";
@@ -125,12 +115,7 @@ int huffman_test_transitive_chunked(
             size_t output_size = output_chunk_size;
             size_t processed = bytes_to_process;
 
-            result = aws_huffman_encode(
-                &encoder,
-                current_input,
-                &processed,
-                current_output,
-                &output_size);
+            result = aws_huffman_encode(&encoder, current_input, &processed, current_output, &output_size);
 
             if (output_size == 0) {
                 *error_string = "encode didn't write any data";
@@ -142,8 +127,7 @@ int huffman_test_transitive_chunked(
             current_output += output_size;
             current_input += processed;
 
-            if (result != AWS_OP_SUCCESS &&
-                aws_last_error() != AWS_ERROR_SHORT_BUFFER) {
+            if (result != AWS_OP_SUCCESS && aws_last_error() != AWS_ERROR_SHORT_BUFFER) {
 
                 *error_string = "encode returned wrong error code";
                 return AWS_OP_ERR;
@@ -171,12 +155,7 @@ int huffman_test_transitive_chunked(
             size_t output_size = output_chunk_size;
             size_t processed = bytes_to_process;
 
-            result = aws_huffman_decode(
-                &decoder,
-                current_input,
-                &processed,
-                current_output,
-                &output_size);
+            result = aws_huffman_decode(&decoder, current_input, &processed, current_output, &output_size);
 
             if (output_size == 0) {
                 *error_string = "decode didn't write any data";
@@ -190,8 +169,7 @@ int huffman_test_transitive_chunked(
 
             int error = aws_last_error();
             (void)error;
-            if (result != AWS_OP_SUCCESS &&
-                aws_last_error() != AWS_ERROR_SHORT_BUFFER) {
+            if (result != AWS_OP_SUCCESS && aws_last_error() != AWS_ERROR_SHORT_BUFFER) {
 
                 *error_string = "decode returned wrong error code";
                 return AWS_OP_ERR;
