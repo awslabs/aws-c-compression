@@ -1,5 +1,5 @@
-#ifndef AWS_COMPRESSION_TESTING_HUFFMAN_INL
-#define AWS_COMPRESSION_TESTING_HUFFMAN_INL
+#ifndef AWS_TESTING_COMPRESSION_HUFFMAN_INL
+#define AWS_TESTING_COMPRESSION_HUFFMAN_INL
 
 /*
  * Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -21,13 +21,17 @@
  */
 
 #ifdef _WIN32
-#include <malloc.h>
-#define alloca _alloca
+#    include <malloc.h>
+#    define alloca _alloca
 #else
-#include <alloca.h>
+#    include <alloca.h>
 #endif /* _WIN32 */
 
-int huffman_test_transitive(struct aws_huffman_symbol_coder *coder, const char *input, size_t size, const char **error_string) {
+int huffman_test_transitive(
+    struct aws_huffman_symbol_coder *coder,
+    const char *input,
+    size_t size,
+    const char **error_string) {
 
     struct aws_huffman_encoder encoder;
     aws_huffman_encoder_init(&encoder, coder);
@@ -43,6 +47,7 @@ int huffman_test_transitive(struct aws_huffman_symbol_coder *coder, const char *
     size_t encode_input_size = size;
     size_t encode_output_size = intermediate_buffer_size;
     int result = aws_huffman_encode(&encoder, input, &encode_input_size, intermediate_buffer, &encode_output_size);
+
     if (result != AWS_OP_SUCCESS) {
         *error_string = "aws_huffman_encode failed";
         return AWS_OP_ERR;
@@ -59,6 +64,7 @@ int huffman_test_transitive(struct aws_huffman_symbol_coder *coder, const char *
     size_t decode_input_size = encode_output_size;
     size_t decode_output_size = size;
     result = aws_huffman_decode(&decoder, intermediate_buffer, &decode_input_size, output_buffer, &decode_output_size);
+
     if (result != AWS_OP_SUCCESS) {
         *error_string = "aws_huffman_decode failed";
         return AWS_OP_ERR;
@@ -79,7 +85,12 @@ int huffman_test_transitive(struct aws_huffman_symbol_coder *coder, const char *
     return AWS_OP_SUCCESS;
 }
 
-int huffman_test_transitive_chunked(struct aws_huffman_symbol_coder *coder, const char *input, size_t size, size_t output_chunk_size, const char **error_string) {
+int huffman_test_transitive_chunked(
+    struct aws_huffman_symbol_coder *coder,
+    const char *input,
+    size_t size,
+    size_t output_chunk_size,
+    const char **error_string) {
 
     struct aws_huffman_encoder encoder;
     aws_huffman_encoder_init(&encoder, coder);
@@ -117,6 +128,7 @@ int huffman_test_transitive_chunked(struct aws_huffman_symbol_coder *coder, cons
             current_input += processed;
 
             if (result != AWS_OP_SUCCESS && aws_last_error() != AWS_ERROR_SHORT_BUFFER) {
+
                 *error_string = "encode returned wrong error code";
                 return AWS_OP_ERR;
             }
@@ -155,12 +167,14 @@ int huffman_test_transitive_chunked(struct aws_huffman_symbol_coder *coder, cons
             current_output += output_size;
             current_input += processed;
 
-            int error = aws_last_error();   (void)error;
+            int error = aws_last_error();
+            (void)error;
             if (result != AWS_OP_SUCCESS && aws_last_error() != AWS_ERROR_SHORT_BUFFER) {
+
                 *error_string = "decode returned wrong error code";
                 return AWS_OP_ERR;
             }
-        }  while (result != AWS_OP_SUCCESS);
+        } while (result != AWS_OP_SUCCESS);
     }
 
     if (result != AWS_OP_SUCCESS) {
@@ -179,4 +193,4 @@ int huffman_test_transitive_chunked(struct aws_huffman_symbol_coder *coder, cons
     return AWS_OP_SUCCESS;
 }
 
-#endif /* AWS_COMPRESSION_TESTING_HUFFMAN_INL */
+#endif /* AWS_TESTING_COMPRESSION_HUFFMAN_INL */

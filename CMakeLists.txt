@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(aws-c-compression)
+project(aws-c-compression C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake")
 

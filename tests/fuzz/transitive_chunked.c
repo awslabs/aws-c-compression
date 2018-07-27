@@ -25,14 +25,15 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
 
-    static const size_t step_sizes[] = { 1, 2, 4, 8, 16, 32, 64, 128 };
+    static const size_t step_sizes[] = {1, 2, 4, 8, 16, 32, 64, 128};
     for (size_t i = 0; i < sizeof(step_sizes) / sizeof(size_t); ++i) {
         size_t step_size = step_sizes[i];
 
         const char *error_message = NULL;
-        int result = huffman_test_transitive_chunked(test_get_coder(), (const char *)data, size, step_size, &error_message);
+        int result =
+            huffman_test_transitive_chunked(test_get_coder(), (const char *)data, size, step_size, &error_message);
         ASSERT_SUCCESS(result, error_message);
     }
 
-    return 0;  // Non-zero return values are reserved for future use.
+    return 0; // Non-zero return values are reserved for future use.
 }
