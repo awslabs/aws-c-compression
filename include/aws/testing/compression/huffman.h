@@ -21,7 +21,6 @@
 #include <aws/compression/huffman.h>
 
 #include <stddef.h>
-#include <stdint.h>
 
 /**
  * The intended use of file is to allow testing of huffman character coders.

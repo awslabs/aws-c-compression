@@ -18,8 +18,6 @@
 
 #include <aws/compression/huffman.h>
 
-#include <stdint.h>
-
 /* Exported by generated file */
 struct aws_huffman_symbol_coder *test_get_coder();
 

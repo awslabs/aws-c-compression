@@ -15,7 +15,7 @@
 
 #include <assert.h>
 #include <ctype.h>
-#include <stdint.h>
+#include <stdint.h> /* NOLINT(fuchsia-restrict-system-includes) */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

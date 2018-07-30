@@ -21,7 +21,6 @@
 #include <aws/common/common.h>
 
 #include <stddef.h>
-#include <stdint.h>
 
 /**
  * Represents an encoded code
