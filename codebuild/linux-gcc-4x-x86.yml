@@ -8,11 +8,10 @@ phases:
   pre_build:
     commands:
       - export CC=gcc
-      - export CXX=g++
   build:
     commands:
       - echo Build started on `date`
-      - ./codebuild/common-trusty.sh -DCMAKE_C_FLAGS="-m32" -DCMAKE_LINK_FLAGS="-m32"
+      - ./codebuild/common-linux.sh -DCMAKE_C_FLAGS="-m32" -DCMAKE_LINK_FLAGS="-m32"
   post_build:
     commands:
       - echo Build completed on `date`
