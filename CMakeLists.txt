@@ -1,15 +1,25 @@
 cmake_minimum_required(VERSION 3.1)
 project(aws-c-compression C)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake")
+if (DEFINED CMAKE_PREFIX_PATH)
+    file(TO_CMAKE_PATH ${CMAKE_PREFIX_PATH} CMAKE_PREFIX_PATH)
+endif()
+
+if (DEFINED CMAKE_INSTALL_PREFIX)
+    file(TO_CMAKE_PATH ${CMAKE_INSTALL_PREFIX} CMAKE_INSTALL_PREFIX)
+endif()
+
+if (UNIX AND NOT APPLE)
+    include(GNUInstallDirs)
+elseif(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+    set(CMAKE_INSTALL_LIBDIR "lib")
+endif()
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_PREFIX_PATH}/${CMAKE_INSTALL_LIBDIR}/cmake")
 
 include(AwsCFlags)
-include(Sanitizers)
+include(AwsSanitizers)
 include(CheckCCompilerFlag)
-
-option(BUILD_PORTABLE_BINARIES
-        "Build Relocatable Binaries, this will turn off features that will fail on older kernels than used for the build."
-        OFF)
 
 file(GLOB AWS_COMPRESSION_HEADERS
         "include/aws/compression/*.h"
@@ -47,7 +57,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
         $<INSTALL_INTERFACE:include>)
 
 find_package(aws-c-common REQUIRED)
-target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC aws-c-common ${PLATFORM_LIBS})
+target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC AWS::aws-c-common)
 
 install(FILES ${AWS_COMPRESSION_HEADERS} DESTINATION "include/aws/compression")
 install(FILES ${AWS_COMPRESSION_TESTING_HEADERS} DESTINATION "include/aws/testing/compression")
@@ -62,6 +72,9 @@ install(
 export(TARGETS ${CMAKE_PROJECT_NAME} FILE ${CMAKE_PROJECT_NAME}-config.cmake)
 install(EXPORT ${CMAKE_PROJECT_NAME}-config DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_PROJECT_NAME}/cmake/")
 
-include(CTest)
-add_subdirectory(tests)
 add_subdirectory(source/huffman_generator)
+
+include(CTest)
+if (BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

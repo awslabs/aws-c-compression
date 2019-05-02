@@ -1,6 +1,7 @@
 include(CTest)
 include(AwsTestHarness)
-include(LibFuzzer)
+include(AwsLibFuzzer)
+
 enable_testing()
 
 file(GLOB TEST_SRC "*.c")
@@ -28,4 +29,4 @@ if(MSVC)
 endif()
 
 file(GLOB FUZZ_TESTS "fuzz/*.c")
-aws_add_fuzz_tests("${FUZZ_TESTS}" "test_huffman_static.c")
+aws_add_fuzz_tests("${FUZZ_TESTS}" "test_huffman_static.c" "")
