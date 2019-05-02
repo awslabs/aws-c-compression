@@ -11,4 +11,4 @@ compiler:
 
 #execute build
 script:
-  - ./codebuild/common-macos.sh
+  - ./codebuild/common-posix.sh

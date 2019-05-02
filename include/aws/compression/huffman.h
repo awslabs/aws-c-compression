@@ -18,6 +18,7 @@
 
 #include <aws/compression/exports.h>
 
+#include <aws/common/byte_buf.h>
 #include <aws/common/common.h>
 
 #include <stddef.h>
@@ -92,9 +93,7 @@ struct aws_huffman_decoder {
     uint8_t num_bits;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+AWS_EXTERN_C_BEGIN
 
 /**
  * Initialize a encoder object with a symbol coder.
@@ -125,45 +124,31 @@ void aws_huffman_decoder_reset(struct aws_huffman_decoder *decoder);
  *
  * \param[in]       encoder         The encoder object to use
  * \param[in]       to_encode       The symbol buffer to encode
- * \param[in,out]   length          In: The length of to_decode. Out: The number
- * of bytes read from to_encode \param[in]       output          The buffer to
- * write encoded bytes to \param[in,out]   output_size     In: The size of
- * output. Out: The number of bytes written to output
+ * \param[in]       output          The buffer to write encoded bytes to
  *
- * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR the code for the
- * error that occured
+ * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR otherwise
  */
 AWS_COMPRESSION_API
 int aws_huffman_encode(
     struct aws_huffman_encoder *encoder,
-    const char *to_encode,
-    size_t *length,
-    uint8_t *output,
-    size_t *output_size);
+    struct aws_byte_cursor *to_encode,
+    struct aws_byte_buf *output);
 
 /**
  * Decodes a byte buffer into the provided symbol array.
  *
  * \param[in]       decoder         The decoder object to use
  * \param[in]       to_decode       The encoded byte buffer to read from
- * \param[in,out]   length          In: The length of to_decode. Out: The number
- * of bytes read from to_decode \param[in]       output          The buffer to
- * write decoded symbols to \param[in,out]   output_size     In: The size of
- * output. Out: The number of bytes written to output
+ * \param[in]       output          The buffer to write decoded symbols to
  *
- * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR the code for the
- * error that occured
+ * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR otherwise
  */
 AWS_COMPRESSION_API
 int aws_huffman_decode(
     struct aws_huffman_decoder *decoder,
-    const uint8_t *to_decode,
-    size_t *length,
-    char *output,
-    size_t *output_size);
+    struct aws_byte_cursor *to_decode,
+    struct aws_byte_buf *output);
 
-#ifdef __cplusplus
-}
-#endif
+AWS_EXTERN_C_END
 
 #endif /* AWS_COMPRESSION_HUFFMAN_H */

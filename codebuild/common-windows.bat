@@ -1,26 +1,28 @@
 
-cd ../
-mkdir install
+set CMAKE_ARGS=%*
 
-git clone https://github.com/awslabs/aws-c-common.git
-cd aws-c-common
-mkdir build
-cd build
-cmake %* -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX=../../install ../ || goto error
-msbuild.exe aws-c-common.vcxproj /p:Configuration=Release || goto error
-msbuild.exe INSTALL.vcxproj /p:Configuration=Release || goto error
+set BUILDS_DIR=%TEMP%\builds
+set INSTALL_DIR=%BUILDS_DIR%\install
+mkdir %BUILDS_DIR%
+mkdir %INSTALL_DIR%
+
+CALL :install_library aws-c-common
+
+mkdir %BUILDS_DIR%\aws-c-compression-build
+cd %BUILDS_DIR%\aws-c-compression-build
+cmake %CMAKE_ARGS% -DCMAKE_BUILD_TYPE="RelWithDebInfo" -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" -DCMAKE_PREFIX_PATH="%INSTALL_DIR%"  %CODEBUILD_SRC_DIR% || goto error
+cmake --build . --config RelWithDebInfo || goto error
 ctest -V || goto error
-cd ../..
-
-cd aws-c-compression
-mkdir build
-cd build
-cmake %* -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX=../../install ../ || goto error
-msbuild.exe aws-c-compression.vcxproj /p:Configuration=Release || goto error
-msbuild.exe tests/aws-c-compression-tests.vcxproj /p:Configuration=Release || goto error
-ctest -V
 
 goto :EOF
+
+:install_library
+mkdir %BUILDS_DIR%\%~1-build
+cd %BUILDS_DIR%\%~1-build
+git clone https://github.com/awslabs/%~1.git
+cmake %CMAKE_ARGS% -DCMAKE_BUILD_TYPE="RelWithDebInfo" -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" -DCMAKE_PREFIX_PATH="%INSTALL_DIR%" %~1 || goto error
+cmake --build . --target install --config RelWithDebInfo || goto error
+exit /b %errorlevel%
 
 :error
 echo Failed with error #%errorlevel%.

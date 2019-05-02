@@ -2392,7 +2392,7 @@ node_111111111:
     }
 }
 
-struct aws_huffman_symbol_coder *test_get_coder() {
+struct aws_huffman_symbol_coder *test_get_coder(void) {
 
     static struct aws_huffman_symbol_coder coder = {
         .encode = encode_symbol,

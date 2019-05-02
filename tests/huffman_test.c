@@ -19,7 +19,7 @@
 #include <aws/compression/huffman.h>
 
 /* Exported by generated file */
-struct aws_huffman_symbol_coder *test_get_coder();
+struct aws_huffman_symbol_coder *test_get_coder(void);
 
 static struct huffman_test_code_point s_code_points[] = {
 #include "test_huffman_static_table.def"
@@ -77,19 +77,19 @@ static int test_huffman_encoder(struct aws_allocator *allocator, void *ctx) {
 
     uint8_t output_buffer[ENCODED_URL_LEN + 1];
     AWS_ZERO_ARRAY(output_buffer);
+    struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, ENCODED_URL_LEN);
 
     struct aws_huffman_symbol_coder *coder = test_get_coder();
     struct aws_huffman_encoder encoder;
     aws_huffman_encoder_init(&encoder, coder);
 
-    size_t output_size = sizeof(output_buffer);
-    size_t processed = URL_STRING_LEN;
-    int result = aws_huffman_encode(&encoder, s_url_string, &processed, output_buffer, &output_size);
+    struct aws_byte_cursor to_encode = aws_byte_cursor_from_array(s_url_string, URL_STRING_LEN);
+    int result = aws_huffman_encode(&encoder, &to_encode, &output_buf);
     ASSERT_SUCCESS(result);
 
-    ASSERT_UINT_EQUALS(ENCODED_URL_LEN, output_size);
+    ASSERT_UINT_EQUALS(ENCODED_URL_LEN, output_buf.len);
     ASSERT_UINT_EQUALS(0, output_buffer[ENCODED_URL_LEN]);
-    ASSERT_BIN_ARRAYS_EQUALS(s_encoded_url, ENCODED_URL_LEN, output_buffer, output_size);
+    ASSERT_BIN_ARRAYS_EQUALS(s_encoded_url, ENCODED_URL_LEN, output_buf.buffer, output_buf.len);
 
     return AWS_OP_SUCCESS;
 }
@@ -103,19 +103,19 @@ static int test_huffman_encoder_all_code_points(struct aws_allocator *allocator,
 
     uint8_t output_buffer[ENCODED_CODES_LEN + 1];
     AWS_ZERO_ARRAY(output_buffer);
+    struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, ENCODED_CODES_LEN);
 
     struct aws_huffman_symbol_coder *coder = test_get_coder();
     struct aws_huffman_encoder encoder;
     aws_huffman_encoder_init(&encoder, coder);
 
-    size_t output_size = sizeof(output_buffer);
-    size_t processed = ALL_CODES_LEN;
-    int result = aws_huffman_encode(&encoder, s_all_codes, &processed, output_buffer, &output_size);
+    struct aws_byte_cursor to_encode = aws_byte_cursor_from_array(s_all_codes, ALL_CODES_LEN);
+    int result = aws_huffman_encode(&encoder, &to_encode, &output_buf);
     ASSERT_SUCCESS(result);
 
-    ASSERT_UINT_EQUALS(ENCODED_CODES_LEN, output_size);
+    ASSERT_UINT_EQUALS(ENCODED_CODES_LEN, output_buf.len);
     ASSERT_UINT_EQUALS(0, output_buffer[ENCODED_CODES_LEN]);
-    ASSERT_BIN_ARRAYS_EQUALS(s_encoded_codes, ENCODED_CODES_LEN, output_buffer, output_size);
+    ASSERT_BIN_ARRAYS_EQUALS(s_encoded_codes, ENCODED_CODES_LEN, output_buf.buffer, output_buf.len);
 
     return AWS_OP_SUCCESS;
 }
@@ -130,44 +130,40 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
     aws_huffman_encoder_init(&encoder, test_get_coder());
 
     uint8_t output_buffer[ENCODED_CODES_LEN];
-    AWS_ZERO_ARRAY(output_buffer);
 
     for (size_t i = 0; i < NUM_STEP_SIZES; ++i) {
-        size_t step_size = s_step_sizes[i];
+        const size_t step_size = s_step_sizes[i];
 
         aws_huffman_encoder_reset(&encoder);
 
-        size_t bytes_written = 0;
-        size_t bytes_to_read = ALL_CODES_LEN;
-        for (size_t bytes_to_write = ENCODED_CODES_LEN; bytes_to_write > 0;) {
+        struct aws_byte_cursor to_encode = aws_byte_cursor_from_array(s_all_codes, ALL_CODES_LEN);
+        struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, 0);
+        AWS_ZERO_ARRAY(output_buffer);
 
-            size_t output_size = bytes_to_write > step_size ? step_size : bytes_to_write;
+        do {
+            output_buf.capacity += step_size;
+            if (output_buf.capacity > ENCODED_CODES_LEN) {
+                output_buf.capacity = ENCODED_CODES_LEN;
+            }
 
-            const char *current_input = s_all_codes + ALL_CODES_LEN - bytes_to_read;
-            uint8_t *current_output = output_buffer + bytes_written;
-            size_t bytes_read = bytes_to_read;
+            const size_t previous_output_len = output_buf.len;
 
-            int result = aws_huffman_encode(&encoder, current_input, &bytes_read, current_output, &output_size);
+            int result = aws_huffman_encode(&encoder, &to_encode, &output_buf);
 
-            ASSERT_TRUE(output_size > 0);
+            ASSERT_TRUE(output_buf.len > previous_output_len);
+            ASSERT_BIN_ARRAYS_EQUALS(s_encoded_codes, output_buf.len, output_buf.buffer, output_buf.len);
 
-            bytes_to_read -= bytes_read;
-            bytes_written += output_size;
-            bytes_to_write -= output_size;
-
-            ASSERT_BIN_ARRAYS_EQUALS(s_encoded_codes, bytes_written, output_buffer, bytes_written);
-
-            if (bytes_to_write == 0) {
+            if (output_buf.len == ENCODED_CODES_LEN) {
                 ASSERT_SUCCESS(result);
             } else {
                 ASSERT_UINT_EQUALS(AWS_ERROR_SHORT_BUFFER, aws_last_error());
                 aws_reset_error();
             }
-        }
+        } while (output_buf.len < ENCODED_CODES_LEN);
 
-        ASSERT_UINT_EQUALS(ENCODED_CODES_LEN, bytes_written);
+        ASSERT_UINT_EQUALS(ENCODED_CODES_LEN, output_buf.len);
 
-        ASSERT_BIN_ARRAYS_EQUALS(s_encoded_codes, ENCODED_CODES_LEN, output_buffer, bytes_written);
+        ASSERT_BIN_ARRAYS_EQUALS(s_encoded_codes, ENCODED_CODES_LEN, output_buf.buffer, output_buf.len);
     }
 
     return AWS_OP_SUCCESS;
@@ -204,19 +200,20 @@ static int test_huffman_decoder(struct aws_allocator *allocator, void *ctx) {
 
     char output_buffer[URL_STRING_LEN + 1];
     AWS_ZERO_ARRAY(output_buffer);
+    struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, URL_STRING_LEN);
 
     struct aws_huffman_symbol_coder *coder = test_get_coder();
     struct aws_huffman_decoder decoder;
     aws_huffman_decoder_init(&decoder, coder);
 
-    size_t output_size = sizeof(output_buffer);
-    size_t processed = ENCODED_URL_LEN;
-    int result = aws_huffman_decode(&decoder, s_encoded_url, &processed, output_buffer, &output_size);
+    struct aws_byte_cursor to_decode = aws_byte_cursor_from_array(s_encoded_url, ENCODED_URL_LEN);
+    int result = aws_huffman_decode(&decoder, &to_decode, &output_buf);
+
     ASSERT_SUCCESS(result);
-    ASSERT_UINT_EQUALS(URL_STRING_LEN, output_size);
-    ASSERT_UINT_EQUALS(ENCODED_URL_LEN, processed);
+    ASSERT_UINT_EQUALS(URL_STRING_LEN, output_buf.len);
+    ASSERT_UINT_EQUALS(0, to_decode.len);
     ASSERT_UINT_EQUALS(output_buffer[URL_STRING_LEN], 0);
-    ASSERT_BIN_ARRAYS_EQUALS(s_url_string, URL_STRING_LEN, output_buffer, output_size);
+    ASSERT_BIN_ARRAYS_EQUALS(s_url_string, URL_STRING_LEN, output_buf.buffer, output_buf.len);
 
     return AWS_OP_SUCCESS;
 }
@@ -230,19 +227,20 @@ static int test_huffman_decoder_all_code_points(struct aws_allocator *allocator,
 
     char output_buffer[ALL_CODES_LEN + 1];
     AWS_ZERO_ARRAY(output_buffer);
+    struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, ALL_CODES_LEN);
 
     struct aws_huffman_symbol_coder *coder = test_get_coder();
     struct aws_huffman_decoder decoder;
     aws_huffman_decoder_init(&decoder, coder);
 
-    size_t output_size = sizeof(output_buffer);
-    size_t processed = ENCODED_CODES_LEN;
-    int result = aws_huffman_decode(&decoder, s_encoded_codes, &processed, output_buffer, &output_size);
+    struct aws_byte_cursor to_decode = aws_byte_cursor_from_array(s_encoded_codes, ENCODED_CODES_LEN);
+    int result = aws_huffman_decode(&decoder, &to_decode, &output_buf);
+
     ASSERT_SUCCESS(result);
-    ASSERT_UINT_EQUALS(ALL_CODES_LEN, output_size);
-    ASSERT_UINT_EQUALS(ENCODED_CODES_LEN, processed);
+    ASSERT_UINT_EQUALS(ALL_CODES_LEN, output_buf.len);
+    ASSERT_UINT_EQUALS(0, to_decode.len);
     ASSERT_UINT_EQUALS(output_buffer[ALL_CODES_LEN], 0);
-    ASSERT_BIN_ARRAYS_EQUALS(s_all_codes, ALL_CODES_LEN, output_buffer, output_size);
+    ASSERT_BIN_ARRAYS_EQUALS(s_all_codes, ALL_CODES_LEN, output_buf.buffer, output_buf.len);
 
     return AWS_OP_SUCCESS;
 }
@@ -257,39 +255,32 @@ static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, v
     aws_huffman_decoder_init(&decoder, test_get_coder());
 
     char output_buffer[150];
-    AWS_ZERO_ARRAY(output_buffer);
 
     for (size_t i = 0; i < NUM_STEP_SIZES; ++i) {
-        size_t step_size = s_step_sizes[i];
+        const size_t step_size = s_step_sizes[i];
 
         aws_huffman_decoder_reset(&decoder);
 
-        uint8_t *current_input = s_encoded_codes;
-        char *current_output = output_buffer;
-        size_t bytes_written = 0;
-        for (size_t bytes_to_process = ENCODED_CODES_LEN; bytes_to_process > 0;) {
+        struct aws_byte_cursor to_decode = aws_byte_cursor_from_array(s_encoded_codes, ENCODED_CODES_LEN);
+        struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, ALL_CODES_LEN);
+        AWS_ZERO_ARRAY(output_buffer);
 
-            size_t output_size = sizeof(output_buffer) - bytes_written;
-            size_t to_process = bytes_to_process > step_size ? step_size : bytes_to_process;
+        do {
+            const size_t chunk_size = step_size < to_decode.len ? step_size : to_decode.len;
+            struct aws_byte_cursor to_decode_chunk = aws_byte_cursor_advance(&to_decode, chunk_size);
 
-            int result = aws_huffman_decode(&decoder, current_input, &to_process, current_output, &output_size);
+            int result = aws_huffman_decode(&decoder, &to_decode_chunk, &output_buf);
 
-            ASSERT_TRUE(to_process > 0);
-            ASSERT_BIN_ARRAYS_EQUALS(
-                s_all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size);
+            ASSERT_UINT_EQUALS(0, to_decode_chunk.len);
+            ASSERT_BIN_ARRAYS_EQUALS(s_all_codes, output_buf.len, output_buf.buffer, output_buf.len);
 
-            bytes_written += output_size;
-            bytes_to_process -= to_process;
-            current_output += output_size;
-            current_input += to_process;
-
-            if (bytes_to_process == 0) {
+            if (output_buf.len == ALL_CODES_LEN) {
                 ASSERT_SUCCESS(result);
             }
-        }
+        } while (output_buf.len < ALL_CODES_LEN);
 
-        ASSERT_UINT_EQUALS(ALL_CODES_LEN, bytes_written);
-        ASSERT_BIN_ARRAYS_EQUALS(s_all_codes, ALL_CODES_LEN, output_buffer, bytes_written);
+        ASSERT_UINT_EQUALS(ALL_CODES_LEN, output_buf.len);
+        ASSERT_BIN_ARRAYS_EQUALS(s_all_codes, ALL_CODES_LEN, output_buf.buffer, output_buf.len);
     }
 
     return AWS_OP_SUCCESS;
@@ -305,42 +296,39 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
     aws_huffman_decoder_init(&decoder, test_get_coder());
 
     char output_buffer[150];
-    AWS_ZERO_ARRAY(output_buffer);
 
     for (size_t i = 0; i < NUM_STEP_SIZES; ++i) {
-        size_t step_size = s_step_sizes[i];
+        const size_t step_size = s_step_sizes[i];
 
         aws_huffman_decoder_reset(&decoder);
 
-        uint8_t *current_input = s_encoded_codes;
-        char *current_output = output_buffer;
-        size_t bytes_written = 0;
-        for (size_t bytes_to_process = ENCODED_CODES_LEN; bytes_written < ALL_CODES_LEN;) {
+        struct aws_byte_cursor to_decode = aws_byte_cursor_from_array(s_encoded_codes, ENCODED_CODES_LEN);
+        struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, 0);
+        AWS_ZERO_ARRAY(output_buffer);
 
-            size_t output_size = step_size;
-            size_t processed = bytes_to_process;
+        do {
+            output_buf.capacity += step_size;
+            if (output_buf.capacity > ALL_CODES_LEN) {
+                output_buf.capacity = ALL_CODES_LEN;
+            }
 
-            int result = aws_huffman_decode(&decoder, current_input, &processed, current_output, &output_size);
+            const size_t previous_output_size = output_buf.len;
 
-            ASSERT_TRUE(output_size > 0);
-            ASSERT_BIN_ARRAYS_EQUALS(
-                s_all_codes + bytes_written, output_size, output_buffer + bytes_written, output_size);
+            int result = aws_huffman_decode(&decoder, &to_decode, &output_buf);
 
-            bytes_written += output_size;
-            bytes_to_process -= processed;
-            current_output += output_size;
-            current_input += processed;
+            ASSERT_TRUE(output_buf.len > previous_output_size);
+            ASSERT_BIN_ARRAYS_EQUALS(s_all_codes, output_buf.len, output_buf.buffer, output_buf.len);
 
-            if (bytes_written == ALL_CODES_LEN) {
+            if (output_buf.len == ALL_CODES_LEN) {
                 ASSERT_SUCCESS(result);
             } else {
                 ASSERT_UINT_EQUALS(AWS_ERROR_SHORT_BUFFER, aws_last_error());
                 aws_reset_error();
             }
-        }
+        } while (output_buf.len < ALL_CODES_LEN);
 
-        ASSERT_UINT_EQUALS(ALL_CODES_LEN, bytes_written);
-        ASSERT_BIN_ARRAYS_EQUALS(s_all_codes, ALL_CODES_LEN, output_buffer, bytes_written);
+        ASSERT_UINT_EQUALS(ALL_CODES_LEN, output_buf.len);
+        ASSERT_BIN_ARRAYS_EQUALS(s_all_codes, ALL_CODES_LEN, output_buf.buffer, output_buf.len);
     }
 
     return AWS_OP_SUCCESS;
@@ -381,7 +369,7 @@ static int test_huffman_transitive_chunked(struct aws_allocator *allocator, void
      * characters and immediately decoding it */
 
     for (size_t i = 0; i < NUM_STEP_SIZES; ++i) {
-        size_t step_size = s_step_sizes[i];
+        const size_t step_size = s_step_sizes[i];
 
         const char *error_message = NULL;
         int result =
