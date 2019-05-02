@@ -15,7 +15,7 @@
  * permissions and limitations under the License.
  */
 #if defined(USE_WINDOWS_DLL_SEMANTICS) || defined(WIN32)
-#    ifdef USE_IMPORT_EXPORT
+#    ifdef AWS_COMPRESSION_USE_IMPORT_EXPORT
 #        ifdef AWS_COMPRESSION_EXPORTS
 #            define AWS_COMPRESSION_API __declspec(dllexport)
 #        else
@@ -23,7 +23,7 @@
 #        endif /* AWS_COMPRESSION_EXPORTS */
 #    else
 #        define AWS_COMPRESSION_API
-#    endif /* USE_IMPORT_EXPORT */
+#    endif /* AWS_COMPRESSION_USE_IMPORT_EXPORT */
 
 #else /* defined (USE_WINDOWS_DLL_SEMANTICS) || defined (WIN32) */
 #    define AWS_COMPRESSION_API
