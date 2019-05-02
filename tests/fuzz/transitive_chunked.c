@@ -17,7 +17,7 @@
 
 #include <aws/testing/compression/huffman.h>
 
-struct aws_huffman_symbol_coder *test_get_coder();
+struct aws_huffman_symbol_coder *test_get_coder(void);
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 

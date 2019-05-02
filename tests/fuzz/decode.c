@@ -17,7 +17,7 @@
 
 #include <aws/testing/compression/huffman.h>
 
-struct aws_huffman_symbol_coder *test_get_coder();
+struct aws_huffman_symbol_coder *test_get_coder(void);
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
@@ -31,8 +31,11 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     size_t output_buffer_size = size * 2;
     char output_buffer[output_buffer_size];
 
+    struct aws_byte_cursor to_decode = aws_byte_cursor_from_array(data, size);
+    struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, AWS_ARRAY_SIZE(output_buffer));
+
     /* Don't really care about result, just make sure there's no crash */
-    aws_huffman_decode(&decoder, data, &size, output_buffer, &output_buffer_size);
+    aws_huffman_decode(&decoder, &to_decode, &output_buf);
 
     return 0; // Non-zero return values are reserved for future use.
 }
