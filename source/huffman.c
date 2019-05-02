@@ -21,6 +21,10 @@
 
 #include <assert.h>
 
+#ifdef __GNUC__
+#    pragma GCC diagnostic ignored "-Wconversion"
+#endif /* __GNUC__ */
+
 #define BITSIZEOF(val) (sizeof(val) * 8)
 
 static uint8_t MAX_PATTERN_BITS = BITSIZEOF(((struct aws_huffman_code *)0)->pattern);
