@@ -317,6 +317,7 @@ int main(int argc, char *argv[]) {
         "*/\n"
         "\n"
         "/* WARNING: THIS FILE WAS AUTOMATICALLY GENERATED. DO NOT EDIT. */\n"
+        "/* clang-format off */\n"
         "\n"
         "#include <aws/compression/huffman.h>\n"
         "\n"
