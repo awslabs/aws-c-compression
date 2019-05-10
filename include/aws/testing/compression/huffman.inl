@@ -97,8 +97,10 @@ int huffman_test_transitive_chunked(
     memset(output_buffer, 0, size);
 
     struct aws_byte_cursor to_encode = aws_byte_cursor_from_array(input, size);
-    struct aws_byte_buf intermediate_buf = aws_byte_buf_from_empty_array(intermediate_buffer, 0);
-    struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, 0);
+    struct aws_byte_buf intermediate_buf = aws_byte_buf_from_empty_array(intermediate_buffer, (size_t)-1);
+    intermediate_buf.capacity = 0;
+    struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, (size_t)-1);
+    output_buf.capacity = 0;
 
     int result = AWS_OP_SUCCESS;
 
