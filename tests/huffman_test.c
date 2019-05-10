@@ -137,7 +137,8 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
         aws_huffman_encoder_reset(&encoder);
 
         struct aws_byte_cursor to_encode = aws_byte_cursor_from_array(s_all_codes, ALL_CODES_LEN);
-        struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, 0);
+        struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, (size_t)-1);
+        output_buf.capacity = 0;
         AWS_ZERO_ARRAY(output_buffer);
 
         do {
@@ -303,7 +304,8 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
         aws_huffman_decoder_reset(&decoder);
 
         struct aws_byte_cursor to_decode = aws_byte_cursor_from_array(s_encoded_codes, ENCODED_CODES_LEN);
-        struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, 0);
+        struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, (size_t)-1);
+        output_buf.capacity = 0; /* Can't set above because it sets buffer to 0 */
         AWS_ZERO_ARRAY(output_buffer);
 
         do {
