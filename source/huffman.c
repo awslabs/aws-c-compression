@@ -80,15 +80,15 @@ static int encode_write_bit_pattern(struct encoder_state *state, struct aws_huff
         uint8_t bits_for_current = bits_to_write > state->bit_pos ? state->bit_pos : bits_to_write;
         /* Chop off the top 0s and bits that have already been read */
         uint8_t bits_to_cut =
-            (uint8_t)((BITSIZEOF(bit_pattern.pattern) - bit_pattern.num_bits) + (bit_pattern.num_bits - bits_to_write));
+            (BITSIZEOF(bit_pattern.pattern) - bit_pattern.num_bits) + (bit_pattern.num_bits - bits_to_write);
 
         /* Write the appropiate number of bits to this byte
             Shift to the left to cut any unneeded bits
             Shift to the right to position the bits correctly */
-        state->working |= (uint8_t)((bit_pattern.pattern << bits_to_cut) >> (MAX_PATTERN_BITS - state->bit_pos));
+        state->working |= (bit_pattern.pattern << bits_to_cut) >> (MAX_PATTERN_BITS - state->bit_pos);
 
-        bits_to_write = (uint8_t)(bits_to_write - bits_for_current);
-        state->bit_pos = (uint8_t)(state->bit_pos - bits_for_current);
+        bits_to_write -= bits_for_current;
+        state->bit_pos -= bits_for_current;
 
         if (state->bit_pos == 0) {
             /* Save the whole byte */
@@ -100,7 +100,7 @@ static int encode_write_bit_pattern(struct encoder_state *state, struct aws_huff
             if (state->output_buf->len == state->output_buf->capacity) {
                 /* Write all the remaining bits to working_bits and return */
 
-                bits_to_cut = (uint8_t)(bits_to_cut + bits_for_current);
+                bits_to_cut += bits_for_current;
 
                 state->encoder->overflow_bits.num_bits = bits_to_write;
                 if (bits_to_write) {
@@ -193,7 +193,7 @@ static void decode_fill_working_bits(struct decoder_state *state) {
                               << (BITSIZEOF(state->decoder->working_bits) - 8 - state->decoder->num_bits);
         state->decoder->working_bits |= positioned;
 
-        state->decoder->num_bits = (uint8_t)(state->decoder->num_bits + 8);
+        state->decoder->num_bits += 8;
     }
 }
 
@@ -252,10 +252,10 @@ int aws_huffman_decode(
 
         bits_left -= bits_read;
         decoder->working_bits <<= bits_read;
-        decoder->num_bits = (uint8_t)(decoder->num_bits - bits_read);
+        decoder->num_bits -= bits_read;
 
         /* Store the found symbol */
-        aws_byte_buf_write_u8(output, (uint8_t)symbol);
+        aws_byte_buf_write_u8(output, symbol);
     }
 
     /* This case is unreachable */

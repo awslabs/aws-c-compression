@@ -218,7 +218,7 @@ void huffman_node_write_decode(struct huffman_node *node, FILE *file, uint8_t cu
     for (uint8_t i = 0; i < 2; ++i) {
         struct huffman_node *child = node->children[i];
         if (child && !child->value) {
-            huffman_node_write_decode(child, file, (uint8_t)(current_bit + 1));
+            huffman_node_write_decode(child, file, current_bit + 1);
         }
     }
 }
@@ -256,13 +256,13 @@ int main(int argc, char *argv[]) {
 
         struct huffman_node *current = &tree_root;
 
-        uint8_t bit_idx = (uint8_t)(value->code.num_bits - 1);
+        uint8_t bit_idx = value->code.num_bits - 1;
         while (1) {
             struct huffman_code code = value->code;
             code.bits >>= bit_idx;
-            code.num_bits = (uint8_t)(value->code.num_bits - bit_idx);
+            code.num_bits = value->code.num_bits - bit_idx;
 
-            uint8_t encoded_bit = (uint8_t)((code.bits) & 0x01);
+            uint8_t encoded_bit = code.bits & 0x01;
             assert(encoded_bit == 0 || encoded_bit == 1);
 
             if (bit_idx == 0) {
