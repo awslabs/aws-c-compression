@@ -37,8 +37,8 @@
  * following (pseudo-code):
  *
  * \code{c} for (cp in code_points) {
- *     assert(my_coder->encode(cp.symbol) == cp.pattern);
- *     assert(my_coder->decode(cp.pattern) == cp.symbol);
+ *     AWS_ASSERT(my_coder->encode(cp.symbol) == cp.pattern);
+ *     AWS_ASSERT(my_coder->decode(cp.pattern) == cp.symbol);
  * }
  * \endcode
  */

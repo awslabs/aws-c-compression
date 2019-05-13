@@ -19,16 +19,14 @@
 
 #include <aws/common/byte_buf.h>
 
-#include <assert.h>
-
 #define BITSIZEOF(val) (sizeof(val) * 8)
 
 static uint8_t MAX_PATTERN_BITS = BITSIZEOF(((struct aws_huffman_code *)0)->pattern);
 
 void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_symbol_coder *coder) {
 
-    assert(encoder);
-    assert(coder);
+    AWS_ASSERT(encoder);
+    AWS_ASSERT(coder);
 
     AWS_ZERO_STRUCT(*encoder);
     encoder->coder = coder;
@@ -37,7 +35,7 @@ void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_hu
 
 void aws_huffman_encoder_reset(struct aws_huffman_encoder *encoder) {
 
-    assert(encoder);
+    AWS_ASSERT(encoder);
 
     uint8_t eos_padding = encoder->eos_padding;
     aws_huffman_encoder_init(encoder, encoder->coder);
@@ -46,8 +44,8 @@ void aws_huffman_encoder_reset(struct aws_huffman_encoder *encoder) {
 
 void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_symbol_coder *coder) {
 
-    assert(decoder);
-    assert(coder);
+    AWS_ASSERT(decoder);
+    AWS_ASSERT(coder);
 
     AWS_ZERO_STRUCT(*decoder);
     decoder->coder = coder;
@@ -129,10 +127,10 @@ int aws_huffman_encode(
     struct aws_byte_cursor *to_encode,
     struct aws_byte_buf *output) {
 
-    assert(encoder);
-    assert(encoder->coder);
-    assert(to_encode);
-    assert(output);
+    AWS_ASSERT(encoder);
+    AWS_ASSERT(encoder->coder);
+    AWS_ASSERT(to_encode);
+    AWS_ASSERT(output);
 
     if (output->len == output->capacity) {
         return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
@@ -166,7 +164,7 @@ int aws_huffman_encode(
     eos_cp.pattern = encoder->eos_padding;
     eos_cp.num_bits = state.bit_pos;
     encode_write_bit_pattern(&state, eos_cp);
-    assert(state.bit_pos == 8);
+    AWS_ASSERT(state.bit_pos == 8);
 
     return AWS_OP_SUCCESS;
 }
@@ -202,10 +200,10 @@ int aws_huffman_decode(
     struct aws_byte_cursor *to_decode,
     struct aws_byte_buf *output) {
 
-    assert(decoder);
-    assert(decoder->coder);
-    assert(to_decode);
-    assert(output);
+    AWS_ASSERT(decoder);
+    AWS_ASSERT(decoder->coder);
+    AWS_ASSERT(to_decode);
+    AWS_ASSERT(output);
 
     if (output->len == output->capacity) {
         return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
@@ -259,5 +257,5 @@ int aws_huffman_decode(
     }
 
     /* This case is unreachable */
-    assert(0);
+    AWS_ASSERT(0);
 }

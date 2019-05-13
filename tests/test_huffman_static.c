@@ -17,8 +17,6 @@
 
 #include <aws/compression/huffman.h>
 
-#include <assert.h>
-
 static struct aws_huffman_code code_points[] = {
     {.pattern = 0x32e, .num_bits = 10}, /* ' ' 0 */
     {.pattern = 0x32f, .num_bits = 10}, /* ' ' 1 */
