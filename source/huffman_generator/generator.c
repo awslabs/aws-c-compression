@@ -321,8 +321,6 @@ int main(int argc, char *argv[]) {
         "\n"
         "#include <aws/compression/huffman.h>\n"
         "\n"
-        "#include <assert.h>\n"
-        "\n"
         "static struct aws_huffman_code code_points[] = {\n");
 
     for (size_t i = 0; i < num_code_points; ++i) {

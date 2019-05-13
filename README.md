@@ -170,5 +170,5 @@ not match a symbol. This is useful for verifying the padding bits of a stream.
 For example, to validate that a stream ends in all 1's (like HPACK requires),
 you could do the following:
 ```c
-assert(decoder->working_bits == UINT64_MAX << (64 - decoder->num_bits));
+AWS_ASSERT(decoder->working_bits == UINT64_MAX << (64 - decoder->num_bits));
 ```
