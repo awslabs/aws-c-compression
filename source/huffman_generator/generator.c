@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-#include <assert.h>
+#include <assert.h> /* NOLINT(fuchsia-restrict-system-includes) */
 #include <ctype.h>
 #include <stdint.h> /* NOLINT(fuchsia-restrict-system-includes) */
 #include <stdio.h>
