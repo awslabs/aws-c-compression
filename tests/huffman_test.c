@@ -51,8 +51,8 @@ enum { NUM_STEP_SIZES = sizeof(s_step_sizes) / sizeof(s_step_sizes[0]) };
 
 AWS_TEST_CASE(huffman_symbol_encoder, test_huffman_symbol_encoder)
 static int test_huffman_symbol_encoder(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test encoding each character */
 
     struct aws_huffman_symbol_coder *coder = test_get_coder();
@@ -71,8 +71,8 @@ static int test_huffman_symbol_encoder(struct aws_allocator *allocator, void *ct
 
 AWS_TEST_CASE(huffman_encoder, test_huffman_encoder)
 static int test_huffman_encoder(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test encoding a short url */
 
     uint8_t output_buffer[ENCODED_URL_LEN + 1];
@@ -96,8 +96,8 @@ static int test_huffman_encoder(struct aws_allocator *allocator, void *ctx) {
 
 AWS_TEST_CASE(huffman_encoder_all_code_points, test_huffman_encoder_all_code_points)
 static int test_huffman_encoder_all_code_points(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test encoding a sequence of all character values expressable as
      * characters */
 
@@ -122,8 +122,8 @@ static int test_huffman_encoder_all_code_points(struct aws_allocator *allocator,
 
 AWS_TEST_CASE(huffman_encoder_partial_output, test_huffman_encoder_partial_output)
 static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test decoding when the output buffer size is limited */
 
     struct aws_huffman_encoder encoder;
@@ -172,8 +172,8 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
 
 AWS_TEST_CASE(huffman_symbol_decoder, test_huffman_symbol_decoder)
 static int test_huffman_symbol_decoder(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test decoding each character */
 
     struct aws_huffman_symbol_coder *coder = test_get_coder();
@@ -195,8 +195,8 @@ static int test_huffman_symbol_decoder(struct aws_allocator *allocator, void *ct
 
 AWS_TEST_CASE(huffman_decoder, test_huffman_decoder)
 static int test_huffman_decoder(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test decoding a short url */
 
     char output_buffer[URL_STRING_LEN + 1];
@@ -221,8 +221,8 @@ static int test_huffman_decoder(struct aws_allocator *allocator, void *ctx) {
 
 AWS_TEST_CASE(huffman_decoder_all_code_points, test_huffman_decoder_all_code_points)
 static int test_huffman_decoder_all_code_points(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test decoding a sequence of all character values expressable as
      * characters */
 
@@ -248,8 +248,8 @@ static int test_huffman_decoder_all_code_points(struct aws_allocator *allocator,
 
 AWS_TEST_CASE(huffman_decoder_partial_input, test_huffman_decoder_partial_input)
 static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test decoding a buffer in chunks */
 
     struct aws_huffman_decoder decoder;
@@ -289,8 +289,8 @@ static int test_huffman_decoder_partial_input(struct aws_allocator *allocator, v
 
 AWS_TEST_CASE(huffman_decoder_partial_output, test_huffman_decoder_partial_output)
 static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test decoding when the output buffer size is limited */
 
     struct aws_huffman_decoder decoder;
@@ -338,8 +338,8 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
 
 AWS_TEST_CASE(huffman_transitive, test_huffman_transitive)
 static int test_huffman_transitive(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test encoding a short url and immediately decoding it */
 
     const char *error_message = NULL;
@@ -351,8 +351,8 @@ static int test_huffman_transitive(struct aws_allocator *allocator, void *ctx) {
 
 AWS_TEST_CASE(huffman_transitive_all_code_points, test_huffman_transitive_all_code_points)
 static int test_huffman_transitive_all_code_points(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test encoding a sequence of all character values expressable as
      * characters and immediately decoding it */
 
@@ -365,8 +365,8 @@ static int test_huffman_transitive_all_code_points(struct aws_allocator *allocat
 
 AWS_TEST_CASE(huffman_transitive_chunked, test_huffman_transitive_chunked)
 static int test_huffman_transitive_chunked(struct aws_allocator *allocator, void *ctx) {
-    (void)allocator;
-    (void)ctx;
+    AWS_UNUSED_PARAM(allocator);
+    AWS_UNUSED_PARAM(ctx);
     /* Test encoding a sequence of all character values expressable as
      * characters and immediately decoding it */
 
