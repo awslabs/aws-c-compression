@@ -120,6 +120,17 @@ AWS_COMPRESSION_API
 void aws_huffman_decoder_reset(struct aws_huffman_decoder *decoder);
 
 /**
+ * Get the byte length of to_encode post-encoding.
+ *
+ * \param[in]       encoder         The encoder object to use
+ * \param[in]       to_encode       The symbol buffer to encode
+ *
+ * \return The length of the encoded string.
+ */
+AWS_COMPRESSION_API
+size_t aws_huffman_get_encoded_length(struct aws_huffman_encoder *encoder, struct aws_byte_cursor to_encode);
+
+/**
  * Encode a symbol buffer into the output buffer.
  *
  * \param[in]       encoder         The encoder object to use

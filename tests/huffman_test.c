@@ -84,6 +84,8 @@ static int test_huffman_encoder(struct aws_allocator *allocator, void *ctx) {
     aws_huffman_encoder_init(&encoder, coder);
 
     struct aws_byte_cursor to_encode = aws_byte_cursor_from_array(s_url_string, URL_STRING_LEN);
+    const size_t encoded_length = aws_huffman_get_encoded_length(&encoder, to_encode);
+    ASSERT_UINT_EQUALS(ENCODED_URL_LEN, encoded_length);
     int result = aws_huffman_encode(&encoder, &to_encode, &output_buf);
     ASSERT_SUCCESS(result);
 
@@ -110,6 +112,8 @@ static int test_huffman_encoder_all_code_points(struct aws_allocator *allocator,
     aws_huffman_encoder_init(&encoder, coder);
 
     struct aws_byte_cursor to_encode = aws_byte_cursor_from_array(s_all_codes, ALL_CODES_LEN);
+    const size_t encoded_length = aws_huffman_get_encoded_length(&encoder, to_encode);
+    ASSERT_UINT_EQUALS(ENCODED_CODES_LEN, encoded_length);
     int result = aws_huffman_encode(&encoder, &to_encode, &output_buf);
     ASSERT_SUCCESS(result);
 

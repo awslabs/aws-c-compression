@@ -114,6 +114,30 @@ static int encode_write_bit_pattern(struct encoder_state *state, struct aws_huff
     return AWS_OP_SUCCESS;
 }
 
+size_t aws_huffman_get_encoded_length(struct aws_huffman_encoder *encoder, struct aws_byte_cursor to_encode) {
+
+    AWS_PRECONDITION(encoder);
+    AWS_PRECONDITION(to_encode.ptr && to_encode.len);
+
+    size_t num_bits = 0;
+
+    while (to_encode.len) {
+        uint8_t new_byte = 0;
+        aws_byte_cursor_read_u8(&to_encode, &new_byte);
+        struct aws_huffman_code code_point = encoder->coder->encode(new_byte, encoder->coder->userdata);
+        num_bits += code_point.num_bits;
+    }
+
+    size_t length = num_bits / 8;
+
+    /* Round up */
+    if (num_bits % 8) {
+        ++length;
+    }
+
+    return length;
+}
+
 #define CHECK_WRITE_BITS(bit_pattern)                                                                                  \
     do {                                                                                                               \
         int result = encode_write_bit_pattern(&state, bit_pattern);                                                    \
