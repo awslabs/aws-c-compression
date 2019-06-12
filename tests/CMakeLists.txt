@@ -20,6 +20,7 @@ add_test_case(huffman_decoder_partial_input)
 add_test_case(huffman_decoder_partial_output)
 
 add_test_case(huffman_transitive)
+add_test_case(huffman_transitive_even_bytes)
 add_test_case(huffman_transitive_all_code_points)
 add_test_case(huffman_transitive_chunked)
 
