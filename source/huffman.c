@@ -184,11 +184,13 @@ int aws_huffman_encode(
     /* The following code only runs when the buffer has written successfully */
 
     /* If whole buffer processed, write EOS */
-    struct aws_huffman_code eos_cp;
-    eos_cp.pattern = encoder->eos_padding;
-    eos_cp.num_bits = state.bit_pos;
-    encode_write_bit_pattern(&state, eos_cp);
-    AWS_ASSERT(state.bit_pos == 8);
+    if (state.bit_pos != 8) {
+        struct aws_huffman_code eos_cp;
+        eos_cp.pattern = encoder->eos_padding;
+        eos_cp.num_bits = state.bit_pos;
+        encode_write_bit_pattern(&state, eos_cp);
+        AWS_ASSERT(state.bit_pos == 8);
+    }
 
     return AWS_OP_SUCCESS;
 }
@@ -258,7 +260,7 @@ int aws_huffman_decode(
             /* Unknown symbol found */
             return aws_raise_error(AWS_ERROR_COMPRESSION_UNKNOWN_SYMBOL);
         }
-        if (bits_read >= bits_left) {
+        if (bits_read > bits_left) {
             /* Check if the buffer has been overrun.
             Note: because of the check in decode_fill_working_bits,
             the buffer won't actually overrun, instead there will
@@ -278,6 +280,11 @@ int aws_huffman_decode(
 
         /* Store the found symbol */
         aws_byte_buf_write_u8(output, symbol);
+
+        /* Successfully decoded whole buffer */
+        if (bits_left == 0) {
+            return AWS_OP_SUCCESS;
+        }
     }
 
     /* This case is unreachable */

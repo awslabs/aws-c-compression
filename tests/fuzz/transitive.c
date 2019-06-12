@@ -26,7 +26,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
 
     const char *error_message = NULL;
-    int result = huffman_test_transitive(test_get_coder(), (const char *)data, size, &error_message);
+    int result = huffman_test_transitive(test_get_coder(), (const char *)data, size, 0, &error_message);
     ASSERT_SUCCESS(result, error_message);
 
     return 0; // Non-zero return values are reserved for future use.
