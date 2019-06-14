@@ -88,7 +88,10 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-config.cmake"
         DESTINATION "${LIBRARY_DIRECTORY}/${CMAKE_PROJECT_NAME}/cmake/"
         COMPONENT Development)
 
-add_subdirectory(source/huffman_generator)
+option(BUILD_HUFFMAN_GENERATOR "Whether or not to build the aws-c-common-huffman-generator tool" OFF)
+if (BUILD_HUFFMAN_GENERATOR)
+        add_subdirectory(source/huffman_generator)
+endif()
 
 include(CTest)
 if (BUILD_TESTING)
