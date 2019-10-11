@@ -1,7 +1,7 @@
-#ifndef AWS_COMPRESSION_ERROR_H
+#ifndef AWS_COMPRESSION_COMPRESSION_H
 
 /*
- * Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -15,14 +15,8 @@
  * permissions and limitations under the License.
  */
 
-#define AWS_COMPRESSION_ERROR_H
+#define AWS_COMPRESSION_COMPRESSION_H
 
-#include <aws/compression/compression.h>
+#define AWS_C_COMPRESSION_PACKAGE_ID 3
 
-enum aws_compression_error {
-    AWS_ERROR_COMPRESSION_UNKNOWN_SYMBOL = AWS_C_COMPRESSION_PACKAGE_ID * AWS_ERROR_ENUM_STRIDE,
-
-    AWS_ERROR_END_COMPRESSION_RANGE = (AWS_C_COMPRESSION_PACKAGE_ID + 1) * AWS_ERROR_ENUM_STRIDE - 1
-};
-
-#endif /* AWS_COMPRESSION_ERROR_H */
+#endif /* AWS_COMPRESSION_COMPRESSION_H */
