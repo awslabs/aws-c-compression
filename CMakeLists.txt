@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 3.1)
 project(aws-c-compression C)
 
+if (POLICY CMP0069)
+    cmake_policy(SET CMP0069 NEW) # Enable LTO/IPO if available in the compiler, see AwsCFlags
+endif()
+
 if (DEFINED CMAKE_PREFIX_PATH)
-    file(TO_CMAKE_PATH ${CMAKE_PREFIX_PATH} CMAKE_PREFIX_PATH)
+    file(TO_CMAKE_PATH "${CMAKE_PREFIX_PATH}" CMAKE_PREFIX_PATH)
 endif()
 
 if (DEFINED CMAKE_INSTALL_PREFIX)
-    file(TO_CMAKE_PATH ${CMAKE_INSTALL_PREFIX} CMAKE_INSTALL_PREFIX)
+    file(TO_CMAKE_PATH "${CMAKE_INSTALL_PREFIX}" CMAKE_INSTALL_PREFIX)
 endif()
 
 if (UNIX AND NOT APPLE)
@@ -75,8 +79,14 @@ aws_prepare_shared_lib_exports(${CMAKE_PROJECT_NAME})
 install(FILES ${AWS_COMPRESSION_HEADERS} DESTINATION "include/aws/compression")
 install(FILES ${AWS_COMPRESSION_TESTING_HEADERS} DESTINATION "include/aws/testing/compression")
 
+if (BUILD_SHARED_LIBS)
+   set (TARGET_DIR "shared")
+else()
+   set (TARGET_DIR "static")
+endif()
+
 install(EXPORT "${CMAKE_PROJECT_NAME}-targets"
-        DESTINATION "${LIBRARY_DIRECTORY}/${CMAKE_PROJECT_NAME}/cmake/"
+        DESTINATION "${LIBRARY_DIRECTORY}/${CMAKE_PROJECT_NAME}/cmake/${TARGET_DIR}"
         NAMESPACE AWS::
         COMPONENT Development)
 
@@ -88,7 +98,10 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-config.cmake"
         DESTINATION "${LIBRARY_DIRECTORY}/${CMAKE_PROJECT_NAME}/cmake/"
         COMPONENT Development)
 
-add_subdirectory(source/huffman_generator)
+option(BUILD_HUFFMAN_GENERATOR "Whether or not to build the aws-c-common-huffman-generator tool" OFF)
+if (BUILD_HUFFMAN_GENERATOR)
+        add_subdirectory(source/huffman_generator)
+endif()
 
 include(CTest)
 if (BUILD_TESTING)

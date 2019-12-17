@@ -27,6 +27,7 @@ int huffman_test_transitive(
     struct aws_huffman_symbol_coder *coder,
     const char *input,
     size_t size,
+    size_t encoded_size,
     const char **error_string) {
 
     struct aws_huffman_encoder encoder;
@@ -52,6 +53,10 @@ int huffman_test_transitive(
     }
     if (to_encode.len != 0) {
         *error_string = "not all data encoded";
+        return AWS_OP_ERR;
+    }
+    if (encoded_size && intermediate_buf.len != encoded_size) {
+        *error_string = "encoded length is incorrect";
         return AWS_OP_ERR;
     }
 
@@ -82,6 +87,7 @@ int huffman_test_transitive_chunked(
     struct aws_huffman_symbol_coder *coder,
     const char *input,
     size_t size,
+    size_t encoded_size,
     size_t output_chunk_size,
     const char **error_string) {
 
@@ -129,6 +135,10 @@ int huffman_test_transitive_chunked(
     }
     if (intermediate_buf.len > intermediate_buffer_size) {
         *error_string = "too much data encoded";
+        return AWS_OP_ERR;
+    }
+    if (encoded_size && intermediate_buf.len != encoded_size) {
+        *error_string = "encoded length is incorrect";
         return AWS_OP_ERR;
     }
 
