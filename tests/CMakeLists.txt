@@ -24,9 +24,9 @@ add_test_case(huffman_transitive_even_bytes)
 add_test_case(huffman_transitive_all_code_points)
 add_test_case(huffman_transitive_chunked)
 
-generate_test_driver(${CMAKE_PROJECT_NAME}-tests)
+generate_test_driver(${PROJECT_NAME}-tests)
 if(MSVC)
-    target_compile_definitions(${CMAKE_PROJECT_NAME}-tests PRIVATE "-D_CRT_SECURE_NO_WARNINGS")
+    target_compile_definitions(${PROJECT_NAME}-tests PRIVATE "-D_CRT_SECURE_NO_WARNINGS")
 endif()
 
 file(GLOB FUZZ_TESTS "fuzz/*.c")
