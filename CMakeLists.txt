@@ -104,8 +104,11 @@ if (BUILD_HUFFMAN_GENERATOR)
         add_subdirectory(source/huffman_generator)
 endif()
 
-if (BUILD_TESTING)
-    include(CTest)
-    add_subdirectory(tests)
+if (NOT CMAKE_CROSSCOMPILING)
+    if (NOT DEFINED BUILD_TESTING OR BUILD_TESTING)
+        include(CTest)
+        add_subdirectory(tests)
+    endif()
 endif()
+
 
