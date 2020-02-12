@@ -235,10 +235,6 @@ int aws_huffman_decode(
     AWS_ASSERT(to_decode);
     AWS_ASSERT(output);
 
-    if (output->len == output->capacity) {
-        return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
-    }
-
     struct decoder_state state;
     state.decoder = decoder;
     state.input_cursor = to_decode;
