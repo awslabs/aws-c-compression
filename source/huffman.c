@@ -273,6 +273,7 @@ int aws_huffman_decode(
             /* Check if we've hit the end of the output buffer.
              * Grow buffer, or raise error, depending on settings */
             if (decoder->allow_growth) {
+                /* Double the capacity */
                 if (aws_byte_buf_reserve_relative(output, output->capacity)) {
                     return AWS_OP_ERR;
                 }
