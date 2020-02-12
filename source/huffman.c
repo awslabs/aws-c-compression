@@ -56,6 +56,10 @@ void aws_huffman_decoder_reset(struct aws_huffman_decoder *decoder) {
     aws_huffman_decoder_init(decoder, decoder->coder);
 }
 
+void aws_huffman_decoder_allow_growth(struct aws_huffman_decoder *decoder, bool allow_growth) {
+    decoder->allow_growth = allow_growth;
+}
+
 /* Much of encode is written in a helper function,
    so this struct helps avoid passing all the parameters through by hand */
 struct encoder_state {
@@ -270,8 +274,15 @@ int aws_huffman_decode(
         }
 
         if (output->len == output->capacity) {
-            /* Check if we've hit the end of the output buffer */
-            return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
+            /* Check if we've hit the end of the output buffer.
+             * Grow buffer, or raise error, depending on settings */
+            if (decoder->allow_growth) {
+                if (aws_byte_buf_reserve_relative(output, output->capacity)) {
+                    return AWS_OP_ERR;
+                }
+            } else {
+                return aws_raise_error(AWS_ERROR_SHORT_BUFFER);
+            }
         }
 
         bits_left -= bits_read;
