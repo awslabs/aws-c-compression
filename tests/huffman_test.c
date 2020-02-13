@@ -340,6 +340,28 @@ static int test_huffman_decoder_partial_output(struct aws_allocator *allocator, 
     return AWS_OP_SUCCESS;
 }
 
+AWS_TEST_CASE(huffman_decoder_allow_growth, test_huffman_decoder_allow_growth)
+static int test_huffman_decoder_allow_growth(struct aws_allocator *allocator, void *ctx) {
+    (void)ctx;
+    /* Test that decoder will grow output buffer if allow-growth is set */
+
+    struct aws_huffman_decoder decoder;
+    aws_huffman_decoder_init(&decoder, test_get_coder());
+    aws_huffman_decoder_allow_growth(&decoder, true);
+
+    struct aws_byte_buf output_buf;
+    ASSERT_SUCCESS(aws_byte_buf_init(&output_buf, allocator, 1 /* way too small */));
+
+    struct aws_byte_cursor to_decode = aws_byte_cursor_from_array(s_encoded_url, ENCODED_URL_LEN);
+    ASSERT_SUCCESS(aws_huffman_decode(&decoder, &to_decode, &output_buf));
+
+    ASSERT_UINT_EQUALS(0, to_decode.len);
+    ASSERT_BIN_ARRAYS_EQUALS(s_url_string, URL_STRING_LEN, output_buf.buffer, output_buf.len);
+
+    aws_byte_buf_clean_up(&output_buf);
+    return AWS_OP_SUCCESS;
+}
+
 AWS_TEST_CASE(huffman_transitive, test_huffman_transitive)
 static int test_huffman_transitive(struct aws_allocator *allocator, void *ctx) {
     (void)allocator;

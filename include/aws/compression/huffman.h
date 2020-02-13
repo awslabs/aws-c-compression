@@ -87,6 +87,7 @@ struct aws_huffman_encoder {
 struct aws_huffman_decoder {
     /* Param */
     struct aws_huffman_symbol_coder *coder;
+    bool allow_growth;
 
     /* State */
     uint64_t working_bits;
@@ -150,7 +151,8 @@ int aws_huffman_encode(
  *
  * \param[in]       decoder         The decoder object to use
  * \param[in]       to_decode       The encoded byte buffer to read from
- * \param[in]       output          The buffer to write decoded symbols to
+ * \param[in]       output          The buffer to write decoded symbols to.
+ *                                  If decoder is set to allow growth, capacity will be increased when necessary.
  *
  * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR otherwise
  */
@@ -159,6 +161,13 @@ int aws_huffman_decode(
     struct aws_huffman_decoder *decoder,
     struct aws_byte_cursor *to_decode,
     struct aws_byte_buf *output);
+
+/**
+ * Set whether or not to increase capacity when the output buffer fills up while decoding.
+ * This is false by default.
+ */
+AWS_COMPRESSION_API
+void aws_huffman_decoder_allow_growth(struct aws_huffman_decoder *decoder, bool allow_growth);
 
 AWS_EXTERN_C_END
 
