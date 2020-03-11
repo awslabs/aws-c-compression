@@ -15,10 +15,6 @@
 
 #include <aws/compression/huffman.h>
 
-#include <aws/compression/error.h>
-
-#include <aws/common/byte_buf.h>
-
 #define BITSIZEOF(val) (sizeof(val) * 8)
 
 static uint8_t MAX_PATTERN_BITS = BITSIZEOF(((struct aws_huffman_code *)0)->pattern);
@@ -37,9 +33,7 @@ void aws_huffman_encoder_reset(struct aws_huffman_encoder *encoder) {
 
     AWS_ASSERT(encoder);
 
-    uint8_t eos_padding = encoder->eos_padding;
-    aws_huffman_encoder_init(encoder, encoder->coder);
-    encoder->eos_padding = eos_padding;
+    AWS_ZERO_STRUCT(encoder->overflow_bits);
 }
 
 void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_huffman_symbol_coder *coder) {
@@ -53,7 +47,8 @@ void aws_huffman_decoder_init(struct aws_huffman_decoder *decoder, struct aws_hu
 
 void aws_huffman_decoder_reset(struct aws_huffman_decoder *decoder) {
 
-    aws_huffman_decoder_init(decoder, decoder->coder);
+    decoder->working_bits = 0;
+    decoder->num_bits = 0;
 }
 
 void aws_huffman_decoder_allow_growth(struct aws_huffman_decoder *decoder, bool allow_growth) {

@@ -8,6 +8,8 @@ file(GLOB TEST_SRC "*.c")
 file(GLOB TEST_HDRS "*.h")
 file(GLOB TESTS ${TEST_HDRS} ${TEST_SRC})
 
+add_test_case(library_init)
+
 add_test_case(huffman_symbol_encoder)
 add_test_case(huffman_encoder)
 add_test_case(huffman_encoder_all_code_points)
