@@ -9,7 +9,7 @@ on:
 env:
   BUILDER_VERSION: v0.3.1
   BUILDER_HOST: https://d19elf31gohf1l.cloudfront.net
-  PACKAGE_NAME: aws-c-mqtt
+  PACKAGE_NAME: aws-c-compression
   LINUX_BASE_IMAGE: ubuntu-16-x64
 
 jobs:
