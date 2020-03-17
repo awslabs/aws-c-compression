@@ -7,7 +7,7 @@ on:
       - '!master'
 
 env:
-  BUILDER_VERSION: v0.5.9
+  BUILDER_VERSION: v0.6.0
   BUILDER_HOST: https://d19elf31gohf1l.cloudfront.net
   PACKAGE_NAME: aws-c-compression
   LINUX_BASE_IMAGE: ubuntu-16-x64
@@ -43,7 +43,7 @@ jobs:
         export DOCKER_IMAGE=docker.pkg.github.com/awslabs/aws-crt-builder/aws-crt-al2-x64:${{ env.BUILDER_VERSION }}
         docker pull $DOCKER_IMAGE
         docker run --env GITHUB_REF $DOCKER_IMAGE build -p ${{ env.PACKAGE_NAME }} downstream
-      
+
   clang-compat:
     runs-on: ubuntu-latest
     strategy:
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [4.8, 5, 6, 7, 8]      
+        version: [4.8, 5, 6, 7, 8]
     steps:
         # We can't use the `uses: docker://image` version yet, GitHub lacks authentication for actions -> packages
     - name: Build ${{ env.PACKAGE_NAME }}
@@ -106,4 +106,4 @@ jobs:
         chmod a+x builder
         ./builder build -p ${{ env.PACKAGE_NAME }} downstream
 
-        
+
