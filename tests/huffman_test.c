@@ -128,7 +128,7 @@ AWS_TEST_CASE(huffman_encoder_partial_output, test_huffman_encoder_partial_outpu
 static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, void *ctx) {
     (void)allocator;
     (void)ctx;
-    /* Test decoding when the output buffer size is limited */
+    /* Test encoding when the output buffer size is limited */
 
     struct aws_huffman_encoder encoder;
     aws_huffman_encoder_init(&encoder, test_get_coder());
@@ -170,6 +170,38 @@ static int test_huffman_encoder_partial_output(struct aws_allocator *allocator, 
 
         ASSERT_BIN_ARRAYS_EQUALS(s_encoded_codes, ENCODED_CODES_LEN, output_buf.buffer, output_buf.len);
     }
+
+    return AWS_OP_SUCCESS;
+}
+
+AWS_TEST_CASE(huffman_encoder_exact_output, test_huffman_encoder_exact_output)
+static int test_huffman_encoder_exact_output(struct aws_allocator *allocator, void *ctx) {
+    (void)allocator;
+    (void)ctx;
+    /* Test encoding when the output buffer size is exactly the necessary size */
+    struct aws_huffman_encoder encoder;
+    aws_huffman_encoder_init(&encoder, test_get_coder());
+
+    uint8_t output_buffer[2];
+    struct aws_byte_buf output_buf = aws_byte_buf_from_empty_array(output_buffer, 2);
+
+    /* Encode a character that uses 8 bits into a 1 byte buffer */
+    struct aws_byte_cursor to_encode = aws_byte_cursor_from_array("?", 1);
+    uint8_t expected_1byte[] = {0xba};
+    output_buf.capacity = 1;
+    ASSERT_SUCCESS(aws_huffman_encode(&encoder, &to_encode, &output_buf));
+    ASSERT_BIN_ARRAYS_EQUALS(expected_1byte, 1, output_buf.buffer, output_buf.len);
+
+    /* Encode 2 characters that sum to 16 bits, into a 2 byte buffer
+     * y: 101000
+     * z: 1101111001
+     * combined: 1010001101111001 == 0xa379 */
+    to_encode = aws_byte_cursor_from_array("yz", 2);
+    uint8_t expected_2byte[] = {0xa3, 0x79};
+    output_buf.capacity = 2;
+    aws_byte_buf_reset(&output_buf, true /*zero*/);
+    ASSERT_SUCCESS(aws_huffman_encode(&encoder, &to_encode, &output_buf));
+    ASSERT_BIN_ARRAYS_EQUALS(expected_2byte, 2, output_buf.buffer, output_buf.len);
 
     return AWS_OP_SUCCESS;
 }
