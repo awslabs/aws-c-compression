@@ -16,12 +16,9 @@
  * permissions and limitations under the License.
  */
 
-#include <aws/compression/exports.h>
+#include <aws/compression/compression.h>
 
 #include <aws/common/byte_buf.h>
-#include <aws/common/common.h>
-
-#include <stddef.h>
 
 /**
  * Represents an encoded code

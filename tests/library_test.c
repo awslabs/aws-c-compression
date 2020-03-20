@@ -1,5 +1,3 @@
-#ifndef AWS_COMPRESSION_ERROR_H
-
 /*
  * Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -15,14 +13,20 @@
  * permissions and limitations under the License.
  */
 
-#define AWS_COMPRESSION_ERROR_H
-
 #include <aws/compression/compression.h>
+#include <aws/testing/aws_test_harness.h>
 
-enum aws_compression_error {
-    AWS_ERROR_COMPRESSION_UNKNOWN_SYMBOL = AWS_ERROR_ENUM_BEGIN_RANGE(AWS_C_COMPRESSION_PACKAGE_ID),
+AWS_TEST_CASE(library_init, s_test_library_init)
+static int s_test_library_init(struct aws_allocator *allocator, void *ctx) {
+    (void)ctx;
 
-    AWS_ERROR_END_COMPRESSION_RANGE = AWS_ERROR_ENUM_END_RANGE(AWS_C_COMPRESSION_PACKAGE_ID)
-};
+    aws_compression_library_init(allocator);
 
-#endif /* AWS_COMPRESSION_ERROR_H */
+    /* Ensure that errors were registered */
+    const char *err_name = aws_error_name(AWS_ERROR_COMPRESSION_UNKNOWN_SYMBOL);
+    const char *expected = "AWS_ERROR_COMPRESSION_UNKNOWN_SYMBOL";
+    ASSERT_BIN_ARRAYS_EQUALS(expected, strlen(expected), err_name, strlen(err_name));
+
+    aws_compression_library_clean_up();
+    return AWS_OP_SUCCESS;
+}
