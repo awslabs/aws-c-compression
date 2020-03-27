@@ -117,7 +117,7 @@ static int encode_write_bit_pattern(struct encoder_state *state, struct aws_huff
 size_t aws_huffman_get_encoded_length(struct aws_huffman_encoder *encoder, struct aws_byte_cursor to_encode) {
 
     AWS_PRECONDITION(encoder);
-    AWS_PRECONDITION(to_encode.ptr && to_encode.len);
+    AWS_PRECONDITION(aws_byte_cursor_is_valid(&to_encode));
 
     size_t num_bits = 0;
 
