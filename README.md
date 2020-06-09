@@ -9,10 +9,19 @@ This library is licensed under the Apache 2.0 License.
 
 ## Usage
 
-This library has a strong dependency on
-[aws-c-common](https://github.com/awslabs/aws-c-common). Please see that repository's
-[README.md](https://github.com/awslabs/aws-c-common/blob/master/README.md) for
-information on how to install it.
+### Building
+
+Note that aws-c-compression has a dependency on aws-c-common:
+
+````
+git clone git@github.com:awslabs/aws-c-common.git
+cmake -DCMAKE_PREFIX_PATH=<install-path> -DCMAKE_INSTALL_PREFIX=<install-path> -S aws-c-common -B aws-c-common/build
+cmake --build aws-c-common/build --target install
+
+git clone git@github.com:awslabs/aws-c-compression.git
+cmake -DCMAKE_PREFIX_PATH=<install-path> -DCMAKE_INSTALL_PREFIX=<install-path> -S aws-c-compression -B aws-c-compression/build
+cmake --build aws-c-compression/build --target install
+````
 
 ### Huffman
 
