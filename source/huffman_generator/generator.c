@@ -1,16 +1,6 @@
-/*
- * Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *  http://aws.amazon.com/apache2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0.
  */
 
 #include <assert.h> /* NOLINT(fuchsia-restrict-system-includes) */
@@ -297,24 +287,10 @@ int main(int argc, char *argv[]) {
     /* Write the file/function header */
     fprintf(
         file,
-        "/*\n"
-        "* Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights "
-        "Reserved.\n"
-        "*\n"
-        "* Licensed under the Apache License, Version 2.0 (the \"License\").\n"
-        "* You may not use this file except in compliance with the License.\n"
-        "* A copy of the License is located at\n"
-        "*\n"
-        "*  http://aws.amazon.com/apache2.0\n"
-        "*\n"
-        "* or in the \"license\" file accompanying this file. This file is "
-        "distributed\n"
-        "* on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY "
-        "KIND, either\n"
-        "* express or implied. See the License for the specific language "
-        "governing\n"
-        "* permissions and limitations under the License.\n"
-        "*/\n"
+        "/**\n"
+        " * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.\n"
+        " * SPDX-License-Identifier: Apache-2.0.\n"
+        " */\n"
         "\n"
         "/* WARNING: THIS FILE WAS AUTOMATICALLY GENERATED. DO NOT EDIT. */\n"
         "/* clang-format off */\n"
