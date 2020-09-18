@@ -26,6 +26,7 @@ string(REPLACE ";" "${AWS_MODULE_DIR};" AWS_MODULE_PATH "${CMAKE_PREFIX_PATH}${A
 list(APPEND CMAKE_MODULE_PATH ${AWS_MODULE_PATH})
 
 include(AwsCFlags)
+include(AwsCheckHeaders)
 include(AwsSharedLibSetup)
 include(AwsSanitizers)
 include(CheckCCompilerFlag)
@@ -76,6 +77,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${DEP_AWS_LIBS})
 
 aws_prepare_shared_lib_exports(${PROJECT_NAME})
 
+aws_check_headers(${PROJECT_NAME} ${AWS_COMPRESSION_HEADERS})
 install(FILES ${AWS_COMPRESSION_HEADERS} DESTINATION "include/aws/compression")
 install(FILES ${AWS_COMPRESSION_TESTING_HEADERS} DESTINATION "include/aws/testing/compression")
 
