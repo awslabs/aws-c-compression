@@ -71,7 +71,7 @@ struct huffman_test_code_point {
  * \return AWS_OP_SUCCESS on success, AWS_OP_FAILURE on failure (error_string
  * will be set)
  */
-int huffman_test_transitive(
+static int huffman_test_transitive(
     struct aws_huffman_symbol_coder *coder,
     const char *input,
     size_t size,
@@ -146,7 +146,7 @@ int huffman_test_transitive(
  * \return AWS_OP_SUCCESS on success, AWS_OP_FAILURE on failure (error_string
  * will be set)
  */
-int huffman_test_transitive_chunked(
+static int huffman_test_transitive_chunked(
     struct aws_huffman_symbol_coder *coder,
     const char *input,
     size_t size,
