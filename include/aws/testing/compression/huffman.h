@@ -98,6 +98,6 @@ int huffman_test_transitive_chunked(
     size_t output_chunk_size,
     const char **error_string);
 
-#include <aws/testing/compression/huffman.inl>
+/*#include <aws/testing/compression/huffman.inl>*/
 
 #endif /* AWS_TESTING_COMPRESSION_HUFFMAN_H */
