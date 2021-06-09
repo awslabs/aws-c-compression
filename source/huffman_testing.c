@@ -9,9 +9,11 @@
 /**
  * See aws/testing/compression/huffman.h for docs.
  */
+#define AWS_UNSTABLE_TESTING_API
+#include <aws/testing/compression/huffman.h>
 
-#include <aws/common/common.h>
 #include <aws/common/byte_buf.h>
+#include <aws/common/common.h>
 
 int huffman_test_transitive(
     struct aws_huffman_symbol_coder *coder,
