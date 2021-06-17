@@ -6,11 +6,7 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-#include <aws/testing/aws_test_harness.h>
-
 #include <aws/compression/huffman.h>
-
-#include <stddef.h>
 
 /**
  * The intended use of file is to allow testing of huffman character coders.
@@ -99,7 +95,5 @@ int huffman_test_transitive_chunked(
     size_t encoded_size,
     size_t output_chunk_size,
     const char **error_string);
-
-/*#include <aws/testing/compression/huffman.inl>*/
 
 #endif /* AWS_TESTING_COMPRESSION_HUFFMAN_H */
