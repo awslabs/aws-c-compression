@@ -6,11 +6,7 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-#include <aws/testing/aws_test_harness.h>
-
 #include <aws/compression/huffman.h>
-
-#include <stddef.h>
 
 /**
  * The intended use of file is to allow testing of huffman character coders.
