@@ -10,7 +10,6 @@
  * See aws/testing/compression/huffman.h for docs.
  */
 #define AWS_UNSTABLE_TESTING_API
-#include <aws/testing/aws_test_harness.h>
 #include <aws/testing/compression/huffman.h>
 
 #include <aws/common/byte_buf.h>
