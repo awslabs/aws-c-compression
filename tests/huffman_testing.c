@@ -9,7 +9,6 @@
 /**
  * See aws/testing/compression/huffman.h for docs.
  */
-#define AWS_UNSTABLE_TESTING_API
 #include <aws/testing/compression/huffman.h>
 
 #include <aws/common/byte_buf.h>
