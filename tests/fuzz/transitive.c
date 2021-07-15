@@ -5,8 +5,8 @@
 
 #include <aws/compression/huffman.h>
 
+#include <aws/compression/private/huffman_testing.h>
 #include <aws/testing/aws_test_harness.h>
-#include <aws/testing/compression/huffman.h>
 
 struct aws_huffman_symbol_coder *test_get_coder(void);
 

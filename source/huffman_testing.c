@@ -171,4 +171,3 @@ int huffman_test_transitive_chunked(
 
     return AWS_OP_SUCCESS;
 }
-
