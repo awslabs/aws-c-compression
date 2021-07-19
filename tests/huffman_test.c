@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
+#include <aws/compression/private/huffman_testing.h>
 #include <aws/testing/aws_test_harness.h>
-#include <aws/testing/compression/huffman.h>
 
 #include <aws/compression/huffman.h>
 

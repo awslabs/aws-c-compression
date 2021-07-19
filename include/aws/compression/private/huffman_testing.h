@@ -1,5 +1,5 @@
-#ifndef AWS_TESTING_COMPRESSION_HUFFMAN_H
-#define AWS_TESTING_COMPRESSION_HUFFMAN_H
+#ifndef AWS_COMPRESSION_HUFFMAN_TESTING_H
+#define AWS_COMPRESSION_HUFFMAN_TESTING_H
 
 /**
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -96,4 +96,4 @@ int huffman_test_transitive_chunked(
     size_t output_chunk_size,
     const char **error_string);
 
-#endif /* AWS_TESTING_COMPRESSION_HUFFMAN_H */
+#endif /* AWS_COMPRESSION_HUFFMAN_TESTING_H */

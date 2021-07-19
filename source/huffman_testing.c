@@ -1,6 +1,3 @@
-#ifndef AWS_TESTING_COMPRESSION_HUFFMAN_INL
-#define AWS_TESTING_COMPRESSION_HUFFMAN_INL
-
 /**
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0.
@@ -10,7 +7,7 @@
  * See aws/testing/compression/huffman.h for docs.
  */
 #define AWS_UNSTABLE_TESTING_API
-#include <aws/testing/compression/huffman.h>
+#include <aws/compression/private/huffman_testing.h>
 
 #include <aws/common/byte_buf.h>
 #include <aws/common/common.h>
@@ -174,5 +171,3 @@ int huffman_test_transitive_chunked(
 
     return AWS_OP_SUCCESS;
 }
-
-#endif /* AWS_TESTING_COMPRESSION_HUFFMAN_INL */
