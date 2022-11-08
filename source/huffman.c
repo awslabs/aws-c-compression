@@ -188,12 +188,12 @@ int aws_huffman_encode(
 
 /* Decode's reading is written in a helper function,
    so this struct helps avoid passing all the parameters through by hand */
-struct decoder_state {
+struct huffman_decoder_state {
     struct aws_huffman_decoder *decoder;
     struct aws_byte_cursor *input_cursor;
 };
 
-static void decode_fill_working_bits(struct decoder_state *state) {
+static void decode_fill_working_bits(struct huffman_decoder_state *state) {
 
     /* Read from bytes in the buffer until there are enough bytes to process */
     while (state->decoder->num_bits < MAX_PATTERN_BITS && state->input_cursor->len) {
@@ -220,7 +220,7 @@ int aws_huffman_decode(
     AWS_ASSERT(to_decode);
     AWS_ASSERT(output);
 
-    struct decoder_state state;
+    struct huffman_decoder_state state;
     state.decoder = decoder;
     state.input_cursor = to_decode;
 
