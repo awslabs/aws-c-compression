@@ -33,6 +33,7 @@ void aws_compression_library_init(struct aws_allocator *alloc);
  */
 AWS_COMPRESSION_API
 void aws_compression_library_clean_up(void);
+
 AWS_POP_SANE_WARNING_LEVEL
 
 #endif /* AWS_COMPRESSION_COMPRESSION_H */
