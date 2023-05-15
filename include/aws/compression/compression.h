@@ -20,6 +20,8 @@ enum aws_compression_error {
     AWS_ERROR_END_COMPRESSION_RANGE = AWS_ERROR_ENUM_END_RANGE(AWS_C_COMPRESSION_PACKAGE_ID)
 };
 
+AWS_EXTERN_C_BEGIN
+
 /**
  * Initializes internal datastructures used by aws-c-compression.
  * Must be called before using any functionality in aws-c-compression.
@@ -34,6 +36,7 @@ void aws_compression_library_init(struct aws_allocator *alloc);
 AWS_COMPRESSION_API
 void aws_compression_library_clean_up(void);
 
+AWS_EXTERN_C_END
 AWS_POP_SANE_WARNING_LEVEL
 
 #endif /* AWS_COMPRESSION_COMPRESSION_H */
