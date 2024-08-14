@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 project(aws-c-compression C)
 
-if (POLICY CMP0069)
-    cmake_policy(SET CMP0069 NEW) # Enable LTO/IPO if available in the compiler, see AwsCFlags
-endif()
-
 if (DEFINED CMAKE_PREFIX_PATH)
     file(TO_CMAKE_PATH "${CMAKE_PREFIX_PATH}" CMAKE_PREFIX_PATH)
 endif()
@@ -59,6 +55,7 @@ file(GLOB COMPRESSION_SRC
         ${AWS_COMPRESSION_SRC}
         )
 
+aws_set_common_policies()
 add_library(${PROJECT_NAME} ${LIBTYPE} ${COMPRESSION_HEADERS} ${COMPRESSION_SRC})
 aws_set_common_properties(${PROJECT_NAME})
 aws_prepare_symbol_visibility_args(${PROJECT_NAME} "AWS_COMPRESSION")
