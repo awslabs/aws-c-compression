@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.13)
 project(aws-c-compression C)
 
 if (DEFINED CMAKE_PREFIX_PATH)
@@ -55,7 +55,6 @@ file(GLOB COMPRESSION_SRC
         ${AWS_COMPRESSION_SRC}
         )
 
-aws_set_common_policies()
 add_library(${PROJECT_NAME} ${LIBTYPE} ${COMPRESSION_HEADERS} ${COMPRESSION_SRC})
 aws_set_common_properties(${PROJECT_NAME})
 aws_prepare_symbol_visibility_args(${PROJECT_NAME} "AWS_COMPRESSION")
