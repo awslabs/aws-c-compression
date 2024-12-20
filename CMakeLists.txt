@@ -59,8 +59,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${DEP_AWS_LIBS})
 aws_prepare_shared_lib_exports(${PROJECT_NAME})
 
 aws_check_headers(${PROJECT_NAME} ${AWS_COMPRESSION_HEADERS})
-install(FILES ${AWS_COMPRESSION_HEADERS} DESTINATION "include/aws/compression")
-install(FILES ${AWS_COMPRESSION_TESTING_HEADERS} DESTINATION "include/aws/testing/compression")
+install(FILES ${AWS_COMPRESSION_HEADERS} DESTINATION "${INCLUDE_DIRECTORY}/aws/compression")
+install(FILES ${AWS_COMPRESSION_TESTING_HEADERS} DESTINATION "${INCLUDE_DIRECTORY}/aws/testing/compression")
 
 if (BUILD_SHARED_LIBS)
    set (TARGET_DIR "shared")

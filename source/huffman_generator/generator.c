@@ -4,7 +4,6 @@
  */
 
 #include <assert.h> /* NOLINT(fuchsia-restrict-system-includes) */
-#include <aws/common/file.h>
 #include <ctype.h>
 #include <stdint.h> /* NOLINT(fuchsia-restrict-system-includes) */
 #include <stdio.h>
@@ -43,7 +42,7 @@ static size_t read_past_comma(const char *str) {
 int read_code_points(const char *input_path) {
 
     memset(code_points, 0, sizeof(code_points));
-    FILE *file = aws_fopen(input_path, "r");
+    FILE *file = fopen(input_path, "r");
     if (!file) {
         printf("Failed to open file '%s' for read.", input_path);
         return 1;
@@ -279,7 +278,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Open the file */
-    FILE *file = aws_fopen(output_file, "w");
+    FILE *file = fopen(output_file, "w");
     if (!file) {
         printf("Failed to open file '%s' for write.", output_file);
         return 1;
