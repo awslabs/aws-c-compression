@@ -12,6 +12,7 @@ include(AwsSharedLibSetup)
 include(AwsSanitizers)
 include(CheckCCompilerFlag)
 include(AwsFindPackage)
+include(GNUInstallDirs)
 
 file(GLOB AWS_COMPRESSION_HEADERS
         "include/aws/compression/*.h"
@@ -59,8 +60,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${DEP_AWS_LIBS})
 aws_prepare_shared_lib_exports(${PROJECT_NAME})
 
 aws_check_headers(${PROJECT_NAME} ${AWS_COMPRESSION_HEADERS})
-install(FILES ${AWS_COMPRESSION_HEADERS} DESTINATION "${INCLUDE_DIRECTORY}/aws/compression")
-install(FILES ${AWS_COMPRESSION_TESTING_HEADERS} DESTINATION "${INCLUDE_DIRECTORY}/aws/testing/compression")
+install(FILES ${AWS_COMPRESSION_HEADERS} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/aws/compression")
+install(FILES ${AWS_COMPRESSION_TESTING_HEADERS} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/aws/testing/compression")
 
 if (BUILD_SHARED_LIBS)
    set (TARGET_DIR "shared")
@@ -69,7 +70,7 @@ else()
 endif()
 
 install(EXPORT "${PROJECT_NAME}-targets"
-        DESTINATION "${LIBRARY_DIRECTORY}/cmake/${PROJECT_NAME}/${TARGET_DIR}"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${TARGET_DIR}"
         NAMESPACE AWS::
         COMPONENT Development)
 
@@ -78,7 +79,7 @@ configure_file("cmake/${PROJECT_NAME}-config.cmake"
         @ONLY)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
-        DESTINATION "${LIBRARY_DIRECTORY}/cmake/${PROJECT_NAME}/"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/"
         COMPONENT Development)
 
 option(BUILD_HUFFMAN_GENERATOR "Whether or not to build the aws-c-common-huffman-generator tool" OFF)
