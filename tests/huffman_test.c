@@ -393,7 +393,7 @@ static int test_huffman_transitive(struct aws_allocator *allocator, void *ctx) {
     const char *error_message = NULL;
     int result =
         huffman_test_transitive(test_get_coder(), s_url_string, URL_STRING_LEN, ENCODED_URL_LEN, &error_message);
-    ASSERT_SUCCESS(result, error_message);
+    ASSERTF_SUCCESS(result, error_message);
 
     return AWS_OP_SUCCESS;
 }
@@ -406,7 +406,7 @@ static int test_huffman_transitive_even_bytes(struct aws_allocator *allocator, v
 
     const char *error_message = NULL;
     int result = huffman_test_transitive(test_get_coder(), "cdfh", 4, 3, &error_message);
-    ASSERT_SUCCESS(result, error_message);
+    ASSERTF_SUCCESS(result, error_message);
 
     return AWS_OP_SUCCESS;
 }
@@ -421,7 +421,7 @@ static int test_huffman_transitive_all_code_points(struct aws_allocator *allocat
     const char *error_message = NULL;
     int result =
         huffman_test_transitive(test_get_coder(), s_all_codes, ALL_CODES_LEN, ENCODED_CODES_LEN, &error_message);
-    ASSERT_SUCCESS(result, error_message);
+    ASSERTF_SUCCESS(result, error_message);
 
     return AWS_OP_SUCCESS;
 }
@@ -439,7 +439,7 @@ static int test_huffman_transitive_chunked(struct aws_allocator *allocator, void
         const char *error_message = NULL;
         int result = huffman_test_transitive_chunked(
             test_get_coder(), s_all_codes, ALL_CODES_LEN, ENCODED_CODES_LEN, step_size, &error_message);
-        ASSERT_SUCCESS(result, error_message);
+        ASSERTF_SUCCESS(result, error_message);
     }
 
     return AWS_OP_SUCCESS;
