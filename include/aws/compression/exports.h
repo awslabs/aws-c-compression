@@ -15,13 +15,13 @@
 #        define AWS_COMPRESSION_API
 #    endif /* AWS_COMPRESSION_USE_IMPORT_EXPORT */
 
-#else /* defined (AWSC_RT_USE_WINDOWS_DLL_SEMANTICS) || defined (WIN32) */
+#else /* defined (AWS_CRT_USE_WINDOWS_DLL_SEMANTICS) || defined (_WIN32) */
 #    if defined(AWS_COMPRESSION_USE_IMPORT_EXPORT) && defined(AWS_COMPRESSION_EXPORTS)
 #        define AWS_COMPRESSION_API __attribute__((visibility("default")))
 #    else
 #        define AWS_COMPRESSION_API
 #    endif
 
-#endif /* defined (AWS_CRT_USE_WINDOWS_DLL_SEMANTICS) || defined (WIN32) */
+#endif /* defined (AWS_CRT_USE_WINDOWS_DLL_SEMANTICS) || defined (_WIN32) */
 
 #endif /* AWS_COMPRESSION_EXPORTS_H */
