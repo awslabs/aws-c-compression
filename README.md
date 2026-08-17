@@ -25,7 +25,7 @@ cmake --build aws-c-compression/build --target install
 
 ### Huffman
 
-The Huffman implemention in this library is designed around the concept of a
+The Huffman implementation in this library is designed around the concept of a
 generic "symbol coder" object, which defines how each symbol (value between 0
 and 255) is encoded and decoded. This object looks like this:
 ```c
@@ -70,7 +70,7 @@ The HUFFMAN_CODE macro expects 4 arguments:
 > };
 > ```
 
-This will emit a c file which exports a function with the following signiture:
+This will emit a c file which exports a function with the following signature:
 ```c
 struct aws_huffman_symbol_coder *{coder_name}_get_coder();
 ```
@@ -103,7 +103,7 @@ aws_huffman_decoder_init(&decoder, {coder_name}_get_coder())
  * \param[in]       output          The buffer to write encoded bytes to
  * \param[in,out]   output_size     In: The size of output. Out: The number of bytes written to output
  *
- * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR the code for the error that occured
+ * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR the code for the error that occurred
  */
 int aws_huffman_encode(struct aws_huffman_encoder *encoder, const char *to_encode, size_t *length, uint8_t *output, size_t *output_size);
 ```
@@ -146,7 +146,7 @@ and `eos_padding` is `0b01010101`, `01010` will be appended to the byte.
  * \param[in]       output          The buffer to write decoded symbols to
  * \param[in,out]   output_size     In: The size of output. Out: The number of bytes written to output
  *
- * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR the code for the error that occured
+ * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR the code for the error that occurred
  */
 int aws_huffman_decode(struct aws_huffman_decoder *decoder, const uint8_t *to_decode, size_t *length, char *output, size_t *output_size);
 ```

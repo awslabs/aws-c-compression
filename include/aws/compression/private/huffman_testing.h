@@ -53,7 +53,7 @@ struct huffman_test_code_point {
 
 /**
  * Function to test a huffman coder to ensure the transitive property applies
- * (input == decode(incode(input)))
+ * (input == decode(encode(input)))
  *
  * \param[in]   coder           The symbol coder to test
  * \param[in]   input           The buffer to test
@@ -61,7 +61,7 @@ struct huffman_test_code_point {
  * \param[in]   encoded_size    The length of the encoded buffer. Pass 0 to skip check.
  * \param[out]  error_string    In case of failure, the error string to report
  *
- * \return AWS_OP_SUCCESS on success, AWS_OP_FAILURE on failure (error_string
+ * \return AWS_OP_SUCCESS on success, AWS_OP_ERR on failure (error_string
  * will be set)
  */
 AWS_COMPRESSION_API
@@ -74,7 +74,7 @@ int huffman_test_transitive(
 
 /**
  * Function to test a huffman coder to ensure the transitive property applies
- * when doing partial encodes/decodes (input == decode(incode(input)))
+ * when doing partial encodes/decodes (input == decode(encode(input)))
  *
  * \param[in]   coder               The symbol coder to test
  * \param[in]   input               The buffer to test
@@ -84,7 +84,7 @@ int huffman_test_transitive(
  * \param[out]  error_string        In case of failure, the error string to
  * report
  *
- * \return AWS_OP_SUCCESS on success, AWS_OP_FAILURE on failure (error_string
+ * \return AWS_OP_SUCCESS on success, AWS_OP_ERR on failure (error_string
  * will be set)
  */
 AWS_COMPRESSION_API

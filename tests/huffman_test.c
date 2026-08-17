@@ -90,7 +90,7 @@ AWS_TEST_CASE(huffman_encoder_all_code_points, test_huffman_encoder_all_code_poi
 static int test_huffman_encoder_all_code_points(struct aws_allocator *allocator, void *ctx) {
     (void)allocator;
     (void)ctx;
-    /* Test encoding a sequence of all character values expressable as
+    /* Test encoding a sequence of all character values expressible as
      * characters */
 
     uint8_t output_buffer[ENCODED_CODES_LEN + 1];
@@ -249,7 +249,7 @@ AWS_TEST_CASE(huffman_decoder_all_code_points, test_huffman_decoder_all_code_poi
 static int test_huffman_decoder_all_code_points(struct aws_allocator *allocator, void *ctx) {
     (void)allocator;
     (void)ctx;
-    /* Test decoding a sequence of all character values expressable as
+    /* Test decoding a sequence of all character values expressible as
      * characters */
 
     char output_buffer[ALL_CODES_LEN + 1];
@@ -415,7 +415,7 @@ AWS_TEST_CASE(huffman_transitive_all_code_points, test_huffman_transitive_all_co
 static int test_huffman_transitive_all_code_points(struct aws_allocator *allocator, void *ctx) {
     (void)allocator;
     (void)ctx;
-    /* Test encoding a sequence of all character values expressable as
+    /* Test encoding a sequence of all character values expressible as
      * characters and immediately decoding it */
 
     const char *error_message = NULL;
@@ -430,7 +430,7 @@ AWS_TEST_CASE(huffman_transitive_chunked, test_huffman_transitive_chunked)
 static int test_huffman_transitive_chunked(struct aws_allocator *allocator, void *ctx) {
     (void)allocator;
     (void)ctx;
-    /* Test encoding a sequence of all character values expressable as
+    /* Test encoding a sequence of all character values expressible as
      * characters and immediately decoding it */
 
     for (size_t i = 0; i < NUM_STEP_SIZES; ++i) {

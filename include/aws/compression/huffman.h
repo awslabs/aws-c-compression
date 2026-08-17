@@ -38,9 +38,10 @@ typedef struct aws_huffman_code(aws_huffman_symbol_encoder_fn)(uint8_t symbol, v
 /**
  * Function used to decode a code into a symbol
  *
- * \param[in]   bits        The bits to attept to decode a symbol from
+ * \param[in]   bits        The bits to attempt to decode a symbol from
  * \param[out]  symbol      The symbol found. Do not write to if no valid symbol
- * found \param[in]   userdata    Optional userdata
+ * found
+ * \param[in]   userdata    Optional userdata
  * (aws_huffman_symbol_coder.userdata)
  *
  * \returns The number of bits read from bits
@@ -86,13 +87,13 @@ struct aws_huffman_decoder {
 AWS_EXTERN_C_BEGIN
 
 /**
- * Initialize a encoder object with a symbol coder.
+ * Initialize an encoder object with a symbol coder.
  */
 AWS_COMPRESSION_API
 void aws_huffman_encoder_init(struct aws_huffman_encoder *encoder, struct aws_huffman_symbol_coder *coder);
 
 /**
- * Resets a decoder for use with a new binary stream
+ * Resets an encoder for use with a new binary stream
  */
 AWS_COMPRESSION_API
 void aws_huffman_encoder_reset(struct aws_huffman_encoder *encoder);
@@ -143,7 +144,7 @@ int aws_huffman_encode(
  * \param[in]       output          The buffer to write decoded symbols to.
  *                                  If decoder is set to allow growth, capacity will be increased when necessary.
  *
- * \return AWS_OP_SUCCESS if encoding is successful, AWS_OP_ERR otherwise
+ * \return AWS_OP_SUCCESS if decoding is successful, AWS_OP_ERR otherwise
  */
 AWS_COMPRESSION_API
 int aws_huffman_decode(
