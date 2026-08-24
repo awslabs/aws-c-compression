@@ -3,6 +3,12 @@
 This is a cross-platform C99 implementation of compression algorithms such as
 gzip, and huffman encoding/decoding. Currently only huffman is implemented.
 
+## Versioning
+
+This library uses a three-part `Major.Minor.Patch` version scheme. See
+[VERSIONING.md](VERSIONING.md) for what each part means and our API/ABI
+stability policy.
+
 ## License
 
 This library is licensed under the Apache 2.0 License.
