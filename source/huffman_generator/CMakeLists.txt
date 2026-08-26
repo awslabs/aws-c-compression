@@ -1,8 +1,8 @@
-file(GLOB GENERATIR_SRC "generator.c")
+file(GLOB GENERATOR_SRC "generator.c")
 
 set(GENERATOR_BINARY_NAME ${CMAKE_PROJECT_NAME}-huffman-generator)
 
-add_executable(${GENERATOR_BINARY_NAME} ${GENERATIR_SRC})
+add_executable(${GENERATOR_BINARY_NAME} ${GENERATOR_SRC})
 aws_set_common_properties(${GENERATOR_BINARY_NAME})
 aws_add_sanitizers(${GENERATOR_BINARY_NAME})
 target_include_directories(${GENERATOR_BINARY_NAME} PRIVATE

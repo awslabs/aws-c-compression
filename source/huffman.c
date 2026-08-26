@@ -70,7 +70,7 @@ static int encode_write_bit_pattern(struct encoder_state *state, struct aws_huff
         uint8_t bits_to_cut =
             (BITSIZEOF(bit_pattern.pattern) - bit_pattern.num_bits) + (bit_pattern.num_bits - bits_to_write);
 
-        /* Write the appropiate number of bits to this byte
+        /* Write the appropriate number of bits to this byte
             Shift to the left to cut any unneeded bits
             Shift to the right to position the bits correctly */
         state->working |= (bit_pattern.pattern << bits_to_cut) >> (MAX_PATTERN_BITS - state->bit_pos);
@@ -198,7 +198,7 @@ static void decode_fill_working_bits(struct huffman_decoder_state *state) {
     /* Read from bytes in the buffer until there are enough bytes to process */
     while (state->decoder->num_bits < MAX_PATTERN_BITS && state->input_cursor->len) {
 
-        /* Read the appropiate number of bits from this byte */
+        /* Read the appropriate number of bits from this byte */
         uint8_t new_byte = 0;
         aws_byte_cursor_read_u8(state->input_cursor, &new_byte);
 
